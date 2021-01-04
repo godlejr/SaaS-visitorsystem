@@ -1,0 +1,75 @@
+{% extends "material/snapshot/base.html" %}
+
+{% block content %}
+<div class="section">
+    <div class="container">
+        <div class="row">
+            <div class="col s12 m4 l3">
+                <div class="sidebar">
+                    <div class="sidebar-body">
+                        <ul class="collection with-header z-depth-1">
+                            <li class="collection-header"><h5>공간</h5></li>
+                            <li class="collection-item"><a href="">침실</a></li>
+                            <li class="collection-item"><a href="">거실</a></li>
+                            <li class="collection-item"><a href="">주방</a></li>
+                            <li class="collection-item"><a href="">서재</a></li>
+                            <li class="collection-item"><a href="">현관</a></li>
+                            <li class="collection-item"><a href="">베란다</a></li>
+                        </ul>
+                        <ul class="collection with-header z-depth-1">
+                            <li class="collection-header"><h5>전문가</h5></li>
+                            <li class="collection-item"><a href="">전체</a></li>
+                            <li class="collection-item"><a href="">전문가</a></li>
+                            <li class="collection-item"><a href="">셀프 인테리어</a></li>
+                        </ul>
+                        <ul class="collection with-header z-depth-1">
+                            <li class="collection-header"><h5>스타일</h5></li>
+                            <li class="collection-item">모던</li>
+                            <li class="collection-item">엔틱</li>
+                            <li class="collection-item">북유럽</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col s12 m8 l9">
+                <div class="cards">
+                {% for post in posts %}
+                    <div class="card snapshot">
+                        <div class="card-image-bg waves-effect waves-block waves-light" style="background-image:url(http://static.inotone.co.kr/data/img/{{ post.photos.filename }})">
+                            <div class="card-info right">
+                                <div class="material-icons white-text">favorite_border</div>
+                                <div class="love-count white-text">1,234</div>
+                            </div>
+                        </div>
+                        <div class="card-content">
+                            <p>{{ post.content|truncate(30, true) }}...</p>
+                        </div>
+                        <div class="card-action">
+                            <div class="chip">
+                                <img src="http://autokadabra.ru/system/uploads/users/20/20303/small.png">
+                                {{ post.snapshot_user.name }}
+                            </div>
+                            <div class="card-button right">
+                                <i class="material-icons grey-text text-lighten-2">favorite_border</i>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="http://cdnjs.cloudflare.com/ajax/libs/masonry/4.1.0/masonry.pkgd.min.js"></script>
+<script>
+var $cards = $('.cards').masonry({
+    itemSelector: '.card',
+    fitWidth: true,
+    columnWidth: 300,
+    gutter: 20,
+    transitionDuration: 0
+});
+</script>
+{% endblock %}

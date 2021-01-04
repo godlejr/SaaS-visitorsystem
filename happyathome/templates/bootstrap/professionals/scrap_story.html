@@ -1,0 +1,43 @@
+{% extends 'bootstrap/users/content.html' %}
+
+{% block content_body %}
+<div class="content-body">
+    <div class="user-contents">
+        {% if user.id == session.user_id %}
+            <div class="user-menu">
+                <ul>
+                    <li href="{{ url_for('users.edit_profile', id=user.id) }}">프로필 수정</li><li href="{{ url_for('users.edit_password', id=user.id) }}">비밀번호 변경</li>
+                </ul>
+            </div>
+        {% endif %}
+
+        <div class="user-title">스토리 스크랩({{ magazinescraps_count }})</div>
+        <div class="cards">
+            {% for magazinescrap in magazinescraps %}
+                <div class="card" href="{{ url_for('magazines.detail', id=magazinescrap.magazine_id) }}"
+                     style="background-image:url({{ url_for_s3('S3_IMG_DIRECTORY', filename=magazinescrap.photos[0].photo.file.name) }})">
+                    {% if magazinescrap.magazine.has_vr %}
+                        <div class="card-media"><span class="vr-icon"></span></div>
+                    {% elif magazinescrap.magazine.has_mov %}
+                        <div class="card-media"><span class="mov-icon"></span></div>
+                    {% endif %}
+                </div>
+            {% endfor %}
+        </div>
+
+        <div class="pagination-nav">
+            {{ func.render_pagination('professionals.scrap_story', pagination, user.id) }}
+        </div>
+    </div>
+</div>
+
+<script>
+$('.card').click(function() {
+    document.location.href = $(this).attr('href');
+});
+
+$('.user-menu li').click(function() {
+    document.location.href = $(this).attr('href');
+});
+</script>
+{% endblock %}

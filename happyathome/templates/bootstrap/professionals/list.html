@@ -1,0 +1,140 @@
+{% extends "bootstrap/professionals/base.html" %}
+
+{% block content %}
+<div id="filter">
+    <div class="filter-container">
+        <ul>
+            <li>
+                <div class="filter-title"><img src="{{ url_for('static', filename='img/main/filter-arrow-icon.png') }}"/>업종</div>
+                <div class="filter-body">
+                    <div class="filter-selected">{% if business %}{{ business.name }}{% else %}전체{% endif %}</div>
+                    <div class="filter-menu">
+                        <div class="filter-items-arrow"><img src="{{ url_for('static', filename='img/story/filter_a.png') }}" alt="" /></div>
+                        <div class="filter-items">
+                            <ul>
+                                <li class="filter-item"><a href="{{ url_for('professionals.list') }}">전체</a></li>
+                                {% for business in businesses %}
+                                    <li class="filter-item"><a href="{{ url_for('professionals.list', business_id=business.id) }}">{{ business.name }}</a></li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </li>
+            <li>
+                <div class="filter-title"><img src="{{ url_for('static', filename='img/main/filter-arrow-icon.png') }}"/>지역</div>
+                <div class="filter-body">
+                    <div class="filter-selected">
+                        {% if request.args.get('area_id') == '1' %}
+                            서울/경기/인천
+                        {% elif request.args.get('area_id') == '2' %}
+                            강원
+                        {% elif request.args.get('area_id') == '3' %}
+                            충북
+                        {% elif request.args.get('area_id') == '4' %}
+                            대전/충남
+                        {% elif request.args.get('area_id') == '5' %}
+                            대구/경북
+                        {% elif request.args.get('area_id') == '6' %}
+                            부산/울산/경남
+                        {% elif request.args.get('area_id') == '7' %}
+                            전북
+                        {% elif request.args.get('area_id') == '8' %}
+                            광주/전남
+                        {% elif request.args.get('area_id') == '9' %}
+                            제주
+                        {% else %}
+                            전체
+                        {% endif %}
+                    </div>
+                    <div class="filter-menu">
+                        <div class="filter-items-arrow"><img src="{{ url_for('static', filename='img/story/filter_a.png') }}" alt="" /></div>
+                        <div class="filter-items">
+                            <ul>
+                                <li class="filter-item"><a href="{{ url_for('professionals.list') }}">전체</a></li>
+                                <li class="filter-item"><a href="{{ url_for('professionals.list', area_id=1) }}">서울/경기/인천</a></li>
+                                <li class="filter-item"><a href="{{ url_for('professionals.list', area_id=2) }}">강원</a></li>
+                                <li class="filter-item"><a href="{{ url_for('professionals.list', area_id=3) }}">충북</a></li>
+                                <li class="filter-item"><a href="{{ url_for('professionals.list', area_id=4) }}">대전/충남</a></li>
+                                <li class="filter-item"><a href="{{ url_for('professionals.list', area_id=5) }}">대구/경북</a></li>
+                                <li class="filter-item"><a href="{{ url_for('professionals.list', area_id=6) }}">부산/울산/경남</a></li>
+                                <li class="filter-item"><a href="{{ url_for('professionals.list', area_id=7) }}">전북</a></li>
+                                <li class="filter-item"><a href="{{ url_for('professionals.list', area_id=8) }}">광주/전남</a></li>
+                                <li class="filter-item"><a href="{{ url_for('professionals.list', area_id=9) }}">제주</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </li>
+            <li>
+                <div class="filter-title"><img src="{{ url_for('static', filename='img/main/filter-arrow-icon.png') }}"/>정렬</div>
+                <div class="filter-body">
+                    <div class="filter-selected">
+                        {% if request.args.get('sort_id') == '1' %}
+                            최신순
+                        {% else %}
+                            활동순
+                        {% endif %}
+                    </div>
+                    <div class="filter-menu">
+                        <div class="filter-items-arrow"><img src="{{ url_for('static', filename='img/story/filter_a.png') }}" alt="" /></div>
+                        <div class="filter-items">
+                            <ul>
+                                <li class="filter-item"><a href="{{ url_for('professionals.list') }}">활동순</a></li>
+                                <li class="filter-item"><a href="{{ url_for('professionals.list', sort_id=1) }}">최신순</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </li>
+        </ul>
+    </div>
+</div><!-- filter end -->
+<div class="bg-line"></div>
+
+<div class="content">
+    <div class="pros">
+        {% for post in posts %}
+        <div class="pro-card" id="{{ post.user_id }}">
+            <div class="pro-photo" {% if post.user.cover %}style="background-image:url({{ url_for_s3('S3_COVER_DIRECTORY', filename=post.user.cover) }})"{% endif %}>
+                {% if post.address %}
+                <div class="pro-address">
+                    <i class="material-icons">location_on</i><br>
+                    {{ post.address }}
+                </div>
+                {% endif %}
+            </div>
+            <div class="pro-detail">
+                <div class="pro-info">
+                    <div class="pro-avatar" style="background-image:url({{ url_for_s3('S3_USER_DIRECTORY', filename=post.user.avatar) }}) "></div>
+                    <div class="{% if post.get_score(post.id) != 0  %} pro-name {% else %} pro-name-nostar {% endif %}" >{{ post.user.name }}</div>
+                        <div class="pro-star">
+                        {% for i in range(0, post.get_integer(post.get_score(post.id))) %}
+                            <i class="material-icons">grade</i>
+                        {% endfor %}
+                        {% if post.get_score(post.id) != 0 %}
+                            <span class="pro-score">{{ post.get_score(post.id) }}</span>
+                        {% endif %}
+                        </div>
+                </div>
+                <div class="pro-greeting">{{ post.greeting|default('', true) }}</div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+    <div class="pagination-nav">{{ func.render_pagination('professionals.list', pagination, None, query_string) }}</div>
+</div>
+
+<script>
+$('.pro-card').click(function() {
+    document.location.href = "{{ url_for('professionals.detail', id='') }}" + $(this).attr('id');
+});
+
+$('.filter-body').mouseover(function() {
+    $(this).find('.filter-menu').toggle();
+}).mouseout(function() {
+    $(this).find('.filter-menu').toggle();
+});
+</script>
+{% endblock %}

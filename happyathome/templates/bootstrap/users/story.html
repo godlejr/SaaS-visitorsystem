@@ -1,0 +1,52 @@
+{% extends 'bootstrap/users/content.html' %}
+
+{% block content_body %}
+<div class="content-body body-main">
+    <div class="user-contents">
+        {% if user == current_user %}
+            <div class="user-menu">
+                <ul>
+                    <li href="{{ url_for('users.edit_profile', id=current_user.id) }}">프로필 수정
+                    </li><li href="{{ url_for('users.edit_password', id=current_user.id) }}">비밀번호 변경
+                    {% if not current_user.is_pro %}
+                        </li><li href="{{ url_for('users.edit_professional', id=current_user.id) }}">사업자로 변경</li>
+                    {% else %}
+                        </li><li href="{{ url_for('users.edit_professional_info', id=current_user.id) }}">사업자정보 수정</li>
+                    {% endif %}
+                </ul>
+            </div>
+        {% endif %}
+
+        <div class="user-title">스토리</div>
+        <div class="cards">
+            {% for magazine in magazines %}
+                {% if magazine.photos %}
+                <div class="card" id="{{ magazine.id }}"
+                     style="background-image:url({{ magazine.photos[0].file_url }})">
+                    {% if magazine.has_vr %}
+                        <div class="card-media"><span class="vr-icon"></span></div>
+                    {% endif %}
+                    {% if magazine.has_mov %}
+                        <div class="card-media"><span class="mov-icon"></span></div>
+                    {% endif %}
+                    <div class="card-title">{{ magazine.title }}</div>
+                </div>
+                {% endif %}
+            {% endfor %}
+        </div>
+        <div class="pagination-nav">
+            {{ func.render_pagination('users.story', pagination, user.id) }}
+        </div>
+    </div>
+</div>
+
+<script>
+$('.card').click(function() {
+    document.location.href = "{{ url_for('magazines.detail', id='') }}" + $(this).attr('id');
+});
+
+$('.user-menu li').click(function() {
+    document.location.href = $(this).attr('href');
+});
+</script>
+{% endblock %}

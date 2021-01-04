@@ -1,0 +1,131 @@
+{% extends "bootstrap/base.html" %}
+{% from "bootstrap/main/_formhelpers.html" import render_field %}
+
+
+{% block content %}
+<div class="content">
+    <form class="login-form" method="POST">
+        <div class="login-header">
+            <img src="{{ url_for('static', filename='img/main/join_img.jpg') }}" width="98" height="97">
+        </div>
+        <div class="login-form-group">{{ form.joiner(class="login-form-field",class="login-check", placeholder=form.joiner.label.text) }} </div>
+
+        <div class="login-form-group">
+            {{ form.email(class="login-form-field", id="email" ,placeholder=form.email.label.text) }}
+        </div>
+
+        <div class="login-form-group" id="name">
+            {{ form.name(class="login-form-field", placeholder=form.name.label.text) }}
+        </div>
+
+        <div class="login-form-group">
+            {{ form.password(class="login-form-field", placeholder=form.password.label.text) }}
+        </div>
+
+        <div class="login-form-group">
+            {{ form.confirm(class="login-form-field", placeholder=form.confirm.label.text) }}
+        </div>
+
+        <div class="login-form-group" id="business_no">
+            {{ form.business_no(class="login-form-field", id="temper_business_no",maxlength=10, value="" ,placeholder=form.business_no.label.text) }}
+        </div>
+
+        <div class="login-form-group">
+            <div class="agreement">
+                {{ form.agreement }} <a target="_blank" href="{{ url_for('main.agreement') }}">이용약관</a> 및 <a target="_blank" href="{{ url_for('main.privacy') }}">개인정보 취급방침</a> 동의
+            </div>
+        </div>
+
+        {% with messages = get_flashed_messages() %}
+            {% if messages %}
+                <div class="message">
+                    <ul>
+                        {% for message in messages %}
+                            <li>{{ message }}</li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            {% endif %}
+
+            {% if form.email.errors %}
+            <div class="message">
+                <ul>
+                    {% for message in form.email.errors %}
+                    <li>{{ message }}</li>
+                    {% endfor %}
+                </ul>
+            </div>
+            {% endif %}
+
+            {% if form.name.errors %}
+            <div class="message">
+                <ul>
+                    {% for message in form.name.errors %}
+                    <li>{{ message }}</li>
+                    {% endfor %}
+                </ul>
+            </div>
+            {% endif %}
+
+
+            {% if form.password.errors %}
+            <div class="message">
+                <ul>
+                    {% for message in form.password.errors %}
+                    <li>{{ message }}</li>
+                    {% endfor %}
+                </ul>
+            </div>
+            {% endif %}
+
+            {% if form.business_no.errors %}
+            <div class="message">
+                <ul>
+                    {% for message in form.business_no.errors %}
+                    <li>{{ message }}</li>
+                    {% endfor %}
+                </ul>
+            </div>
+            {% endif %}
+
+
+        {% if form.agreement.errors %}
+            <div class="message">
+                <ul>
+                    {% for message in form.agreement.errors %}
+                    <li>{{ message }}</li>
+                    {% endfor %}
+                </ul>
+            </div>
+            {% endif %}
+        {% endwith %}
+
+        <div class="login-form-group">
+            <button type="submit" class="btn-submit">회원가입</button>
+        </div>
+        <!--social register -->
+    </form>
+</div>
+
+<script>
+if ($('input[name="joiner"]:radio:checked').val() == 1) {
+    $('#business_no').hide();
+    $('#temper_business_no').val('0000000000');
+} else {
+    $('#temper_business_no').val('');
+    $('#business_no').show();
+}
+
+$('input[name="joiner"]').change(function() {
+    if ($(this).val() == "1") {
+        $('#business_no').hide();
+        $('#temper_business_no').val('0000000000');
+    } else {
+        $('#temper_business_no').val('');
+        $('#business_no').show();
+    }
+});
+
+
+</script>
+{% endblock %}

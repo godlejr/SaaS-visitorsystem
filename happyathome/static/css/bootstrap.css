@@ -1,0 +1,409 @@
+@import url(http://fonts.googleapis.com/earlyaccess/nanumgothic.css);
+@import url(http://fonts.googleapis.com/css?family=Unica+One|Quicksand);
+
+/* Sticky footer styles
+-------------------------------------------------- */
+html {
+  position: relative;
+  min-height: 100%;
+}
+body {
+  /* Margin bottom by footer height */
+  margin-bottom: 65px;
+  background-color: #fcfcfc;
+  color: #030303;
+  font-size: 14px;
+  font-family: 'Nanum Gothic', sans-serif;
+}
+hr {
+    margin: 10px 0;
+}
+label {
+    cursor: pointer;
+}
+pre {
+    padding: 0;
+    margin: 0;
+    border: 0;
+    border-radius: 0;
+    background: none;
+    white-space: pre-wrap;
+    font-size: 15px;
+    font-family: 'Nanum Gothic', sans-serif;
+}
+#navbar {
+    background-color: #000000;
+}
+.navbar {
+    float: right;
+    color: #ffffff;
+    height: 43px;
+    min-height: 43px;
+    box-shadow: 0 0 0 rgba(0,0,0,0);
+    background-color: #000000;
+}
+.navbar a {
+    border-radius: 0;
+}
+.navbar .container {
+    margin: 0;
+    height: 100%;
+    width: 100%;
+}
+.navbar-header {
+    height: 43px;
+}
+.navbar-header .navbar-brand {
+    padding: 10px 15px;
+    height: 43px;
+    font-size: 18px;
+    font-family: 'Unica One';
+    color: #ffffff;
+    background-color: #008ec9;
+}
+.navbar-header .navbar-controls {
+    float: left;
+    padding: 4px 4px;
+}
+.navbar-header .navbar-toggle {
+    margin: 4px 0;
+    border-radius: 0;
+}
+.navbar-header .navbar-toggle .icon-bar {
+    background-color: #ffffff;
+}
+.nav.navbar-nav>li>a {
+    padding: 10px;
+    color: #ffffff;
+    background-color: #000000;
+    font-weight: 500;
+    font-family: 'Quicksand', 'Nanum Gothic', 'Noto Sans KR', sans-serif;
+}
+.nav.navbar-nav>li.active>a {
+    background-color: #008ec9;
+}
+.breadcrumb {
+    border-radius: 0;
+}
+.footer {
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    /* Set the fixed height of the footer here */
+    height: 65px;
+    background-color: #008ec9;
+}
+
+
+/* Custom page CSS
+-------------------------------------------------- */
+/* Not required for template or sticky footer method. */
+
+body > .container {
+  width: 100%;
+  padding: 80px 0;
+}
+.container .text-muted {
+  margin: 20px 0;
+  color: #ffffff;
+}
+.dropdown {
+    display: inline-block;
+}
+.dropdown-toggle {
+    font-weight: 700;
+}
+.footer > .container {
+  padding-right: 15px;
+  padding-left: 15px;
+}
+.footer .dropup {
+  margin: 15px;
+}
+code {
+  font-size: 80%;
+}
+
+
+.content {
+    margin: 0 auto;
+    width: 100%;
+    max-width: 1206px;
+}
+
+select.form-control {
+    width: 140px;
+}
+
+.cards {
+    width: 100%;
+}
+.card {
+    position: relative;
+    cursor: pointer;
+    float: left;
+    width: 33.333%;
+    max-width: 380px;
+    max-height: 380px;
+    margin: 0 11px 22px 11px;
+    border: 1px solid #eeeeee;
+    background-color: #ffffff;
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: center;
+}
+.card:after {
+    content: "";
+    display: block;
+    padding-bottom: 100%;
+ }
+.card .card-info {
+    position: absolute;
+    bottom: 0;
+    padding: 0;
+    width: 100%;
+    height: 120px;
+}
+.card .card-author {
+    position: absolute;
+    display: flex;
+    float: left;
+    top: 0px;
+    padding: 6px 20px;
+    width: 100%;
+    color: #ffffff;
+    background-color: rgba(0, 0, 0, 0.4);
+}
+.card .card-avatar {
+    display: flex;
+    width: 25px;
+    height: 25px;
+    border-radius: 50px;
+    background-color: #ffffff;
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: center;
+}
+.card .card-user {
+    display: flex;
+    padding-left: 6px;
+}
+.card .card-content {
+    position: absolute;
+    display: inline-block;
+    bottom: 0;
+    width: 100%;
+    height: 84px;
+    padding: 10px 51px;
+    background-color: #ffffff;
+}
+.card .card-title {
+    font-size: 13px;
+    overflow: hidden;
+    text-align: justify;
+    text-overflow: ellipsis;
+    word-wrap: break-word;
+    white-space: nowrap;
+}
+.card .card-content a {
+    color: #030303;
+    font-size: 14px;
+}
+.card .card-content a:hover {
+    text-decoration: underline;
+}
+.card .card-content .card-category {
+    font-weight: 700;
+    margin-bottom: 8px;
+}
+.card .card-action {
+    height: 44px;
+    background-color: #ffffff;
+    border-top: 1px solid rgba(160, 160, 160, 0.2);
+}
+
+input[type=file] {
+    display: none;
+}
+.photo-file-form {
+    position: relative;
+}
+.photo-preview {
+    width: 600px;
+    height: 400px;
+    line-height: 400px;
+    cursor: pointer;
+    margin: 0 auto;
+    text-align: center;
+    vertical-align: middle;
+    background-color: #ffffff;
+    background-size: auto;
+    background-repeat: no-repeat;
+    background-position: center;
+    background-image: url('/static/img/btn_upload.png');
+    box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+}
+.photo-preview img {
+    width: auto;
+    height: auto;
+    max-width: 100%;
+    max-height: 100%;
+    vertical-align: middle;
+}
+.photo-preview-loading {
+    display: none;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 600px;
+    height: 400px;
+    margin: -200px 0 0 -300px;
+    background-color: #ffffff;
+    background-repeat: no-repeat;
+    background-position: center;
+    background-image: url('/static/img/ripple.gif');
+}
+
+
+.content-detail {
+    width: 866px;
+    background-color: #ffffff;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+}
+.magazine-body {
+    width: 75%;
+    margin: 0 auto;
+    padding: 15px 5px;
+    text-align: justify;
+}
+.magazine-body .magazine-title {
+    font-size: 24px;
+    font-weight: 700;
+}
+.magazine-body .magazine-user {
+    font-size: 18px;
+    font-weight: 500;
+}
+.magazine-body .magazine-content {
+    font-size: 15px;
+    margin-top: 20px;
+}
+.content-photo {
+    width: 100%;
+    overflow: hidden;
+    text-align: center;
+}
+.content-photo img {
+    max-width: 100%;
+    height: auto;
+}
+.content-photo-360 {
+    width: 650px;
+    height: 400px;
+    margin: 0 auto;
+}
+.content-photos {
+    margin: 0 auto;
+    width: 75%;
+}
+.content-title {
+    width: 100%;
+    padding: 5px;
+    font-size: 26px;
+}
+.content-body {
+    width: 100%;
+    color: #030303;
+    text-align: justify;
+    padding: 15px 5px;
+    font-size: 15px;
+    word-wrap: break-word;
+}
+.content-sidebar {
+    padding: 5px;
+    background-color: #ffffff;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+}
+.content-controls {
+    width: 100%;
+    margin: 10px auto;
+}
+.content-relative {
+    display: table;
+    width: 255px;
+    margin: 0 auto;
+}
+.content-relative ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+.content-relative ul.photos-relative li {
+    float: left;
+}
+.content-relative .relative-title {
+    font-weight: 700;
+}
+.content-relative .relative-list {
+    display: flex;
+}
+.content-relative .relative-body {
+    padding: 7px 0 0 7px;
+    line-height: 170%;
+}
+.content-relative .relative-body p {
+    margin: 0;
+    font-size: 12px;
+}
+
+
+.content-comment {
+    padding: 10px;
+}
+.comment-list {
+    margin-top: 10px;
+    border: 1px solid #eeeeee;
+}
+.comment-list ul {
+    list-style: none;
+}
+
+.custom-pagination {
+    margin:0 auto;
+    width: 100%;
+    display: inline-block;
+    margin: 23px 0;
+    border-radius: 3px;
+}
+
+@media only screen and (min-width: 830px) and (max-width: 1230px) {
+    .content {
+        max-width: 804px;
+    }
+    .card {
+        width: 50%;
+    }
+}
+@media only screen and (min-width:768px) and (max-width: 829px) {
+    .content {
+        max-width: 760px;
+    }
+    .card {
+        width: 50%;
+        max-width: 358px;
+    }
+}
+@media only screen and (max-width:767px) {
+    .content {
+        max-width: 402px;
+    }
+    .well {
+        padding: 0;
+    }
+    .card {
+        width: 100%;
+        margin: 0 0 20px 0;
+        max-width: 402px;
+    }
+}
+

@@ -1,0 +1,439 @@
+{% extends 'bootstrap/gallery/base.html' %}
+
+
+{% block header %}
+<meta property="og:title" content="{{ post.user.name }}" />
+<meta property="og:type" content="website" />
+<meta property="og:url" content="http://www.happyathome.co.kr/gallery/{{ post.id }}" />
+<meta property="og:image" content="http://static.inotone.co.kr/data/img/{{ post.file.name }}" />
+<meta property="og:description" content="{{ post.content }}" />
+<meta property="og:image:width" content="300" />
+<meta property="og:image:height" content="300" />
+
+<meta name="twitter:card" content="{{ post.user.name }}" />
+<meta name="twitter:url" content="http://www.happyathome.co.kr/gallery/{{ post.id }}" />
+<meta name="twitter:description" content="{{ post.content }}" />
+<meta name="twitter:image" content="http://static.inotone.co.kr/data/img/{{ post.file.name }}" />
+
+
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet"/>
+{% endblock %}
+
+{% block content %}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r79/three.min.js"></script>
+<script src="{{ url_for('static', filename='js/carousel.min.js') }}"></script>
+
+<div class="content">
+    <div class="content-body">
+        <div class="content-main">
+            <div class="content-section">
+                <div class="content-photos">
+                    <form method="POST" name="content_form" action="{{ url_for('photos.comment_new', id=post.id) }}">
+                        {% if post.is_vr %}
+                            <div class="content-photo photo-360" id="photo360" photo-id="{{ post.id }}">
+                                {% if post.user_id == current_user.id %}
+                                    <div class="photo-edit"></div>
+                                    <div class="photo-remove" photo-id="{{ post.id }}"></div>
+                                {% endif %}
+                            </div>
+
+                            <script>
+                            new Carousel().viewer("photo360", {
+                                action: true,
+                                is_like: {% if post.is_active('PhotoLike', current_user.id) %}true{% else %}false{% endif %},
+                                is_scrap: {% if post.is_active('PhotoScrap', current_user.id) %}true{% else %}false{% endif %},
+                                panorama: "{{ post.file_url }}"
+                            });
+                            </script>
+                        {% else %}
+                            <div class="content-photo {% if post.is_youtube %}youtube{% endif %}" photo-id="{{ post.id }}">
+                                {% if post.user_id == current_user.id %}
+                                    <div class="photo-edit"></div>
+                                    <div class="photo-remove" photo-id="{{ post.id }}"></div>
+                                {% endif %}
+
+                                {% if post.is_youtube %}
+                                    <iframe width="650" height="366" src="{{ post.youtube_url }}" frameborder="0" allowfullscreen></iframe>
+                                {% else %}
+                                    <img src="{{ post.file_url }}" />
+                                {% endif %}
+
+                                <div class="content-like">
+                                    <span class="like-icon {% if post.is_active('PhotoLike', current_user.id) %}active{% endif %}"></span>
+                                </div>
+                                <div class="content-scrap">
+                                    <span class="scrap-icon {% if post.is_active('PhotoScrap', current_user.id) %}active{% endif %}"></span>
+                                </div>
+
+                                <div class="content-share" >
+                                    <div class="content-share-sns" hidden="hidden">
+                                        <div class="content-share-facebook">
+                                            <a href="https://www.facebook.com/sharer/sharer.php?u=http://www.happyathome.co.kr/gallery/{{ post.id }}" target="_blank"><span class="share-icon"></span></a>
+                                        </div>
+                                        <div class="content-share-kakao">
+                                            <a href="https://story.kakao.com/share?url=http://www.happyathome.co.kr/gallery/{{ post.id }}" target="_blank"><span class="share-icon" id="kakaostory-share-button"></span></a>
+                                        </div>
+                                        <div class="content-share-twitter"><span class="share-icon"></span></div>
+                                    </div>
+                                    <span id="share-icon" class="share-icon"></span>
+                                </div>
+                            </div>
+                        {% endif %}
+                    </form>
+                    <div class="content-text">{{ post.content }}</div>
+                    <div class="content-comment">
+                        <div class="comment-form">
+                            <form method="POST" name="comment_form" action="{{ url_for('photos.comment_new', id=post.id) }}">
+                                <textarea class="comment-text" id="textArea" name="comment"></textarea><button type="submit" class="btn-comment">문의</button>
+                            </form>
+                        </div>
+
+                        {% if post.comments %}
+                        <div class="comment-list">
+                            <ul>
+                                {% for comment in comments %}
+                                     {% if comment.deleted == 0 %}
+                                        <li>
+                                            {% if comment.depth == 0 %}
+                                            <div class="comment-info" id="{{ comment.id }}" name="{{ comment.group_id }}">
+                                                <span class="comment-avatar"  name="{{ comment.user_id }}"  style="background-image:url({{ url_for_s3('S3_USER_DIRECTORY', filename=comment.user.avatar) }}) "></span>
+                                                <a href="{{ url_for('users.info', id=comment.user_id) }}"><span class="comment-user">{{ comment.user.name }}</span></a>
+                                                <span class="comment-date">{{ comment.created_date }}</span>
+                                                {% if current_user.id %}
+                                                    {% if post.user_id == current_user.id and comment.user_id != current_user.id %}
+                                                        {% if comment.reply_count != 1 %}
+                                                            <span class="comment-reply">답글</span>
+                                                            <span class="comment-reply-finish" hidden="hidden">답변완료</span>
+                                                        {% else %}
+                                                            <span class="comment-reply-finish">답변완료</span>
+                                                            <span class="comment-reply" hidden="hidden">답글</span>
+                                                        {% endif %}
+                                                    {% endif %}
+                                                    {% if comment.user.id == current_user.id %}
+                                                        <span class="comment-edit" >수정</span>
+                                                        <span class="comment-remove">삭제</span>
+                                                    {% endif %}
+                                                {% endif %}
+                                            </div>
+                                            <div class="comment-content">{{ comment.content }}</div>
+                                            <textarea class="comment-edit-text" id="reply-hidden-form" hidden="hidden"></textarea>
+                                            <button class="comment-finish-reply" hidden="hidden" >완료</button>
+                                            <button class="comment-finish" hidden="hidden" >완료</button>
+                                            {% else %}
+                                                <div class="comment-reply-content">
+                                                    <div class="comment-info" id="{{ comment.get_id }}" parent-id = "{{ comment.get_parent_id(comment.group_id) }}">
+                                                        <span class="comment-avatar"  name="{{ comment.user_id }}" style="background-image:url({{ url_for_s3('S3_USER_DIRECTORY', filename=comment.user.avatar) }}) "></span>
+                                                        <a href="{{ url_for('users.info',id = comment.user_id) }}"><span class="comment-user">{{ comment.user.name }}</span></a><span class="comment-user">님의 답변</span>
+                                                        <span class="comment-date">{{ comment.created_date }}</span>
+                                                        {% if comment.user_id == current_user.id %}
+                                                            <span class="comment-edit" >수정</span>
+                                                            <span class="comment-remove">삭제</span>
+                                                        {% endif %}
+                                                    </div>
+                                                    <div class="comment-content" >{{ comment.content }}</div>
+                                                    <button class="comment-finish" hidden="hidden" >완료</button>
+                                                </div>
+                                            {% endif %}
+                                        </li>
+                                     {% endif %}
+                                {% endfor %}
+                            </ul>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="content-side">
+            <div class="content-sidebar">
+                <div class="content-sidebody">
+                    <div class="content-info">
+                        <div class="content-avatar" id="{{ post.user_id }}" style="background-image:url({{ url_for_s3('S3_USER_DIRECTORY', filename=post.user.avatar) }}) "></div>
+                        <div class="content-author">
+                            <div class="content-user"><a href="{{ url_for('users.info', id=post.user_id) }}">{{ post.user.name }}</a></div>
+                            <div class="content-score">
+                                <div class="icon"><img src="{{ url_for('static', filename='img/main/like_i.png') }}"/> <span class="count-text like">{{ post.like_photos|length }}</span></div>
+                                <div class="icon"><img src="{{ url_for('static', filename='img/main/scrab_i.png') }}"/> <span class="count-text scrap">{{ post.scrap_photos|length }}</span></div>
+                                <div class="icon"><img src="{{ url_for('static', filename='img/main/comment_i.png') }}"/> <span class="count-text comment">{{ post.comments|length }}</span></div>
+                                <span cals>{{ post.created_date }}</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    {% if magazine_photos %}
+                        <div class="content-relative">
+                            <div class="relative-title"><a href="{{ url_for('magazines.detail', id=post.magazine_id) }}">{{ post.magazine.title }}</a>의 갤러리</div>
+                            <ul class="relative-photos">
+                                {% for photo in magazine_photos %}
+                                    <li>
+                                        <div class="relative-photo-wrap">
+                                            <a href="{{ url_for('photos.detail', id=photo.id) }}">
+                                                {% if photo.is_vr %}
+                                                    <div class="relative-photo vr-wrap"></div>
+                                                {% elif photo.is_mov %}
+                                                    <div class="relative-photo mov-wrap"></div>
+                                                {% else %}
+                                                    <div class="relative-photo"></div>
+                                                {% endif %}
+                                                <img src="{{ photo.thumb_url }}" width="70" height="70" />
+                                            </a>
+                                        </div>
+                                    </li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                    {% endif %}
+
+                    {% if user_photos %}
+                        <div class="content-relative">
+                            <div class="relative-title">{{ post.user.name }}의 다른 갤러리</div>
+                            <ul class="relative-photos">
+                            {% for user_photo in user_photos %}
+                                <li>
+                                    <div class="relative-photo-wrap">
+                                        <a href="{{ url_for('photos.detail', id=user_photo.id) }}">
+                                            {% if user_photo.is_vr %}
+                                                <div class="relative-photo vr-wrap"></div>
+                                            {% elif user_photo.is_mov %}
+                                                <div class="relative-photo mov-wrap"></div>
+                                            {% else %}
+                                                <div class="relative-photo"></div>
+                                            {% endif %}
+                                            <img src="{{ user_photo.thumb_url }}" width="70" height="70" />
+                                        </a>
+                                    </div>
+                                </li>
+                            {% endfor %}
+                            </ul>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+var click_flag = true;
+
+$('.content-avatar').click(function(){
+    document.location.href ="{{ url_for('users.info',id='') }}" + $(this).attr('id');
+});
+
+$('.comment-list').delegate('.comment-avatar', 'click', function() {
+    document.location.href ="{{ url_for('users.info',id='') }}" + $(this).attr('name');
+});
+
+$('.content-share').click(function(){
+    if( click_flag ){
+        $(this).find('#share-icon').toggleClass('active');
+        $('.content-share-sns').show();
+        click_flag = false;
+    }else{
+        $(this).find('#share-icon').toggleClass('active');
+        $('.content-share-sns').hide();
+        click_flag = true;
+    }
+});
+
+$('.content-share-twitter').click(function(){
+    twitter('http://www.happyathome.co.kr/gallery/{{ post.id }}' ,'{{ post.user.name }}');
+});
+
+twitter = function(url, text) {
+	window.open("https://twitter.com/intent/tweet?url=" + url  +"&text=" + text );
+};
+
+
+$('.comment-reply').click(function(){
+    if ($(this).text() == '답글') {
+        var id = $(this).parent().attr('id');
+        $(document.getElementById(id)).next('.comment-content').next('.comment-edit-text').show();
+        $(document.getElementById(id)).next('.comment-content').next('.comment-edit-text').val('');
+        $(this).parent().next().next().next('.comment-finish-reply').show();
+        $(this).text('취소');
+    } else {
+        var id = $(this).parent().attr('id');
+        $(document.getElementById(id)).next('.comment-content').next('.comment-edit-text').hide();
+        $(this).parent().next().next().next('.comment-finish-reply').hide();
+        $(this).text('답글');
+    }
+});
+
+
+$('.comment-finish-reply').click(function(){
+    var self = this;
+    var group_id = $(self).prev().prev().prev('.comment-info').attr('name');
+    var id = $(self).prev().prev().prev('.comment-info').attr('id');
+    var reply_finish = $(document.getElementById(id)).find('.comment-reply-finish');
+    var cancel = $(document.getElementById(id)).find('.comment-reply');
+
+    var comment = $(document.getElementById(id)).next('.comment-content').next('.comment-edit-text');
+    var content = comment.val();
+    $.ajax({
+        type:"POST",
+        url:"{{ url_for('photos.comment_reply') }}",
+        data:{
+            photo_id: "{{ post.id }}",
+            content: content,
+            group_id: group_id
+        }
+    }).success(function(data){
+        $(self).hide();
+        comment.hide();
+        cancel.hide();
+        reply_finish.show();
+        comment.parent().after(
+            '<li class="comment-box">' +
+                '<div class="comment-reply-content">'+
+                    '<div class="comment-info" id="'+ data.comment_id +'" parent-id ="'+ data.group_id +'">' +
+                    '<span class="comment-avatar" name=' + data.user_id + ' style="background-image:url({{ url_for_s3('S3_USER_DIRECTORY', filename="' + data.avatar + '" ) }})"></span>'+
+                    '<a href="/user/' + data.user_id + '">'+'<span class="comment-user">'+ data.user_name + '</span>'+'</a>'+'<span class="comment-user">님의 답변</span>'+
+                    '<span class="comment-date">' + data.created_date + '</span>'+
+                    '<span class="comment-edit" cancel-id ="1" >수정</span>'+
+                    '<span class="comment-remove">삭제</span>' + '</div>' +
+                    '<div class="comment-content" >' + data.comment +'</div>'+
+                    '<button class="comment-finish" hidden="hidden" >완료</button>'+
+                '</div>' +
+            '</li>'
+        );
+    });
+});
+
+$('.comment-list').delegate('.comment-remove', 'click', function() {
+    var self = this;
+    var id = $(self).parent().attr('id');
+
+    $.ajax({
+        type:"POST",
+        url:"{{ url_for('photos.comment_remove') }}",
+        data:{
+            comment_id: id
+        }
+    }).success(function(data){
+        if ( $(self).parent().attr('parent-id') ){
+            var parent_id = $(self).parent().attr('parent-id');
+            var parent_reply = $(document.getElementById(parent_id)).find('.comment-reply');
+            var parent_reply_finish = $(document.getElementById(parent_id)).find('.comment-reply-finish');
+            parent_reply.text('답글');
+            parent_reply.show();
+            parent_reply_finish.hide();
+        }
+        $(self).parent().parent().remove();
+    });
+});
+
+$('.comment-list').delegate('.comment-edit', 'click', function() {
+    var id = $(this).parent().attr('id'),
+        comment = $(document.getElementById(id)).next(),
+        value =  comment.text(),
+        finishObj = $(this).parent().parent().find('.comment-finish');
+
+    if ($(this).text() == '수정') {
+        comment.replaceWith('<textarea class="comment-edit-text">'+ value + '</textarea>');
+        finishObj.show();
+        $(this).text('취소');
+    } else {
+        comment.replaceWith('<div class="comment-content">'+ value + '</div>');
+        finishObj.hide();
+        $(this).text('수정');
+    }
+    return false;
+});
+
+$('.comment-list').delegate('.comment-finish', 'click', function() {
+    var self = this;
+    var id = $(self).parent().find('.comment-info').attr('id');
+    var comment = $(document.getElementById(id)).next()
+    $.ajax({
+        type:"POST",
+        url: "{{ url_for('photos.comment_edit') }}",
+        data:{
+            comment_id: id
+            ,content: comment.val()
+            }
+    }).success(function(data){
+            $(self).hide();
+            var edit = $(self).parent().find('.comment-info').find('.comment-edit');
+            edit.text('수정');
+            edit.show();
+            comment.replaceWith('<div class="comment-content">' + data.comment + '</div>');
+    });
+});
+
+
+$('.content-like').click(function(event) {
+    {% if session.user_id %}
+        var icon = $(this).find('.like-icon');
+
+        icon.toggleClass('active');
+
+        $.ajax({
+            type: "POST",
+            url: "{{ url_for('photos.like') }}",
+            data: {
+                photo_id: $(this).parent('.content-photo').attr('photo-id')
+            }
+        }).success(function(data) {
+            $('.content-score .count-text.like').text(data.count);
+        }).error(function(request, status, error) {
+            icon.toggleClass('active');
+        });
+
+        event.stopPropagation();
+    {% else %}
+        document.location.href = "{{ url_for('main.login', next=request.path) }}";
+    {% endif %}
+});
+
+$('.content-scrap').click(function(event) {
+    event.stopPropagation();
+    {% if session.user_id %}
+        var icon = $(this).find('.scrap-icon');
+
+        icon.toggleClass('active');
+
+        $.ajax({
+            type: "POST",
+            url: "{{ url_for('photos.scrap') }}",
+            data: {
+                photo_id: $(this).parent('.content-photo').attr('photo-id')
+            }
+        }).success(function(data) {
+            $('.content-score .count-text.scrap').text(data.count);
+        }).error(function(request, status, error) {
+            icon.toggleClass('active');
+        });
+
+        event.stopPropagation();
+    {% else %}
+        document.location.href = "{{ url_for('main.login', next=request.path) }}";
+    {% endif %}
+});
+
+$('.photo-remove').click(function() {
+    $.ajax({
+        type:"POST",
+        url: "{{ url_for('photos.magazine_check') }}",
+        data: {
+            photo_id: "{{ post.id }}"
+        }
+    }).success(function(data){
+        if (data.check==2) {
+            if (confirm('사진을 삭제하시겠습니까?')){
+                document.location.href = "{{ url_for('photos.delete', id=post.id) }}";
+            }
+        } else {
+            if (confirm(data.magazine_name+'의 포토입니다. 해당 스토리를 삭제해주세요')){
+
+            }
+        }
+    });
+});
+
+$('.photo-edit').click(function() {
+    document.location.href = "{{ url_for('photos.edit', id=post.id) }}";
+});
+</script>
+{% endblock %}

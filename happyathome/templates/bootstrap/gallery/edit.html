@@ -1,0 +1,181 @@
+{% extends 'bootstrap/gallery/base.html' %}
+
+{% block content %}
+<div class="content">
+    <div class="content-body">
+        <div class="content-form">
+            <form method="POST" id="photoForm" enctype="multipart/form-data">
+                <input type="file" class="photo-file" id="photoFile" name="photo_file" accept="image/jpeg,video/mp4"/>
+                <input type="hidden" id="photoFileName" name="file_name" value="{{ photo.file.name|default('', true) }}" />
+
+                <legend>사진을 등록해주세요.</legend>
+
+                <div class="input-field">
+                    <div class="photo-preview" id="photoPreview">
+                        {% if photo.file_url %}<img class="edit-profile-photo" src="{{ photo.thumb_url }}">{% endif %}
+                    </div>
+                    <div class="photo-preview-loading"></div>
+                </div>
+
+                <div class="input-field">
+                    <select name="content_type" id="contentType">
+                        <option value="1" {% if photo.is_photo %}selected{% endif %}>사진</option>
+                        <option value="2" {% if photo.is_vr %}selected{% endif %}>VR/360</option>
+                        <option value="3" {% if photo.is_mov %}selected{% endif %}>동영상</option>
+                    </select>
+
+                    <select id="room_id" name="room_id">
+                        <option value="">공간을 선택해주세요</option>
+                        {% for room in rooms %}
+                            <option value="{{ room.id }}" {% if room.id == photo.room_id %}selected{% endif %}>{{ room.name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="input-field">
+                    <textarea id="textArea" name="content" placeholder="사진에 대한 설명을 등록해주세요.">{{ photo.content|default('', true) }}</textarea>
+                </div>
+
+                <div class="input-field">
+                    <div class="btn-panel left"><button type="reset" class="btn-danger">취소</button></div>
+                    <div class="btn-panel right"><button type="submit" class="btn-submit">등록</button></div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+var $photoFile = $('#photoFile'),
+    $photoPreview = $('#photoPreview'),
+    $photoPreviewLoading = $('.photo-preview-loading');
+
+$('button[type=reset]').click(function() {
+    photosUnload();
+});
+
+$('#photoForm').submit(function() {
+    window.onunload = window.onbeforeunload = undefined;
+
+    if (!$('#photoFile').val() && !$('#preFileName').val()) {
+        alert('사진 파일을 선택해주세요.');
+        return false;
+    }
+
+    if (!$('#room_id').val()) {
+        alert('공간을 선택해주세요.');
+        $('#room_id').focus();
+        return false;
+    }
+
+    return true;
+});
+
+$photoPreview.click(function(e) {
+    e.preventDefault();
+
+    $photoFile.click();
+});
+
+$photoFile.change(function() {
+    photosUnload();
+
+    var ext = $(this).val().split('.').pop().toLowerCase();
+
+    if (ext.length > 0) {
+        if ($.inArray(ext, ['jpg', 'mp4']) == -1) {
+            alert('사진 및 동영상 파일(JPG/MP4)만 업로드 할수 있습니다.');
+            $(this).val('');
+            return false;
+        }
+
+        if (ext == 'jpg') {
+            if (!checkFileSize(document.getElementById('photoFile'), 1)) {
+                alert('사진 파일(JPG)은 1MB 이내의 사이즈만 업로드 할수 있습니다.');
+                $(this).val('');
+                return false;
+            }
+
+            $photoPreviewLoading.show();
+
+            var reader = new FileReader();
+            reader.readAsDataURL($photoFile[0].files[0])
+            reader.onload = function(e) {
+                $.ajax({
+                    type: "POST",
+                    url: "{{ url_for('photos.upload') }}",
+                    data: {
+                        file_name: $photoFile.val(),
+                        file_data: e.target.result,
+                        photo_id: {{ photo.id|default(0, true) }}
+                    }
+                }).success(function(data) {
+                    $('#photoFileName').val(data.file_name);
+                    $photoPreview.append("<img src=http://static.inotone.co.kr/data/img/" + data.file_name + " />");
+                    $photoPreview.find('img').load(function() {
+                        $photoPreviewLoading.hide();
+
+                        if (this.naturalWidth / this.naturalHeight == 2) {
+                            $('#contentType').val('2');
+                        } else {
+                            $('#contentType').val('1');
+                        };
+                    });
+                });
+            }
+        } else if (ext == 'mp4') {
+            if (!checkFileSize(document.getElementById('photoFile'), 30)) {
+                alert('동영상 파일(MP4)은 30MB 이내의 사이즈만 업로드 할수 있습니다.');
+                $(this).val('');
+                return false;
+            }
+
+            var file = this.files[0],
+                type = file.type,
+                fileURL = URL.createObjectURL(file),
+                videoNode = $('<video>').width('100%').attr('src', fileURL);
+            $photoPreview.append(videoNode);
+            $('#contentType').val('3');
+        } else {
+            alert('사진 및 동영상 파일(JPG/MP4)만 업로드 할수 있습니다.');
+            $(this).val('');
+            return false;
+        }
+    }
+});
+
+function photosUnload() {
+    var  $photoFileName = $('#photoFileName');
+
+    if ($photoFileName.val()) {
+        $.ajax({
+            type: "POST",
+            async: false,
+            cache: false,
+            url: "{{ url_for('photos.unload') }}",
+            data: {
+                file_name: $photoFileName.val(),
+                pre_file_name: "{{ photo.file.name }}"
+            }
+        }).success(function(data) {
+            $photoFileName.val('');
+        });
+    }
+
+    if ($photoPreview) {
+        $photoPreview.children().remove();
+    }
+
+    $('#contentType').val('1');
+}
+
+window.onunload = function() {
+    photosUnload();
+};
+
+window.onbeforeunload = function(e) {
+    e = e || window.event;
+    e.returnValue = "변경사항이 저장되지 않을 수 있습니다.";
+};
+</script>
+{% endblock %}

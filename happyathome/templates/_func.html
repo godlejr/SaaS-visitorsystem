@@ -1,0 +1,44 @@
+{% macro render_new(endpoint) %}
+    <a href="{{ url_for(endpoint) }}" class="btn btn-primary content-new"><i class="glyphicon glyphicon-plus"></i></a>
+{% endmacro %}
+
+{% macro render_menu(endpoint, display, active='') %}
+    <li {% if request.endpoint == endpoint or active == endpoint %} class='active' {% endif %}>
+        <a href="{{ url_for(endpoint) }}">{{ display }}</a>
+    </li>
+{% endmacro %}
+
+{% macro render_sub_hp_menu(endpoint, display , id) %}
+    <li class="pros-hp-button" >
+        <a href="{{ url_for(endpoint, id=id) }}">{{ display }}</a>
+    </li>
+{% endmacro %}
+
+{% macro render_edit_menu(endpoint, display , id) %}
+<a href="{{ url_for(endpoint, id=id) }}">{{ display }}</a>
+{% endmacro %}
+
+{% macro render_pagination(endpoint, pagination, id=None, query_string=None) %}
+<!-- pagination -->
+<ul class="custom-pagination">
+    {% if pagination.has_prev %}
+        <a href="{{ url_for(endpoint, page=pagination.page - 1, id=id) }}{% if query_string %}?{{ query_string }}{% endif %}"><li>&#8592;</li></a>
+    {% endif %}
+
+    {% for page in pagination.iter_pages() %}
+        {% if page %}
+            {% if page != pagination.page %}
+                <a href="{{ url_for(endpoint, page=page, id=id) }}{% if query_string %}?{{ query_string }}{% endif %}"><li>{{ page }}</li></a>
+            {% else %}
+                <li class="active">{{ page }}</li>
+            {% endif %}
+        {% else %}
+            <span>...</span>
+        {% endif %}
+    {% endfor %}
+
+    {% if pagination.has_next %}
+        <a href="{{ url_for(endpoint, page=pagination.page + 1, id=id) }}{% if query_string %}?{{ query_string }}{% endif %}"><li>&#8594;</li></a>
+    {% endif %}
+</ul>
+{% endmacro %}

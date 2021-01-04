@@ -1,0 +1,34 @@
+{% extends 'bootstrap/professionals/content.html' %}
+
+{% block content_body %}
+<div class="content-body">
+    <div class="user-contents">
+        <div class="user-title">스토리</div>
+        <div class="cards">
+            {% for magazine in magazines %}
+                {% if magazine.photos %}
+                <div class="card" id="{{ magazine.id }}"
+                     style="background-image:url({{ url_for_s3('S3_IMG_DIRECTORY', filename=magazine.photos[0].file.name) }})">
+                    {% if magazine.has_vr  %}
+                        <div class="card-media"><span class="vr-icon"></span></div>
+                    {% endif %}
+                    {% if magazine.has_mov  %}
+                        <div class="card-media"><span class="mov-icon"></span></div>
+                    {% endif %}
+                    <div class="card-title">{{ magazine.title }}</div>
+                </div>
+                {% endif %}
+            {% endfor %}
+        </div>
+        <div class="pagination-nav">
+            {{ func.render_pagination('professionals.story', pagination, user.id) }}
+        </div>
+    </div>
+</div>
+
+<script>
+$('.card').click(function() {
+    document.location.href = "{{ url_for('magazines.detail', id='') }}" + $(this).attr('id');
+});
+</script>
+{% endblock %}

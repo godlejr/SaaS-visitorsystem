@@ -1,0 +1,154 @@
+{% extends "bootstrap/base.html" %}
+{% from "bootstrap/main/_formhelpers.html" import render_field %}
+
+
+{% block content %}
+<div class="content">
+    <div class="login-form">
+        <form method="POST">
+            <div class="login-header">
+                <img src="{{ url_for('static', filename='img/main/log_img.jpg') }}" width="98" height="97">
+            </div>
+            <div class="login-form-group">
+                {{ form.email(class="login-form-field", placeholder="e메일을 입력하세요.") }}
+            </div>
+
+            <div class="login-form-group">
+                {{ form.password(class="login-form-field", placeholder="비밀번호를 입력하세요.") }}
+            </div>
+
+            {% with messages = get_flashed_messages() %}
+            {% if messages %}
+            <div class="message">
+                <ul>
+                    {% for message in messages %}
+                    <li>{{ message }}</li>
+                    {% endfor %}
+                </ul>
+            </div>
+            {% endif %}
+
+            {% if form.email.errors %}
+            <div class="message">
+                <ul>
+                    {% for message in form.email.errors %}
+                    <li>{{ message }}</li>
+                    {% endfor %}
+                </ul>
+            </div>
+            {% endif %}
+            {% endwith %}
+
+            <div class="login-form-group">
+                <button type="submit" class="btn-submit">로그인</button>
+            </div>
+        </form>
+        <div class="login-anchor">
+            <a href="{{ url_for('main.password') }}">비밀번호 재설정하기</a>
+        </div>
+
+        <div class="login-anchor">아이디가 없으신가요?
+            <a href="{{ url_for('main.join') }}">회원가입</a>
+        </div>
+        <hr>
+
+        <div name="fbForm"  class="login-form-group" method="post">
+            <div class="login-form-group">
+                <button type="button" id="fb-btn" class="btn-default">facebook로그인</button>
+            </div>
+        </div>
+
+    </div>
+
+</div>
+
+
+<!--facebook login-->
+<script>
+//button event
+$('#fb-btn').click(function(){
+    checkLoginState();
+});
+
+//facebook 초기 설정
+function statusChangeCallback(response) {
+    console.log('statusChangeCallback');
+    console.log(response);
+
+    if (response.status === 'connected') {                   // Logged into your app and Facebook.
+            FB.login(function (response) {handleFacebookRegist(response); },
+            {scope: 'public_profile, email'});
+    } else if (response.status === 'not_authorized') {       // The person is logged into Facebook, but not your app.
+            FB.login(function (response) {handleFacebookRegist(response); },
+            {scope: 'public_profile, email'});
+    } else {
+            FB.login(function (response) {handleFacebookRegist(response); },
+            {scope: 'public_profile, email'});
+    }
+}
+
+
+
+function handleFacebookRegist(response) {
+    var accessToken = response.authResponse.accessToken;
+    var userName, userEmail;
+
+    FB.api('/me', {fields: 'name'}, function (user) {
+        userName = user.name;  
+
+        FB.api('/me',{fields: 'email'}, function (user) {
+            userEmail = user.email;
+
+            $.ajax({
+                type:"POST",
+                url: "{{ url_for('main.facebook_login')}}",
+                data:{
+                    user_name: userName,
+                    user_email: userEmail
+                }
+            }).success(function(data) {
+                document.location.href = "{{ url_for('main.index') }}";
+            }).error(function(request, status, error) {
+                alert('facebook error: facebook 로그인을 확인 후 다시 시도해주세요.')
+                document.location.href = "{{ url_for('main.login') }}";
+            });
+        });
+    });
+} 
+
+function checkLoginState() {
+    FB.getLoginStatus(function(response) {
+        statusChangeCallback(response);
+    });
+}
+
+window.fbAsyncInit = function() {
+    FB.init({
+        appId      : '588264208044970',
+        cookie     : true,  // enable cookies to allow the server to access
+                            // the session
+        xfbml      : true,  // parse social plugins on this page
+        version    : 'v2.5' // use graph api version 2.5
+    });
+};
+
+
+(function(d, s, id) {
+    var js, fjs = d.getElementsByTagName(s)[0];
+    if (d.getElementById(id)) return;
+    js = d.createElement(s); js.id = id;
+    js.src = "//connect.facebook.net/en_US/sdk.js";
+    fjs.parentNode.insertBefore(js, fjs);
+}(document, 'script', 'facebook-jssdk'));
+
+
+function testAPI() {
+    console.log('Welcome!  Fetching your information.d대다받애ㅐ해... ');
+    FB.api('/me', function(response) {
+          console.log('Successful login for: ' + response.name);
+
+    });
+}
+</script>
+
+{% endblock %}

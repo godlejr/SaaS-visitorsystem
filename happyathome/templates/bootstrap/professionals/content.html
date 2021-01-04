@@ -1,0 +1,69 @@
+{% extends 'bootstrap/professionals/base.html' %}
+
+{% block content%}
+<div class="content">
+    <div class="content-cover-wrap" {% if user.cover %}style="background-image:url({{ url_for_s3('S3_COVER_DIRECTORY', filename=user.cover) }})"{% endif %}>
+        <div class="content-cover">
+            <div class="content-user">
+                <div class="user-avatar" {% if user.avatar %}style="background-image:url({{ url_for_s3('S3_USER_DIRECTORY', filename=user.avatar) }})"{% endif %}></div>
+                <div class="user-star">
+                    {% for i in range(0, user.user_professionals[0].get_integer(user.user_professionals[0].get_score(user.user_professionals[0].id))) %}
+                    <i class="material-icons">grade</i>
+                    {% endfor %}
+                    {% if user.user_professionals[0].get_score(user.user_professionals[0].id) != 0 %}
+                    <span class="user-score">{{ user.user_professionals[0].get_score(user.user_professionals[0].id) }}</span>
+                    {% endif %}
+                </div>
+                <div class="user-name">{{ user.name }}</div>
+            </div>
+            <div class="content-menu">
+                <a href="{{ url_for('professionals.detail', id=user.id) }}"><div class="menu-item">소개</div></a>
+                <a href="{{ url_for('professionals.story', id=user.id) }}"><div class="menu-item">스토리</div></a>
+                <a href="{{ url_for('professionals.gallery', id=user.id) }}"><div class="menu-item">갤러리</div></a>
+                <a href="{{ url_for('professionals.scrap', id=user.id) }}"><div class="menu-item">스크랩</div></a>
+                <a href="{{ url_for('professionals.question', id=user.id) }}"><div class="menu-item">Q&amp;A</div></a>
+                <a href="{{ url_for('professionals.review', id=user.id) }}"><div class="menu-item">리뷰</div></a>
+            </div>
+            <div class="user-follow-wrap">
+                <div class="user-follows">
+                    <ul>
+                        <li><a href="{{ url_for('users.user_follower', id=user.id) }}"><span class="follewer-count">{{ user.follower_count(user.id) }}</span> 팔로워</a></li>
+                        <li><a href="{{ url_for('users.user_following', id=user.id) }}"><span class="follewing-count">{{ user.following_count(user.id) }}</span> 팔로잉</a></li>
+                    </ul>
+                </div>
+                <div class="user-follow"
+                    {% if user.id == current_user.id %}
+                        style="background-image: url(/static/img/user/my-icon.png);"
+                    {% else %}
+                        style="background-image: url(/static/img/user/follow-icon.png);"
+                    {% endif %}
+                ></div>
+            </div>
+        </div>
+    </div>
+
+    {% block content_body %}{% endblock %}
+</div>
+
+<script>
+$(".user-follow").click(function(){
+    {% if session.user_id %}
+        {% if user.id == session.user_id %}
+            document.location.href = "{{ url_for('users.follow', id=user.id) }}";
+        {% else %}
+            $.ajax({
+                type: "POST",
+                url: "{{ url_for('users.following') }}",
+                data: {
+                    follow_id: "{{ user.id }}"
+                }
+            }).success(function(data) {
+                $('.follewer-count').text(parseInt($('.follewer-count').text()) + data.ok);
+            });
+        {% endif %}
+    {% else %}
+         document.location.href = "{{ url_for('main.login', next=request.path) }}";
+    {% endif %}
+});
+</script>
+{% endblock %}

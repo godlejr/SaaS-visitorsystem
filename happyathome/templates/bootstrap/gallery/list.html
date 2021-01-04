@@ -1,0 +1,63 @@
+{% extends "bootstrap/gallery/base.html" %}
+
+{% block content_body %}
+<div class="content">
+    <div class="cards col-{{ col }}">
+        <div class="cards-cols-opt">
+            <ul>
+                <li><img src="{{ url_for('static', filename='img/gallery/col-3.png') }}"> <a href="{{ url_for('photos.list', col=3) }}">3줄 보기</a></li><li><img src="{{ url_for('static', filename='img/gallery/col-4.png') }}"> <a href="{{ url_for('photos.list') }}">4줄 보기</a></li>
+            </ul>
+        </div>
+        {% for card in cards %}
+            <div class="card gallery" id="{{ card.id }}" style="background-image:url({{ card.thumb_url }})">
+                <div class="card-media">
+                    {% if card.is_vr %}
+                        <span class="vr-icon"></span>
+                    {% elif card.is_mov %}
+                        <span class="mov-icon"></span>
+                    {% endif %}
+                </div>
+                <div class="card-info gallery">
+                    <div class="card-author">
+                        <a href="{{ url_for('users.info',id = card.user.id) }}"><div class="card-avatar" style="background-image:url({{ url_for_s3('S3_USER_DIRECTORY', filename=card.user.avatar) }}) "></div></a>
+                        <a class="card-user" href="{{ url_for('users.info',id = card.user.id) }}">{{ card.user.name }}</a>
+                        <div class="card-hits"><img src="{{ url_for('static', filename='img/gallery/hits-icon.png') }}" width="13"/> {{ card.hits }}</div>
+                    </div>
+                    <div class="card-content">
+                        <div class="card-text">{{ card.content|truncate(50, true) }}</div>
+                        <div class="card-icon">
+                            <div class="icon"><img src="{{ url_for('static', filename='img/gallery/like-icon.png') }}"  width="13"/> {{ card.like_photos|length }}</div>
+                            <div class="icon"><img src="{{ url_for('static', filename='img/gallery/scrap-icon.png') }}"  width="13"/> {{ card.scrap_photos|length }}</div>
+                            <div class="icon"><img src="{{ url_for('static', filename='img/gallery/comment-icon.png') }}" /> {{ card.comments|length }}</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+    <div class="pagination-nav">{{ func.render_pagination('photos.list', pagination, None, query_string) }}</div>
+</div>
+
+<script>
+$('select.form-control').change(function() {
+    document.location.href = "{{ url_for('photos.list') }}?room_id=" + $('#rooms').val();
+});
+
+$('.card').click(function() {
+    document.location.href = "{{ url_for('photos.detail', id='') }}" + $(this).attr('id');
+});
+
+$('.card').hover(
+    function() {
+        $(this).find('.card-info').stop().animate({
+            bottom: 0
+        });
+    },
+    function() {
+        $(this).find('.card-info').stop().animate({
+            bottom: "-64px"
+        });
+    }
+);
+</script>
+{% endblock %}

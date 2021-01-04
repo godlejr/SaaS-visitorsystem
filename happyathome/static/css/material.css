@@ -1,0 +1,144 @@
+@import 'https://fonts.googleapis.com/css?family=Unica+One';
+@import 'https://fonts.googleapis.com/earlyaccess/nanumgothic.css';
+
+
+html {
+    font-family: 'NanumGothic', sans serif;
+}
+
+a {
+    color: #009688 !important;
+}
+
+body {
+    background-color: #f4f4f4;
+}
+
+main {
+    flex: 1 0 auto;
+}
+
+.brand-logo {
+    margin-top: 7px;
+    font-family: 'Unica One', sans-serif;
+}
+
+.card-image-bg {
+    overflow: hidden;
+    background-size: cover;
+    background-position: center;
+}
+.card-image-bg:after {
+    content: "";
+    display: block;
+    padding-bottom: 100%;
+}
+
+.cards {
+    padding-top: 10px;
+}
+.card .card-info {
+    display: flex;
+    padding: 10px;
+}
+.card .card-info .material-icons {
+    float: left;
+    font-size: 17px;
+}
+.card .card-info .love-count {
+    float: left;
+    font-size: 12px;
+    line-height: 140%;
+    margin-left: 2px;
+}
+.card .card-title.trans-bottom {
+    position: absolute;
+    float: left;
+    width: 100%;
+    bottom: 0;
+    padding: 6px;
+    color: #ffffff;
+    font-size: 1rem;
+    background-color: rgba(0, 0, 0, 0.5);
+}
+.card .card-title.trans-bottom .card-title-image {
+    float: left;
+    width: 48px;
+    height: 48px;
+}
+.card .card-title.trans-bottom .card-title-info {
+    padding-left: 6px;
+    text-align: left;
+    white-space: nowrap;
+    overflow: hidden;
+}
+.card .card-title.trans-bottom .card-title-info .info-title {
+    font-size: 14px;
+    margin: 3px 0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.card .card-title.trans-bottom .card-title-info .info-author {
+    font-size: 12px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.card .card-content {
+    line-height: 170%;
+}
+.card .card-action {
+    padding: 10px 20px;
+}
+.card .chip {
+    background-color: #ffffff;
+}
+.card .card-button {
+    padding-top: 5px;
+}
+.container .cards {
+    width: 100%;
+    margin: 0 auto;
+    display: table;
+}
+.container .cards .card.snapshot {
+    float: left;
+    width: 300px;
+    margin: 0 0 20px 0;
+}
+
+.card.magazine {
+    display: flex;
+}
+
+.card.magazine .card-image {
+    width: 200px;
+}
+
+.card.magazine .card-content {
+    flex: 1;
+    height: 200px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.card.magazine .card-content h5 {
+    margin: 0 0 0.6rem 0;
+    line-height: 105%;
+}
+
+@media only screen and (max-width: 600px) {
+    .card.magazine .card-image {
+        width: 100%;
+    }
+
+    .card.magazine {
+        display: block;
+    }
+
+    .card.magazine .card-content {
+        height: 150px;
+        display: inline-block;
+    }
+}

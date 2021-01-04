@@ -1,0 +1,131 @@
+{% extends 'bootstrap/users/menu.html' %}
+
+{% block content_body %}
+<div class="content-body body-main">
+    <div class="user-contents">
+        {% if session.user_id == user.id %}
+            <div class="user-menu">
+                <ul>
+                    <li href="{{ url_for('users.edit_profile', id=user.id) }}">프로필 수정
+                    </li><li href="{{ url_for('users.edit_password', id=user.id) }}">비밀번호 변경
+                    {% if user.level !=2 %}
+                        </li><li href="{{ url_for('users.edit_professional', id=user.id) }}">사업자로 변경</li>
+                    {% else %}
+                        </li><li href="{{ url_for('users.edit_professional_info', id=user.id) }}">사업자정보 수정</li>
+                    {% endif %}
+                </ul>
+            </div>
+        {% endif %}
+
+        <div class="follow-title">{{ user.name }}님의 팔로워({{ user.follower_count(user.id) }})</div>
+        <div class="follow-content-row">
+            <div class="follow-list">
+                <div class="caption"><a href="{{ url_for('users.user_follower', id=user.id) }}">나의 팔로워</a></div>
+                <div class="row">
+                    {% for follower in followers %}
+                        <div class="cell col">
+                            <div class="follow-info">
+                                <div class="follow-avatar" id="{{ follower.user_id }}"
+                                     {% if follower.user.avatar %}
+                                     style="background-image:url({{ url_for_s3('S3_USER_DIRECTORY', filename=user.follow_user(follower.user_id).avatar) }})"
+                                     {% endif %}
+                                ></div>
+                                <div class="follow-content">
+                                    <div class="follow-name">{{ follower.user.name }}</div>
+                                    {% if follower.user_id == session.user_id %}
+                                        나
+                                    {% else %}
+                                        {% if session.user_id %}
+                                            <button class="follow-button btn-submit small {% if user.follow_check(session.user_id, follower.user_id) %}display_none{% endif %}"
+                                                name="{{ follower.user_id }}">
+                                                <i class="material-icons">person_add</i> 팔로잉
+                                            </button>
+                                            <button class="follow-button btn-submit small {% if not user.follow_check(session.user_id, follower.user_id) %}display_none{% endif %}"
+                                                name="{{ follower.user_id }}">
+                                                팔로잉 취소
+                                            </button>
+                                        {% endif %}
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                        {% if loop.index % 4 == 0 %}</div><div>{% endif %}
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+
+        <div class="follow-title">{{user.name}}님이 팔로잉({{user.following_count(user.id)}})</div>
+        <div class="follow-content-row">
+            <div class="follow-list">
+                <div class="caption"><a href="{{ url_for('users.user_following', id=user.id) }}">나의 팔로잉</a></div>
+                <div class="row">
+                    {% for following in followings %}
+                        <div class="cell col">
+                            <div class="follow-info">
+                                <div class="follow-avatar" id="{{ following.follow_id }}"
+                                     {% if user.follow_user(following.follow_id).avatar %}
+                                     style="background-image:url({{ url_for_s3('S3_USER_DIRECTORY', filename=user.follow_user(following.follow_id).avatar) }})"
+                                     {% endif %}
+                                ></div>
+                                <div class="follow-content">
+                                    <div class="follow-name">{{ user.follow_user(following.follow_id).name }}</div>
+                                    {% if session.user_id %}
+                                        {% if session.user_id == following.follow_id %}
+                                            나
+                                        {% else %}
+                                            <button class="follow-button btn-submit small {% if user.follow_check(session.user_id, following.follow_id) %}display_none{% endif %}"
+                                                name="{{ following.follow_id }}">
+                                                <i class="material-icons">person_add</i> 팔로잉
+                                            </button>
+                                            <button class="follow-button btn-submit small {% if not user.follow_check(session.user_id, following.follow_id) %}display_none{% endif %}"
+                                                name="{{ following.follow_id }}">
+                                                팔로잉 취소
+                                            </button>
+                                        {% endif %}
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                        {% if loop.index % 4 == 0 %}</div><div class="row">{% endif %}
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+$(".follow-me-button").click(function(){
+    document.location.href = "{{ url_for('users.gallery', id=session.user_id) }}";
+});
+
+$(".follow-avatar").click(function() {
+    document.location.href = "{{ url_for('users.info', id='') }}" + $(this).attr('id');
+});
+
+$(".follow-button").click(function(){
+    var self = this;
+
+    $.ajax({
+        type: "POST",
+        url: "{{ url_for('users.following') }}",
+        data: {
+            follow_id: $(self).attr('name')
+        }
+    }).success(function(data) {
+        $(self).children().remove();
+
+        if (data.ok == 1) {
+             $(self).html('팔로잉 취소');
+        } else {
+             $(self).html('<i class="material-icons">person_add</i> 팔로잉');
+        }
+    });
+});
+
+$('.user-menu li').click(function() {
+    document.location.href = $(this).attr('href');
+});
+</script>
+{% endblock %}
