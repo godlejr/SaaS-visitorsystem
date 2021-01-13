@@ -1,4 +1,4 @@
-#!C:\Users\godlejr\PycharmProjects\happyhome\venv\Scripts\python.exe
+#!C:\Users\godlejr\PycharmProjects\visitorsystem\venv\Scripts\python.exe
 
 import sys
 import json
@@ -34,7 +34,7 @@ def main():
         data = json.loads(data)
     try:
         sys.stdout.write(json.dumps(
-            jmespath.search(expression, data), indent=4))
+            jmespath.search(expression, data), indent=4, ensure_ascii=False))
         sys.stdout.write('\n')
     except exceptions.ArityError as e:
         sys.stderr.write("invalid-arity: %s\n" % e)

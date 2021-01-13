@@ -6,7 +6,7 @@ gunicorn 실행 모듈
 import os
 
 from flask import url_for
-from happyathome import create_app
+from visitorsystem import create_app
 
 app = create_app(os.getenv('FLASK_CONFIG') or 'default')
 

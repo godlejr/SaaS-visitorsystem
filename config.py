@@ -32,7 +32,7 @@ class Config(object):
     SQLALCHEMY_POOL_TIMEOUT = 10
     SQLALCHEMY_POOL_RECYCLE = 1800
     SQLALCHEMY_TRACK_MODIFICATIONS = False
-    SQLALCHEMY_DATABASE_URI = 'mysql://root:1miglobal@inotone.cjj0w56trea4.ap-northeast-2.rds.amazonaws.com/happyathome'
+    SQLALCHEMY_DATABASE_URI = 'mysql://root:1miglobal@inotone.cjj0w56trea4.ap-northeast-2.rds.amazonaws.com/visitorsystem'
     SOCIAL_FACEBOOK = {
         'consumer_key': 'xxxxxxxx',
         'consumer_secret': 'xxxxxxxxx'
@@ -48,7 +48,6 @@ class ProductionConfig(Config):
 
 class StagingConfig(Config):
     DEBUG = True
-
 
 class DevelopmentConfig(Config):
     DEBUG = True
