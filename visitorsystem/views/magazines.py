@@ -1,17 +1,17 @@
 import os
+
 import boto3
 import html2text
 import shortuuid
 from flask import Blueprint, render_template, request, redirect, jsonify, url_for, current_app, session
 from flask_login import login_required, current_user
-from googleapiclient.http import MediaFileUpload
-from visitorsystem.forms import Pagination
-from visitorsystem.lib import youtube_api
-from visitorsystem.lib.youtube_api import resumable_upload
-from visitorsystem.models import db, File, Magazine, Comment, MagazineComment, Category, Residence, Photo, Room, User, \
-    del_or_create, MagazineLike, MagazineScrap
 from sqlalchemy import func
 from werkzeug.utils import secure_filename
+
+from visitorsystem.forms import Pagination
+from visitorsystem.lib import youtube_api
+from visitorsystem.models import db, File, Magazine, Comment, MagazineComment, Category, Residence, Photo, Room, User, \
+    del_or_create, MagazineLike, MagazineScrap
 
 magazines = Blueprint('magazines', __name__)
 

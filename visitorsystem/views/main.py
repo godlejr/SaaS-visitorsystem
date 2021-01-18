@@ -21,8 +21,9 @@ def utility_processor():
 
 @main.route('/')
 def index():
-    magazines = Magazine.query.order_by(Magazine.hits.desc(), Magazine.id.desc()).limit(6).all()
-    photos = Photo.query.order_by(Photo.hits.desc(), Photo.id.desc()).limit(6).all()
+    # magazines = Magazine.query.order_by(Magazine.hits.desc(), Magazine.id.desc()).limit(6).all()
+    # photos = Photo.query.order_by(Photo.hits.desc(), Photo.id.desc()).limit(6).all()
+    tenants  = Tename
     return render_template(current_app.config['TEMPLATE_THEME'] + '/main/index.html', magazines=magazines, photos=photos)
 
 
@@ -31,7 +32,7 @@ def login():
     form = LoginForm(request.form)
     if request.method == 'POST':
         if form.validate():
-            user = User.query.filter_by(email=form.email.data).first()
+            user = User.query.filter_by(email=form.email.data).first() #유저 아이디로 전환 필요.. 2021.01.13
             if user:
                 if not check_password_hash(user.password, form.password.data):
                     flash('비밀번호가 잘못되었습니다.')

@@ -87,9 +87,10 @@ class UpdateForm(Form):
     email = StringField('이메일', validators['email'])
 
 
+##회원가입 폼 수정 필요
 class JoinForm(Form):
     name = StringField('이름', validators['name'])
-    email = StringField('이메일', validators['email'])
+    email = StringField('이메일', validators['email'])  #기존의 아이디라서 유저 아이디 필요
     password = PasswordField('비밀번호', validators['password'])
     confirm = PasswordField('비밀번호 확인')
     agreement = BooleanField('동의', validators['agreement'])
@@ -98,7 +99,7 @@ class JoinForm(Form):
 
 
 class LoginForm(Form):
-    email = StringField('이메일', validators['email'])
+    userid = StringField('유저아이디')
     password = PasswordField('비밀번호', validators['password_login'])
 
 
