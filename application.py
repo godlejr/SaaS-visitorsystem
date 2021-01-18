@@ -28,5 +28,5 @@ def dated_url_for(endpoint, **values):
 if __name__ == '__main__':
     from flask_script import Manager
 
-    manager = Manager(application)
-    manager.run()
+    application = Manager(application)
+    application.run()
