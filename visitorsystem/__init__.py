@@ -23,24 +23,24 @@ def create_app(config_name):
     current_dir = os.path.abspath(os.path.dirname(__file__))
     template_folder = os.path.join(current_dir, 'templates')
 
-    app = Flask(__name__, template_folder=template_folder)
-    app.jinja_env.auto_reload = True
-    app.jinja_env.autoescape = False
-    app.jinja_env.add_extension('jinja2.ext.loopcontrols')
+    application = Flask(__name__, template_folder=template_folder)
+    application.jinja_env.auto_reload = True
+    application.jinja_env.autoescape = False
+    application.jinja_env.add_extension('jinja2.ext.loopcontrols')
 
-    config.init_app(app, config_name)
-    db.init_app(app)
-    mail.init_app(app)
+    config.init_app(application, config_name)
+    db.init_app(application)
+    mail.init_app(application)
 
-    redis = Redis.from_url(app.config['REDIS_URL'])
-    app.redis = redis
-    app.session_interface = RedisSessionInterface(redis)
+    redis = Redis.from_url(application.config['REDIS_URL'])
+    application.redis = redis
+    application.session_interface = RedisSessionInterface(redis)
 
     toolbar = DebugToolbarExtension()
-    toolbar.init_app(app)
+    toolbar.init_app(application)
 
     # admin
-    admin = Admin(app, name='Happy@Home', template_mode='bootstrap3', index_view=MyAdminIndexView())
+    admin = Admin(application, name='Happy@Home', template_mode='bootstrap3', index_view=MyAdminIndexView())
     admin.add_view(UserAdmin(User, db.session, name='사용자관리', endpoint='user'))
     admin.add_view(ClassAdminCategory(Category, db.session, name='테마', category='분류 관리', endpoint='category'))
     admin.add_view(ClassAdminResidence(Residence, db.session, name='장소', category='분류 관리', endpoint='residence'))
@@ -59,20 +59,20 @@ def create_app(config_name):
     from visitorsystem.views.users import users as users_blueprint
     from visitorsystem.views.search import search as search_blueprint
 
-    app.register_blueprint(main_blueprint)
-    app.register_blueprint(magazines_blueprint, url_prefix='/story')
-    app.register_blueprint(photos_blueprint, url_prefix='/gallery')
-    app.register_blueprint(pros_blueprint, url_prefix='/professional')
-    app.register_blueprint(boards_blueprint, url_prefix='/board')
-    app.register_blueprint(users_blueprint, url_prefix='/user')
-    app.register_blueprint(search_blueprint, url_prefix='/search')
+    application.register_blueprint(main_blueprint)
+    application.register_blueprint(magazines_blueprint, url_prefix='/story')
+    application.register_blueprint(photos_blueprint, url_prefix='/gallery')
+    application.register_blueprint(pros_blueprint, url_prefix='/professional')
+    application.register_blueprint(boards_blueprint, url_prefix='/board')
+    application.register_blueprint(users_blueprint, url_prefix='/user')
+    application.register_blueprint(search_blueprint, url_prefix='/search')
 
-    app.errorhandler(403)(lambda e: redirect('/'))
-    app.errorhandler(404)(lambda e: render_template('error/404.html'))
-    app.errorhandler(500)(lambda e: render_template('error/404.html'))
+    application.errorhandler(403)(lambda e: redirect('/'))
+    application.errorhandler(404)(lambda e: render_template('error/404.html'))
+    application.errorhandler(500)(lambda e: render_template('error/404.html'))
 
     login_manager = LoginManager()
-    login_manager.init_app(app)
+    login_manager.init_app(application)
     login_manager.login_view = 'main.login'
     login_manager.login_message = '로그인 후 이용해주세요.'
 
@@ -80,4 +80,4 @@ def create_app(config_name):
     def load_user(user_id):
         return User.query.get(int(user_id))
 
-    return app
+    return application
