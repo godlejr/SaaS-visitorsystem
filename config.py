@@ -10,7 +10,7 @@ class Config(object):
     TEMPLATE_THEME = 'bootstrap'
     NO_IMG = 'noimg.JPG'
     # REDIS_URL = 'redis://52.78.113.21/0'
-    REDIS_URL = 'vms-redis-prod.wv2xup.ng.0001.apn2.cache.amazonaws.com:6379'
+    REDIS_URL = 'redis://vms-redis-prod.wv2xup.ng.0001.apn2.cache.amazonaws.com:6379'
     S3_BUCKET_NAME = 'http://static.inotone.co.kr'
     S3_IMG_DIRECTORY = '/data/img/'
     S3_USER_DIRECTORY = '/data/user/'

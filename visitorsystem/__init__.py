@@ -32,6 +32,7 @@ def create_app(config_name):
     db.init_app(application)
     mail.init_app(application)
 
+
     redis = Redis.from_url(application.config['REDIS_URL'])
     application.redis = redis
     application.session_interface = RedisSessionInterface(redis)
