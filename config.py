@@ -42,7 +42,7 @@ class Config(object):
 
 class ProductionConfig(Config):
     DEBUG = False
-    REDIS_URL = '52.78.113.21'
+    REDIS_URL = 'redis://vms-redis-prod.wv2xup.ng.0001.apn2.cache.amazonaws.com:6379'
     TEMPLATE_THEME = 'bootstrap'
     SECRET_KEY = os.getenv('SECRET_KEY') or 'xxxxxxxxxx'
 
