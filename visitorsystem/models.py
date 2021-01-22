@@ -32,9 +32,17 @@ def del_or_create(session, model, **kwargs):
 
 
 class BaseMixin(object):
+    # id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    # created_at = db.Column(db.DateTime, default=db.func.now())
+    # updated_at = db.Column(db.DateTime, default=db.func.now(), onupdate=db.func.now())
+
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    use_yn = db.Column(db.String(1))
     created_at = db.Column(db.DateTime, default=db.func.now())
+    created_by = db.Column(db.String(50))
     updated_at = db.Column(db.DateTime, default=db.func.now(), onupdate=db.func.now())
+    updated_by = db.Column(db.String(50))
+    end_at = db.Column(db.DateTime, default=db.func.now())
 
     @hybrid_property
     def created_date(self):
@@ -83,7 +91,8 @@ class User(db.Model, BaseMixin):
 
     @hybrid_property
     def avatar_url(self):
-        return ''.join((current_app.config['S3_BUCKET_NAME'], current_app.config['S3_USER_DIRECTORY'], '%s')) % self.avatar
+        return ''.join(
+            (current_app.config['S3_BUCKET_NAME'], current_app.config['S3_USER_DIRECTORY'], '%s')) % self.avatar
 
     @hybrid_method
     def follow_check(self, session_id, follow_id):
@@ -115,8 +124,8 @@ class Category(db.Model, BaseMixin):
         return self.name
 
     @hybrid_method
-    def get_count(self,category_id):
-        count =  Magazine.query.filter(Magazine.category_id == category_id).count()
+    def get_count(self, category_id):
+        count = Magazine.query.filter(Magazine.category_id == category_id).count()
         return count
 
 
@@ -471,7 +480,7 @@ class Professional(db.Model, BaseMixin):
 
     @hybrid_method
     def get_integer(self, score):
-        score_integer =  int(round(score))
+        score_integer = int(round(score))
         return score_integer
 
 
@@ -517,7 +526,8 @@ class Board(db.Model, BaseMixin):
 
     @hybrid_property
     def max1_depth(self):
-        depth = db.session.query(func.max(Board.depth)).filter_by(board_id=self.board_id, group_id=self.group_id).one()[0]
+        depth = db.session.query(func.max(Board.depth)).filter_by(board_id=self.board_id, group_id=self.group_id).one()[
+            0]
         return (depth + 1) if depth else 1
 
 
@@ -536,3 +546,40 @@ class Review(db.Model, BaseMixin):
     @property
     def project_date(self):
         return self.project_at.strftime('%Y-%m-%d')
+
+
+class Ssctenant(db.Model, BaseMixin):
+    """테넌트 정보"""
+
+    __tablename__ = 'ssc_tenants'
+
+    tenant_id = db.Column(db.String(50))
+    comp_nm = db.Column(db.String(50))
+    comp_id = db.Column(db.String(30))
+    country_id = db.Column(db.String(30))
+    biz_no = db.Column(db.String(50))
+    vnd_grp_id = db.Column(db.String(30))
+    sub_biz_no = db.Column(db.String(30))
+    comp_enm = db.Column(db.String(50))
+    addr_1 = db.Column(db.String(30))
+    addr_2 = db.Column(db.String(100))
+    addr_no = db.Column(db.String(50))
+    addr_post = db.Column(db.String(50))
+    tel_no = db.Column(db.String(20))
+    fax_no = db.Column(db.String(30))
+    phone = db.Column(db.String(20))
+    vnd_url = db.Column(db.String(100))
+    vnd_email = db.Column(db.String(75))
+    president = db.Column(db.String(50))
+    biz_condi = db.Column(db.String(20))
+    biz_sector = db.Column(db.String(20))
+    pymt_type = db.Column(db.String(30))
+    ssn = db.Column(db.String(30))
+    language = db.Column(db.String(30))
+    part_type = db.Column(db.String(30))
+    comp_shrt_nm = db.Column(db.String(30))
+    tenant_group_id = db.Column(db.String(30))
+    tenant_group_nm = db.Column(db.String(50))
+    event_url = db.Column(db.String(100))
+    background_img = db.Column(db.String(100))
+    logo_img = db.Column(db.String(100))
