@@ -25,10 +25,10 @@ class Config(object):
 
     #S3 VMS
     # 개발
-    #S3_BUCKET_NAME_VMS = 'https://vms-tenants-bucket-dev.s3.ap-northeast-2.amazonaws.com/'
+    S3_BUCKET_NAME_VMS = 'https://vms-tenants-bucket-dev.s3.ap-northeast-2.amazonaws.com/'
 
     #운영
-    S3_BUCKET_NAME_VMS = 'https://vms-tenants-bucket.s3.ap-northeast-2.amazonaws.com/'
+    #S3_BUCKET_NAME_VMS = 'https://vms-tenants-bucket.s3.ap-northeast-2.amazonaws.com/'
 
 
     S3_IMG_DIRECTORY_VMS = '/data/img/'  # 공통 Config
