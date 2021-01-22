@@ -56,7 +56,7 @@ class Config(object):
     #SQLALCHEMY_DATABASE_URI = 'mysql+pymysql://saas:P@ssw0rd@172.19.116.78:3307/hccwebdev'
 
     #운영
-    SQLALCHEMY_DATABASE_URI = 'mysql+pymysql://root:password!@vms-database.cluster-custom-cseigyxe813j.ap-northeast-2.rds.amazonaws.com:3306/vmswebprod'
+    SQLALCHEMY_DATABASE_URI = 'mysql+pymysql://root:password!@vms-database.cluster-custom-cseigyxe813j.ap-northeast-2.rds.amazonaws.com/vmswebprod'
 
     SOCIAL_FACEBOOK = {
         'consumer_key': 'xxxxxxxx',
