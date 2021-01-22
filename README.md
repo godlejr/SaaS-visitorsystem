@@ -1,7 +1,7 @@
-**내방객 시스템**
+**내방객시스템**
 
 **서버 환경**
-* CentOS(nginx, gunicorn)
+* ubuntu(nginx, gunicorn)
 
 **AWS 환경**
 * Server: EC2 (CentOS)
