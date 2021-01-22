@@ -50,7 +50,14 @@ class Config(object):
     SQLALCHEMY_POOL_TIMEOUT = 10
     SQLALCHEMY_POOL_RECYCLE = 1800
     SQLALCHEMY_TRACK_MODIFICATIONS = False
-    SQLALCHEMY_DATABASE_URI = 'mysql+pymysql://saas:P@ssw0rd@172.19.116.78:3307/hccwebdev'
+
+    #DB
+    #개발
+    #SQLALCHEMY_DATABASE_URI = 'mysql+pymysql://saas:P@ssw0rd@172.19.116.78:3307/hccwebdev'
+
+    #운영
+    SQLALCHEMY_DATABASE_URI = 'mysql+pymysql://root:password!@vms-database.cluster-custom-cseigyxe813j.ap-northeast-2.rds.amazonaws.com:3306/vmswebprod'
+
     SOCIAL_FACEBOOK = {
         'consumer_key': 'xxxxxxxx',
         'consumer_secret': 'xxxxxxxxx'
