@@ -22,7 +22,7 @@ def utility_processor():
 def index():
     ssctenant = Ssctenant.query.filter_by(event_url=request.host).first()
 
-    return render_template(current_app.config['TEMPLATE_THEME'] + '/main_example/signin.html',
+    return render_template(current_app.config['TEMPLATE_THEME'] + '/main_example/login.html',
                            current_app=current_app,
                            ssctenant=ssctenant)
 

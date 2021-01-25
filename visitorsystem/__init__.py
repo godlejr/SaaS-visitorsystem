@@ -53,7 +53,7 @@ def create_app(config_name):
     # admin.add_view(BoardAdminFile(Board, db.session, name='해피QnA', category='댓글 관리',endpoint='board'))
 
     # Application Blueprints (내방객 시스템)
-    from visitorsystem.views import main as main_blueprint
+    from visitorsystem.views.main import main as main_blueprint
     from visitorsystem.views.user_account import user_account as user_account_blueprint
     from visitorsystem.views.user_auth import user_auth as user_auth_blueprint
     from visitorsystem.views.super_approval import super_approval as super_approval_blueprint
