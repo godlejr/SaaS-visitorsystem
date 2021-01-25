@@ -83,6 +83,8 @@ def create_app(config_name):
     application.errorhandler(404)(lambda e: render_template('error/404.html'))
     application.errorhandler(500)(lambda e: render_template('error/404.html'))
 
+
+
     login_manager = LoginManager()
     login_manager.init_app(application)
     login_manager.login_view = 'main.login'

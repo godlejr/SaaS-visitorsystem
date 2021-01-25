@@ -1,4 +1,5 @@
 from flask import Blueprint, render_template, request, current_app
+from flask_login import login_required
 
 from visitorsystem.forms import LoginForm
 from visitorsystem.models import Ssctenant
@@ -14,7 +15,9 @@ def utility_processor():
     return dict(url_for_s3=url_for_s3)
 
 
+
 @main.route('/')
+#@login_required
 def index():
     return render_template(current_app.config['TEMPLATE_THEME'] + '/main/index.html')
 
@@ -41,6 +44,6 @@ def login():
     ssctenant = Ssctenant.query.filter_by(event_url=request.host).first()
 
     return render_template(current_app.config['TEMPLATE_THEME'] + '/main/login.html', current_app=current_app,
-                           ssctenant=ssctenant)
+                           ssctenant=ssctenant, form=form)
 
 
