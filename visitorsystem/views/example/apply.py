@@ -9,6 +9,6 @@ apply = Blueprint('apply', __name__)
 def index():
     # print(request.form)
     # form = TestForm(request.form)
-    return render_template(current_app.config['TEMPLATE_THEME'] + '/vms_apply/form.html',
+    return render_template(current_app.config['TEMPLATE_THEME'] + '/inout_apply/form.html',
                            current_app=current_app,
                          )

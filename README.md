@@ -1,5 +1,10 @@
 **내방객시스템**
 
+**Architecture Created & Updated**
+* Created Date: 2021-01-14 (초기) 
+* Updated Date: 2021-01-25 (최신) 
+* Architect: 김동주 
+
 **서버 환경**
 * ubuntu(nginx, gunicorn)
 
@@ -10,3 +15,4 @@
 * Session: Redis,
 * Language: Python v3.5.2,
 * Framework: Flask v0.11.1
+

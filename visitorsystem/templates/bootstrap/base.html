@@ -1,104 +1,346 @@
-<!DOCTYPE html>{%- import "_func.html" as func %}
-<html lang="ko">
+<!DOCTYPE html>
+<html>
 
 <head>
     <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width,initial-scale=1,shrink-to-fit=no">
 
-    {% block header %}{% endblock %}
 
-    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
-    <meta name="description" content="인테리어 O2O 서비스">
-    <meta name="keywords" content="해피홈,해피앳홈,이노톤,인테리어,홈스타일링,아파트,원룸,신혼집,이쁜집,예쁜집,북유럽,모던,interior">
-    <meta name="author" content="INOTONE">
-    <meta name="google-site-verification" content="Ik-6CYkgAsJrG7R0ThZx6niLw-knbHJF-la9C-4Z7I0" />
-    <meta name="naver-site-verification" content="a12464c2025d209f88fa81b9d12d25fbcec3067d"/>
+    <title>Dashboard</title>
+    <style>
+        #loader {
+            transition: all .3s ease-in-out;
+            opacity: 1;
+            visibility: visible;
+            position: fixed;
+            height: 100vh;
+            width: 100%;
+            background: #fff;
+            z-index: 90000
+        }
 
-    <meta property="og:type" content="website">
-    <meta property="og:title" content="해피홈">
-    <meta property="og:description" content="행복공간 크리에이터">
-    <meta property="og:image" content="http://www.happyathome.co.kr/static/img/main/slide/01.jpg">
-    <meta property="og:url" content="http://www.happyathome.co.kr">
+        #loader.fadeOut {
+            opacity: 0;
+            visibility: hidden
+        }
 
-    <title>해피홈 - 행복공간 크리에이터</title>
-    <link rel="apple-touch-icon" href="{{ url_for('static', filename='img/favicon.ico') }}" />
-    <link rel="apple-touch-icon-precomposed" href="{{ url_for('static', filename='img/favicon.ico') }}" />
-    <link rel="shortcut icon" href="{{ url_for('static', filename='img/favicon.ico') }}" />
-    <link href="{{ url_for('static', filename='img/favicon.ico') }}" rel="icon">
-    <link href="{{ url_for('static', filename='css/style.css') }}" rel="stylesheet">
-    <link href="http://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+        .spinner {
+            width: 40px;
+            height: 40px;
+            position: absolute;
+            top: calc(50% - 20px);
+            left: calc(50% - 20px);
+            background-color: #333;
+            border-radius: 100%;
+            -webkit-animation: sk-scaleout 1s infinite ease-in-out;
+            animation: sk-scaleout 1s infinite ease-in-out
+        }
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
-    <script src="{{ url_for('static', filename='js/common.js') }}"></script>
+        @-webkit-keyframes sk-scaleout {
+            0% {
+                -webkit-transform: scale(0)
+            }
+
+            100% {
+                -webkit-transform: scale(1);
+                opacity: 0
+            }
+        }
+
+        @keyframes sk-scaleout {
+            0% {
+                -webkit-transform: scale(0);
+                transform: scale(0)
+            }
+
+            100% {
+                -webkit-transform: scale(1);
+                transform: scale(1);
+                opacity: 0
+            }
+        }
+
+    </style>
+    <!--    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/lykmapipo/themify-icons@0.1.2/css/themify-icons.css">-->
+
+    <link href="{{ url_for('static', filename='css/ad_style.css') }}" rel="stylesheet">
+    <link href="{{ url_for('static', filename='css/themifyicons.css') }}" rel="stylesheet">
+    <script src="{{ url_for('static', filename='js/beacon.min.js') }}"></script>
+    <!--<script type="text/javascript" src="static/js/vendor.js"></script>-->
+    <!--<script type="text/javascript" src="static/js/bundle.js"></script>-->
+    <script src="{{ url_for('static', filename='js/vendor.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/bundle.js') }}"></script>
 </head>
 
-<body>
-
-<div id="header">
-    <div class="top">
-        <div class="log"><a href="/"><img src="{{ url_for('static', filename='img/brand-logo.png') }}" width="112" height="33"/></a></div>
-        <div class="nav">
-            <form class="search" action="{{ url_for('search.list') }}">
-                <div class="search_field"><input id="search_text" name="keyword" type="text" style="background-repeat:no-repeat;border-color:transparent;border:transparent; margin:11px;" size="18" /></div>
-                <div class="search_btn"><button class="search-button" type="submit"><img src="{{ url_for('static', filename='img/main/search_i.jpg') }}" /></button></div>
-            </form>
-            {% if not current_user.id %}
-                <div class="login_01"><a href="{{ url_for('main.login') }}">로그인</a></div>
-                <div class="login_02"><a href="{{ url_for('main.join') }}">회원가입</a></div>
-            {% else %}
-                <div class="login_01 login"><a href="{{ url_for('main.logout') }}">로그아웃</a></div>
-                <div class="login_02 login"><a href="{{ url_for('users.info', id=current_user.id) }}">마이페이지</a></div>
-            {% endif %}
-            <div class="gnb">
-                <div class="gnb_nav_h1"><a href="{{ url_for('magazines.list') }}">스토리</a></div>
-                <div class="gnb_nav_h1"><a href="{{ url_for('photos.list') }}">갤러리</a></div>
-                <div class="gnb_nav_h1"><a href="{{ url_for('professionals.list')}}">전문가</a></div>
-                <div class="gnb_nav_h2"><a href="{{ url_for('boards.list', id=1)}}">해피Q&amp;A</a></div>
-            </div><!-- gnb end -->
-        </div><!-- nav end -->
-    </div><!-- top end -->
-</div><!-- header end -->
-
-<div id="container">
-    {% block content %}{% endblock %}
+<body class="app">
+<div id="loader">
+    <div class="spinner"></div>
 </div>
+<script>
+        window.addEventListener('load', () => {
+            const loader = document.getElementById('loader');
+            setTimeout(() => {
+                loader.classList.add('fadeOut');
+            }, 300);
+        });
 
-<div id="footer">
-    <div class="bot">
-        <div class="ci"><a href="http://www.inotone.co.kr" target="_blank"><img src="{{ url_for('static', filename='img/main/ci.jpg') }}"/></a></div>
-        <div class="cr_1">상호명  |  INOTONE <br/> 대표이사  |  김경태 <br/> 주소  |  서울특별시 강남구 봉은사로84길 8<br/>Copyright ⓒ 2016 by Inotone Co,. LTD. All Rights Reserved</div>
-        <div class="cr_2">대표전화번호  |  1644-0989 <br/> 사업자등록번호  |  478-86-00420 <br/> 이메일  |  contact@inotone.co.kr</div>
-        <div class="cr_3"><a href="{{ url_for('main.agreement') }}">이용약관</a></div>
-        <div class="cr_4"><a href="{{ url_for('main.privacy') }}">개인정보취급방침</a></div>
-        <div class="cr_4">의견보내기</div>
-        <div class="selectbox">
-            <select id="familySite" name="family_site">
-                <option>FAMILY</option>
-                <option value="http://www.hmglobal.com">한미글로벌</option>
-                <option value="http://www.ikukbo.com">국보디자인</option>
-            </select>
+</script>
+<div>
+    <div class="sidebar">
+        <div class="sidebar-inner">
+            <div class="sidebar-logo">
+                <div class="peers ai-c fxw-nw">
+                    <div class="peer peer-greed"><a class="sidebar-link td-n"
+                                                    href="templates/bootstrap/vms_main/ad_index.html">
+                        <div class="peers ai-c fxw-nw">
+                            <div class="peer">
+                                <div class="logo">
+                                    {# <img
+                                        src="{{ current_app.config['S3_BUCKET_NAME_VMS'] + ssctenant.tenant_id + current_app.config['S3_IMG_MAIN_LOGO_DIRECTORY_VMS'] + ssctenant.logo_img  }}"
+                                        width="170" height="60"/>
+                                    #}
+                                </div>
+                            </div>
+                            <div class="peer peer-greed">
+                                <h5 class="lh-1 mB-0 logo-text">VMS</h5>
+                            </div>
+                        </div>
+                    </a></div>
+                    <div class="peer">
+                        <div class="mobile-toggle sidebar-toggle"><a href="" class="td-n"><i
+                                class="ti-arrow-circle-left"></i></a></div>
+                    </div>
+                </div>
+            </div>
+
+
+            <ul class="sidebar-menu scrollable pos-r">
+                <li class="nav-item mT-30 active"><a class="sidebar-link" href="index.html"><span class="icon-holder"><i
+                        class="c-blue-500 ti-home"></i> </span><span class="title">출입신청</span></a></li>
+                <li class="nav-item"><a class="sidebar-link" href="email.html"><span class="icon-holder"><i
+                        class="c-brown-500 ti-email"></i> </span><span class="title">감독부서업무</span></a></li>
+                <li class="nav-item"><a class="sidebar-link" href="compose.html"><span class="icon-holder"><i
+                        class="c-blue-500 ti-share"></i> </span><span class="title">출입관리</span></a></li>
+                <li class="nav-item"><a class="sidebar-link" href="calendar.html"><span class="icon-holder"><i
+                        class="c-deep-orange-500 ti-calendar"></i> </span><span class="title">출입통계업무</span></a></li>
+                <li class="nav-item"><a class="sidebar-link" href="chat.html"><span class="icon-holder"><i
+                        class="c-deep-purple-500 ti-comment-alt"></i> </span><span class="title">관리자설정</span></a></li>
+                <li class="nav-item"><a class="sidebar-link" href="charts.html"><span class="icon-holder"><i
+                        class="c-indigo-500 ti-bar-chart"></i> </span><span class="title">Charts</span></a></li>
+                <li class="nav-item"><a class="sidebar-link" href="forms.html"><span class="icon-holder"><i
+                        class="c-light-blue-500 ti-pencil"></i> </span><span class="title">Forms</span></a></li>
+                <li class="nav-item dropdown"><a class="sidebar-link" href="ui.html"><span class="icon-holder"><i
+                        class="c-pink-500 ti-palette"></i> </span><span class="title">UI Elements</span></a></li>
+                <li class="nav-item dropdown"><a class="dropdown-toggle" href="javascript:void(0);"><span
+                        class="icon-holder"><i class="c-orange-500 ti-layout-list-thumb"></i> </span><span
+                        class="title">Tables</span> <span class="arrow"><i class="ti-angle-right"></i></span></a>
+                    <ul class="dropdown-menu">
+                        <li><a class="sidebar-link" href="basic-table.html">Basic Table</a></li>
+                        <li><a class="sidebar-link" href="datatable.html">Data Table</a></li>
+                    </ul>
+                </li>
+                <li class="nav-item dropdown"><a class="dropdown-toggle" href="javascript:void(0);"><span
+                        class="icon-holder"><i class="c-purple-500 ti-map"></i> </span><span class="title">Maps</span>
+                    <span class="arrow"><i class="ti-angle-right"></i></span></a>
+                    <ul class="dropdown-menu">
+                        <li><a href="google-maps.html">Google Map</a></li>
+                        <li><a href="vector-maps.html">Vector Map</a></li>
+                    </ul>
+                </li>
+                <li class="nav-item dropdown"><a class="dropdown-toggle" href="javascript:void(0);"><span
+                        class="icon-holder"><i class="c-red-500 ti-files"></i> </span><span class="title">Pages</span>
+                    <span class="arrow"><i class="ti-angle-right"></i></span></a>
+                    <ul class="dropdown-menu">
+                        <li><a class="sidebar-link" href="blank.html">Blank</a></li>
+                        <li><a class="sidebar-link" href="404.html">404</a></li>
+                        <li><a class="sidebar-link" href="500.html">500</a></li>
+                        <li><a class="sidebar-link" href="signin.html">Sign In</a></li>
+                        <li><a class="sidebar-link" href="signup.html">Sign Up</a></li>
+                    </ul>
+                </li>
+                <li class="nav-item dropdown"><a class="dropdown-toggle" href="javascript:void(0);"><span
+                        class="icon-holder"><i class="c-teal-500 ti-view-list-alt"></i> </span><span class="title">Multiple Levels</span>
+                    <span class="arrow"><i class="ti-angle-right"></i></span></a>
+                    <ul class="dropdown-menu">
+                        <li class="nav-item dropdown"><a href="javascript:void(0);"><span>Menu Item</span></a></li>
+                        <li class="nav-item dropdown"><a href="javascript:void(0);"><span>Menu Item</span> <span
+                                class="arrow"><i class="ti-angle-right"></i></span></a>
+                            <ul class="dropdown-menu">
+                                <li><a href="javascript:void(0);">Menu Item</a></li>
+                                <li><a href="javascript:void(0);">Menu Item</a></li>
+                            </ul>
+                        </li>
+                    </ul>
+                </li>
+            </ul>
         </div>
     </div>
-</div><!-- footer end -->
+    <div class="page-container">
+        <div class="header navbar">
+            <div class="header-container">
+                <ul class="nav-left">
+                    <li><a id="sidebar-toggle" class="sidebar-toggle" href="javascript:void(0);"><i class="ti-menu"></i></a>
+                    </li>
+                    <li class="search-box"><a class="search-toggle no-pdd-right" href="javascript:void(0);"><i
+                            class="search-icon ti-search pdd-right-10"></i> <i
+                            class="search-icon-close ti-close pdd-right-10"></i></a>
+                    </li>
+                    <li class="search-input"><input class="form-control" type="text" placeholder="Search..."></li>
+                </ul>
+                <ul class="nav-right">
+                    <li class="notifications dropdown"><span class="counter bgc-red">3</span> <a href=""
+                                                                                                 class="dropdown-toggle no-after"
+                                                                                                 data-toggle="dropdown"><i
+                            class="ti-bell"></i></a>
+                        <ul class="dropdown-menu">
+                            <li class="pX-20 pY-15 bdB"><i class="ti-bell pR-10"></i> <span
+                                    class="fsz-sm fw-600 c-grey-900">Notifications</span>
+                            </li>
+                            <li>
+                                <ul class="ovY-a pos-r scrollable lis-n p-0 m-0 fsz-sm">
+                                    <li><a href="" class="peers fxw-nw td-n p-20 bdB c-grey-800 cH-blue bgcH-grey-100">
+                                        <div class="peer mR-15"><img class="w-3r bdrs-50p"
+                                                                     src="https://randomuser.me/api/portraits/men/1.jpg"
+                                                                     alt="">
+                                        </div>
+                                        <div class="peer peer-greed"><span><span class="fw-500">John Doe</span> <span
+                                                class="c-grey-600">liked your <span class="text-dark">post</span></span></span>
+                                            <p class="m-0"><small class="fsz-xs">5 mins ago</small></p>
+                                        </div>
+                                    </a></li>
+                                    <li><a href="" class="peers fxw-nw td-n p-20 bdB c-grey-800 cH-blue bgcH-grey-100">
+                                        <div class="peer mR-15"><img class="w-3r bdrs-50p"
+                                                                     src="https://randomuser.me/api/portraits/men/2.jpg"
+                                                                     alt="">
+                                        </div>
+                                        <div class="peer peer-greed"><span><span class="fw-500">Moo Doe</span> <span
+                                                class="c-grey-600">liked your <span
+                                                class="text-dark">cover image</span></span></span>
+                                            <p class="m-0"><small class="fsz-xs">7 mins ago</small></p>
+                                        </div>
+                                    </a></li>
+                                    <li><a href="" class="peers fxw-nw td-n p-20 bdB c-grey-800 cH-blue bgcH-grey-100">
+                                        <div class="peer mR-15"><img class="w-3r bdrs-50p"
+                                                                     src="https://randomuser.me/api/portraits/men/3.jpg"
+                                                                     alt="">
+                                        </div>
+                                        <div class="peer peer-greed"><span><span class="fw-500">Lee Doe</span> <span
+                                                class="c-grey-600">commented on your <span
+                                                class="text-dark">video</span></span></span>
+                                            <p class="m-0"><small class="fsz-xs">10 mins ago</small></p>
+                                        </div>
+                                    </a></li>
+                                </ul>
+                            </li>
+                            <li class="pX-20 pY-15 ta-c bdT"><span><a href="" class="c-grey-600 cH-blue fsz-sm td-n">View All Notifications <i
+                                    class="ti-angle-right fsz-xs mL-10"></i></a></span></li>
+                        </ul>
+                    </li>
+                    <li class="notifications dropdown"><span class="counter bgc-blue">3</span> <a href=""
+                                                                                                  class="dropdown-toggle no-after"
+                                                                                                  data-toggle="dropdown"><i
+                            class="ti-email"></i></a>
+                        <ul class="dropdown-menu">
+                            <li class="pX-20 pY-15 bdB"><i class="ti-email pR-10"></i> <span
+                                    class="fsz-sm fw-600 c-grey-900">Emails</span></li>
+                            <li>
+                                <ul class="ovY-a pos-r scrollable lis-n p-0 m-0 fsz-sm">
+                                    <li><a href="" class="peers fxw-nw td-n p-20 bdB c-grey-800 cH-blue bgcH-grey-100">
+                                        <div class="peer mR-15"><img class="w-3r bdrs-50p"
+                                                                     src="https://randomuser.me/api/portraits/men/1.jpg"
+                                                                     alt="">
+                                        </div>
+                                        <div class="peer peer-greed">
+                                            <div>
+                                                <div class="peers jc-sb fxw-nw mB-5">
+                                                    <div class="peer">
+                                                        <p class="fw-500 mB-0">John Doe</p>
+                                                    </div>
+                                                    <div class="peer"><small class="fsz-xs">5 mins ago</small></div>
+                                                </div>
+                                                <span class="c-grey-600 fsz-sm">Want to create your own customized data generator for your app...</span>
+                                            </div>
+                                        </div>
+                                    </a></li>
+                                    <li><a href="" class="peers fxw-nw td-n p-20 bdB c-grey-800 cH-blue bgcH-grey-100">
+                                        <div class="peer mR-15"><img class="w-3r bdrs-50p"
+                                                                     src="https://randomuser.me/api/portraits/men/2.jpg"
+                                                                     alt="">
+                                        </div>
+                                        <div class="peer peer-greed">
+                                            <div>
+                                                <div class="peers jc-sb fxw-nw mB-5">
+                                                    <div class="peer">
+                                                        <p class="fw-500 mB-0">Moo Doe</p>
+                                                    </div>
+                                                    <div class="peer"><small class="fsz-xs">15 mins ago</small></div>
+                                                </div>
+                                                <span class="c-grey-600 fsz-sm">Want to create your own customized data generator for your app...</span>
+                                            </div>
+                                        </div>
+                                    </a></li>
+                                    <li><a href="" class="peers fxw-nw td-n p-20 bdB c-grey-800 cH-blue bgcH-grey-100">
+                                        <div class="peer mR-15"><img class="w-3r bdrs-50p"
+                                                                     src="https://randomuser.me/api/portraits/men/3.jpg"
+                                                                     alt="">
+                                        </div>
+                                        <div class="peer peer-greed">
+                                            <div>
+                                                <div class="peers jc-sb fxw-nw mB-5">
+                                                    <div class="peer">
+                                                        <p class="fw-500 mB-0">Lee Doe</p>
+                                                    </div>
+                                                    <div class="peer"><small class="fsz-xs">25 mins ago</small></div>
+                                                </div>
+                                                <span class="c-grey-600 fsz-sm">Want to create your own customized data generator for your app...</span>
+                                            </div>
+                                        </div>
+                                    </a></li>
+                                </ul>
+                            </li>
+                            <li class="pX-20 pY-15 ta-c bdT"><span><a href="email.html"
+                                                                      class="c-grey-600 cH-blue fsz-sm td-n">View All Email <i
+                                    class="fs-xs ti-angle-right mL-10"></i></a></span></li>
+                        </ul>
+                    </li>
+                    <li class="dropdown"><a href="" class="dropdown-toggle no-after peers fxw-nw ai-c lh-1"
+                                            data-toggle="dropdown">
+                        <div class="peer mR-10"><img class="w-2r bdrs-50p"
+                                                     src="https://randomuser.me/api/portraits/men/10.jpg"
+                                                     alt=""></div>
+                        <div class="peer"><span class="fsz-sm c-grey-900">John Doe</span></div>
+                    </a>
+                        <ul class="dropdown-menu fsz-sm">
+                            <li><a href="" class="d-b td-n pY-5 bgcH-grey-100 c-grey-700"><i
+                                    class="ti-settings mR-10"></i> <span>Setting</span></a>
+                            </li>
+                            <li><a href="" class="d-b td-n pY-5 bgcH-grey-100 c-grey-700"><i class="ti-user mR-10"></i>
+                                <span>Profile</span></a>
+                            </li>
+                            <li><a href="email.html" class="d-b td-n pY-5 bgcH-grey-100 c-grey-700"><i
+                                    class="ti-email mR-10"></i>
+                                <span>Messages</span></a></li>
+                            <li role="separator" class="divider"></li>
+                            <li><a href="" class="d-b td-n pY-5 bgcH-grey-100 c-grey-700"><i
+                                    class="ti-power-off mR-10"></i> <span>Logout</span></a>
+                            </li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+        </div>
+        <main class="main-content bgc-grey-100">
+            {% block content %}
+            {% endblock %}
+        </main>
+        <footer class="bdT ta-c p-30 lh-0 fsz-sm c-grey-600"><span>Copyright © 2017 Designed by <a
+                href="https://colorlib.com" target="_blank" title="Colorlib">Colorlib</a>. All rights reserved.</span>
+        </footer>
+    </div>
+</div>
 
-<script>
-$('#familySite').change(function() {
-    if ($(this).val()) window.open($(this).val());
-});
 
-document.ondragstart = function() { return false };
-document.onselectstart = function() { return false };
-document.oncontextmenu = function() { return false };
-</script>
-<script>
-  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
-  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
-  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
-  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
-
-  ga('create', 'UA-82648701-1', 'auto');
-  ga('send', 'pageview');
-</script>
 </body>
+
 
 </html>
