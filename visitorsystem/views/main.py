@@ -19,7 +19,11 @@ def utility_processor():
 @main.route('/')
 #@login_required
 def index():
-    return render_template(current_app.config['TEMPLATE_THEME'] + '/main/index.html')
+
+    ssctenant = Ssctenant.query.filter_by(event_url=request.host).first()
+
+    return render_template(current_app.config['TEMPLATE_THEME'] + '/main/index.html',current_app=current_app,
+                           ssctenant=ssctenant)
 
 
 @main.route('/login', methods=['GET', 'POST'])
