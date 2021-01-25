@@ -4,7 +4,7 @@ from flask_mail import Mail, Message
 from werkzeug.security import generate_password_hash, check_password_hash
 
 from visitorsystem.forms import JoinForm, LoginForm
-from visitorsystem.models import db, User, Professional,Ssctenant
+from visitorsystem.models import db, User, Professional, Ssctenant
 
 main = Blueprint('main', __name__)
 mail = Mail()
@@ -20,14 +20,13 @@ def utility_processor():
 
 @main.route('/')
 def index():
-
-
     ssctenant = Ssctenant.query.filter_by(event_url=request.host).first()
-
 
     return render_template(current_app.config['TEMPLATE_THEME'] + '/main/signin.html',
                            current_app=current_app,
                            ssctenant=ssctenant)
+
+
 
 
 @main.route('/login', methods=['GET', 'POST'])

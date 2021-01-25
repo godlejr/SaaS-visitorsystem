@@ -59,6 +59,8 @@ def create_app(config_name):
     from visitorsystem.views.users import users as users_blueprint
     from visitorsystem.views.search import search as search_blueprint
 
+
+
     application.register_blueprint(main_blueprint)
     application.register_blueprint(magazines_blueprint, url_prefix='/story')
     application.register_blueprint(photos_blueprint, url_prefix='/gallery')
@@ -66,6 +68,9 @@ def create_app(config_name):
     application.register_blueprint(boards_blueprint, url_prefix='/board')
     application.register_blueprint(users_blueprint, url_prefix='/user')
     application.register_blueprint(search_blueprint, url_prefix='/search')
+
+    from visitorsystem.views.test import test as test_blueprint
+    application.register_blueprint(test_blueprint, url_prefix='/test')
 
     application.errorhandler(403)(lambda e: redirect('/'))
     application.errorhandler(404)(lambda e: render_template('error/404.html'))

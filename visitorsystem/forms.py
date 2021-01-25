@@ -11,7 +11,7 @@ class BusinessCheck(object):
         self.message = message
 
     def __call__(self, form, field):
-        number = list(map(int,str(field.data)))
+        number = list(map(int, str(field.data)))
         key = [1, 3, 7, 1, 3, 7, 1, 3, 5]
         sum = 0
 
@@ -35,6 +35,7 @@ class HomepageCheck(object):
     def __call__(self, form, field):
         if field.data[0:7] != 'http://':
             raise ValidationError(self.message)
+
 
 validators = {
     'email': [
@@ -130,3 +131,8 @@ class Pagination(object):
                     yield None
                 yield num
                 last = num
+
+
+class TestForm(Form):
+    email = StringField('이메일', validators['email'])
+    password = PasswordField('비밀번호', validators['password_login'])
