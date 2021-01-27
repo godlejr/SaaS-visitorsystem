@@ -99,8 +99,8 @@ class JoinForm(Form):
 
 
 class LoginForm(Form):
-    email = StringField('이메일', validators['email'])
-    password = PasswordField('비밀번호', validators['password_login'])
+    login_id = StringField('아이디', validators['name'])
+    login_pwd = PasswordField('비밀번호', validators['password_login'])
 
 
 class Pagination(object):
