@@ -119,24 +119,28 @@
 
     <!-- 로그인 폼 -->
     <div class="login-form">
-        <form>
+        <form method="POST">
 
             <div class="form-group"><label class="text-normal text-dark">ID</label>
-                                {{ form.email(class="form-control", placeholder="e메일을 입력하세요.") }}
-
-<!--                -->
-<!--                <input type="text"-->
-<!--                                                                                           class="form-control"-->
-<!--                                                                                           placeholder="아이디를 입력하세요.">-->
+                                {{ form.login_id(class="form-control", placeholder="아이디를 입력하세요.") }}
             </div>
             <div class="form-group"><label class="text-normal text-dark">Password</label>
-
-<!--                <input type="password"-->
-<!--                       class="form-control"-->
-<!--                       placeholder="패스워드를 입력하세요.">-->
-                                {{ form.password(class="form-control", placeholder="비밀번호를 입력하세요.") }}
+                                {{ form.login_pwd(class="form-control", placeholder="패스워드를 입력하세요.") }}
 
             </div>
+
+            {% with messages = get_flashed_messages() %}
+            {% if messages %}
+            <div class="message">
+                <ul>
+                    {% for message in messages %}
+                    <li>{{ message }}</li>
+                    {% endfor %}
+                </ul>
+            </div>
+            {% endif %}
+            {% endwith %}
+
             <div class="form-group">
                 <div class="peers ai-c jc-sb fxw-nw">
                     <div class="peer">
