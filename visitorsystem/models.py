@@ -5,6 +5,7 @@ from flask_sqlalchemy import SQLAlchemy
 from markupsafe import Markup
 from sqlalchemy import func
 from sqlalchemy.ext.hybrid import hybrid_method, hybrid_property
+from flask_login import UserMixin
 from sqlalchemy.orm import backref
 
 db = SQLAlchemy()
@@ -559,7 +560,7 @@ class Sclogininteg(db.Model, BaseMixin):
     auth_group = db.Column(db.String(50),nullable=False)
 
 
-class Scoutterlogininfo(db.Model, BaseMixin):
+class Scoutterlogininfo(db.Model, UserMixin):
     """로그인정보(외부)"""
 
     __tablename__ = 'sc_outter_login_info'
@@ -578,6 +579,27 @@ class Scoutterlogininfo(db.Model, BaseMixin):
     logout_at = db.Column(db.DateTime,default=db.func.now())
     user_ip = db.Column(db.String(20))
     user_host = db.Column(db.String(50))
+
+
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    use_yn = db.Column(db.String(1))
+    created_at = db.Column(db.DateTime, default=db.func.now())
+    created_by = db.Column(db.String(50))
+    updated_at = db.Column(db.DateTime, default=db.func.now(), onupdate=db.func.now())
+    updated_by = db.Column(db.String(50))
+    end_at = db.Column(db.DateTime, default=db.func.now())
+
+    @hybrid_property
+    def created_date(self):
+        return self.created_at.strftime('%Y-%m-%d')
+
+    @hybrid_property
+    def updated_date(self):
+        return self.updated_at.strftime('%Y-%m-%d')
+
+    @hybrid_method
+    def get_id(self):
+        return self.id
 
 
 
@@ -613,7 +635,7 @@ class Sccompinfo(db.Model, BaseMixin):
 
 
 
-class Sclogininfo(db.Model, BaseMixin):
+class Sclogininfo(db.Model, UserMixin):
     """로그인정보(내부)"""
 
     __tablename__ = 'sc_login_info'
@@ -630,6 +652,25 @@ class Sclogininfo(db.Model, BaseMixin):
     pwd_exp_day = db.Column(db.DateTime, nullable = False, default = db.func.now())
 
 
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    use_yn = db.Column(db.String(1))
+    created_at = db.Column(db.DateTime, default=db.func.now())
+    created_by = db.Column(db.String(50))
+    updated_at = db.Column(db.DateTime, default=db.func.now(), onupdate=db.func.now())
+    updated_by = db.Column(db.String(50))
+    end_at = db.Column(db.DateTime, default=db.func.now())
+
+    @hybrid_property
+    def created_date(self):
+        return self.created_at.strftime('%Y-%m-%d')
+
+    @hybrid_property
+    def updated_date(self):
+        return self.updated_at.strftime('%Y-%m-%d')
+
+    @hybrid_method
+    def get_id(self):
+        return self.id
 
 
 class Scinneruserinfo(db.Model, BaseMixin):

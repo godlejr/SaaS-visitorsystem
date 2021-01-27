@@ -46,12 +46,8 @@ def login():
             else:
                 flash('회원아이디가 잘못되었습니다.')
 
-    # print('-------------------')
-    # print(Ssctenant.query)
-    # print('-------------------')
-    # ssctenants = Ssctenant.query.all()
+
     return render_template(current_app.config['TEMPLATE_THEME'] + '/main_example/login.html', form=form)
-    # return render_template(current_app.config['TEMPLATE_THEME'] + '/main_example/test.html', ssctenants=ssctenants)
 
 
 @main_example.route('/logout')

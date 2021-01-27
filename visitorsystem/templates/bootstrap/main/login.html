@@ -58,6 +58,7 @@
 }
 
 
+
     </style>
     <link href="{{ url_for('static', filename='css/bootstrap_vms.css') }}" rel="stylesheet">
     <link href="{{ url_for('static', filename='css/vms_style.css') }}" rel="stylesheet">
@@ -74,6 +75,7 @@
           loader.classList.add('fadeOut');
         }, 300);
       });
+
 
 
 </script>
@@ -97,9 +99,13 @@
     <!--    <div class="d-n@sm- peer peer-greed h-100 pos-r bgr-n bgpX-c bgpY-c bgsz-cv tenant-bg"
              style="background-image:url(/static/img/company/tenant_bg_img_HanwhaSolution.jpg)"/>
         </div>-->
+
+    {% set tenant = get_tenant() %}
+
     <div class="d-n@sm- peer peer-greed h-100 pos-r bgr-n bgpX-c bgpY-c bgsz-cv tenant-bg"
-         style="background-image:url( {{ current_app.config['S3_BUCKET_NAME_VMS'] + ssctenant.tenant_id + current_app.config['S3_IMG_MAIN_DIRECTORY_VMS'] + ssctenant.background_img }})"/>
+         style="background-image:url( {{ url_for_s3(tenant.tenant_id, 'S3_IMG_MAIN_DIRECTORY_VMS',tenant.background_img)  }})"/>
 </div>
+
 
 <!-- 우측 로그인 부분 -->
 <div class="col-12 col-md-4 peer pX-40 pY-80 h-100 bgc-white scrollable pos-r">
@@ -108,10 +114,9 @@
         <!-- 테넌트 정보를 통해 S3에서 알맞은 회사로고 띄우기 -->
 
         <!-- S3_IMG_MAIN_LOGO_DIRECTORY_VMS 앞에 테넌트 ID 붙여야함 -->
-        <img src="{{ current_app.config['S3_BUCKET_NAME_VMS'] + ssctenant.tenant_id + current_app.config['S3_IMG_MAIN_LOGO_DIRECTORY_VMS'] + ssctenant.logo_img  }}"
+        <img src="{{ url_for_s3(tenant.tenant_id, 'S3_IMG_MAIN_LOGO_DIRECTORY_VMS',tenant.logo_img)  }}"
              width="170" height="60"/>
         <br/>
-
 
         <h3 style="font-weight:bold">Visitor Management System</h3>
         <hr/>
@@ -122,10 +127,10 @@
         <form method="POST">
 
             <div class="form-group"><label class="text-normal text-dark">ID</label>
-                                {{ form.login_id(class="form-control", placeholder="아이디를 입력하세요.") }}
+                {{ form.login_id(class="form-control", placeholder="아이디를 입력하세요.") }}
             </div>
             <div class="form-group"><label class="text-normal text-dark">Password</label>
-                                {{ form.login_pwd(class="form-control", placeholder="패스워드를 입력하세요.") }}
+                {{ form.login_pwd(class="form-control", placeholder="패스워드를 입력하세요.") }}
 
             </div>
 
@@ -171,8 +176,5 @@
 <!--    </div>-->
 <!--</div>&lt;!&ndash; footer end &ndash;&gt;-->
 
-
-<script src="{{ url_for('static', filename='js/vendor.js') }}"></script>
-<script src="{{ url_for('static', filename='js/bundle.js') }}"></script>
 </body>
 </html>
