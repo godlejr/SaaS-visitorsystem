@@ -663,9 +663,18 @@ class Scmenuauth(db.Model,BaseMixin):
     menu_id = db.Column(db.String(30),db.ForeignKey('sc_menu.menu_id'), nullable=False)
 
 
-class Scuser(db.Model, BaseMixin):
+class Scuser(db.Model, UserMixin):
     """사용자 정보"""
     __tablename__ = 'sc_user'
+
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    use_yn = db.Column(db.String(1))
+    created_at = db.Column(db.DateTime, default=db.func.now())
+    created_by = db.Column(db.String(50))
+    updated_at = db.Column(db.DateTime, default=db.func.now(), onupdate=db.func.now())
+    updated_by = db.Column(db.String(50))
+    end_at = db.Column(db.DateTime, default=db.func.now())
+
     tenant_id = db.Column(db.String(50), db.ForeignKey('ssc_tenants.tenant_id'), nullable=False)
     login_id = db.Column(db.String(100), nullable=False, unique=True)
     name = db.Column(db.String(256), nullable=False)
@@ -689,6 +698,17 @@ class Scuser(db.Model, BaseMixin):
     user_ip = db.Column(db.String(20))
     user_host = db.Column(db.String(50))
 
+    @hybrid_property
+    def created_date(self):
+        return self.created_at.strftime('%Y-%m-%d')
+
+    @hybrid_property
+    def updated_date(self):
+        return self.updated_at.strftime('%Y-%m-%d')
+
+    @hybrid_method
+    def get_id(self):
+        return self.login_id
 
 
 class Ssctenantdb(db.Model,BaseMixin):

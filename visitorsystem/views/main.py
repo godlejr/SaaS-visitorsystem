@@ -3,7 +3,7 @@ from flask_login import login_required, login_user
 from werkzeug.security import generate_password_hash, check_password_hash
 
 from visitorsystem.forms import LoginForm
-from visitorsystem.models import Ssctenant, Sclogininfo, Scoutterlogininfo
+from visitorsystem.models import Ssctenant, Scuser
 
 main = Blueprint('main', __name__)
 
@@ -11,6 +11,7 @@ main = Blueprint('main', __name__)
 @main.route('/')
 @login_required
 def index():
+
     return render_template(current_app.config['TEMPLATE_THEME'] + '/main/index.html')
 
 
@@ -20,11 +21,8 @@ def login():
     if request.method == 'POST':
         if form.validate():
 
-            # 내부 조회
-            user = Sclogininfo.query.filter_by(login_id=form.login_id.data).first()
-            if not user:
-                # 없으면 외부 조회
-                user = Scoutterlogininfo.query.filter_by(login_id=form.login_id.data).first()
+            # 사용자 조회
+            user = Scuser.query.filter_by(login_id=form.login_id.data).first()
 
             if user:
                 # 비밀번호 비교
@@ -33,13 +31,12 @@ def login():
                 else:
                     # 정상 로그인 - 세션
                     session['login_id'] = user.login_id
-                    # session['name'] = user.emp_no
-                    # session['user_level'] = user.level
-                    login_user(user)
-                    return redirect(request.args.get("next") or url_for('main.index'))
+                    session['name'] = user.name
+                    session['auth_id'] = user.auth_id
+                    session['tenant_id'] = user.tenant_id
 
+                    return redirect(request.args.get("next") or url_for('main.index'))
             else:
                 flash('회원아이디가 잘못되었습니다.')
 
-    return render_template(current_app.config['TEMPLATE_THEME'] + '/main/login.html',
-                           form=form)
+    return render_template(current_app.config['TEMPLATE_THEME'] + '/main/login.html', form=form)
