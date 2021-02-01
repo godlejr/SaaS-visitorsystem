@@ -968,3 +968,21 @@ class Ssctenant(db.Model, BaseMixin):
     event_url = db.Column(db.String(100))
     background_img = db.Column(db.String(100))
     logo_img = db.Column(db.String(100))
+
+
+
+
+
+
+
+
+class Scrule(db.Model, BaseMixin):
+    """테넌트 정보"""
+    __tablename__ = 'sc_rule'
+
+    tenant_id = db.Column(db.String(50), nullable=False)
+    rule_name = db.Column(db.String(50), nullable=False, unique=True)
+    rule_type = db.Column(db.String(50), nullable=False)
+    rule_duedate = db.Column(db.String(50), nullable=False)
+    rule_desc = db.Column(db.String(100), nullable=False)
+    rule_tlocation = db.Column(db.String(50), nullable=False, default='test')
