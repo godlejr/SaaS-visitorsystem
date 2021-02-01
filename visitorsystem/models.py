@@ -550,65 +550,45 @@ class Review(db.Model, BaseMixin):
 
 
 
-class Sclogininteg(db.Model, BaseMixin):
-    """로그인정보(통합)"""
-
-    __tablename__ = 'sc_login_integ'
-    login_id = db.Column(db.String(100),nullable=False, unique=True)
-    login_type = db.Column(db.String(1),nullable=False)
-    auth_id = db.Column(db.String(50), db.ForeignKey('sc_auth.id'))
-    auth_group = db.Column(db.String(50),nullable=False)
-
-
-class Scoutterlogininfo(db.Model, UserMixin):
-    """로그인정보(외부)"""
-
-    __tablename__ = 'sc_outter_login_info'
-    login_id = db.Column(db.String(100),nullable=False, unique=True)
-    login_pwd = db.Column(db.String(128),nullable=False)
-    pwd_updated_at = db.Column(db.DateTime,nullable=False,default=db.func.now())
-    biz_no = db.Column(db.String(50),db.ForeignKey('sc_comp_info.biz_no'))
-    login_yn = db.Column(db.String(2))
-    phone = db.Column(db.String(20),nullable=False)
-    email = db.Column(db.String(75),nullable=False)
-    fax_no = db.Column(db.String(30))
-    tel_no = db.Column(db.String(75))
-    sms_yn = db.Column(db.String(1),nullable=False)
-    info_agr_yn = db.Column(db.String(1),nullable=False)
-    login_at = db.Column(db.DateTime,default=db.func.now())
-    logout_at = db.Column(db.DateTime,default=db.func.now())
-    user_ip = db.Column(db.String(20))
-    user_host = db.Column(db.String(50))
+#===============================================================================================================================================
+# 방문객 관리 VMS
+#===============================================================================================================================================
+class Scclass(db.Model, BaseMixin):
+    """공통클래스관리"""
+    __tablename__ = 'sc_class'
+    class_id = db.Column(db.String(30), nullable=False, unique=True)
+    class_nm = db.Column(db.String(50))
+    user_def_yn = db.Column(db.String(1))
 
 
-    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    use_yn = db.Column(db.String(1))
-    created_at = db.Column(db.DateTime, default=db.func.now())
-    created_by = db.Column(db.String(50))
-    updated_at = db.Column(db.DateTime, default=db.func.now(), onupdate=db.func.now())
-    updated_by = db.Column(db.String(50))
-    end_at = db.Column(db.DateTime, default=db.func.now())
+class Sccode(db.Model, BaseMixin):
+    """공통코드관리"""
+    __tablename__ = 'sc_code'
+    tenant_id = db.Column(db.String(50), nullable=False)
+    class_id = db.Column(db.String(30), db.ForeignKey('sc_class.class_id'), nullable=False)
+    class_nm = db.Column(db.String(50))
+    code_id = db.Column(db.String(30), nullable=False)
+    code_nm = db.Column(db.String(50))
+    depth = db.Column(db.Integer)
+    group = db.Column(db.String(50))
+    position = db.Column(db.Integer)
+    user_def_yn = db.Column(db.String(1))
 
-    @hybrid_property
-    def created_date(self):
-        return self.created_at.strftime('%Y-%m-%d')
 
-    @hybrid_property
-    def updated_date(self):
-        return self.updated_at.strftime('%Y-%m-%d')
-
-    @hybrid_method
-    def get_id(self):
-        return self.id
-
+class Sccodeauth(db.Model,BaseMixin):
+    """공통코드권한관리"""
+    __tablename__ = 'sc_code_auth'
+    auth_id = db.Column(db.String(100),nullable = False)
+    class_id = db.Column(db.String(30),db.ForeignKey('sc_class.class_id'),nullable = False)
 
 
 class Sccompinfo(db.Model, BaseMixin):
     """업체정보"""
     __tablename__ = 'sc_comp_info'
+    tenant_id = db.Column(db.String(50), db.ForeignKey('ssc_tenants.tenant_id'), nullable=False)
     comp_id = db.Column(db.String(30))
     country_id = db.Column(db.String(30))
-    biz_no = db.Column(db.String(50),nullable=False,unique=True)
+    biz_no = db.Column(db.String(50), nullable=False, unique=True)
     vnd_grp_id = db.Column(db.String(30))
     sub_biz_no = db.Column(db.String(30))
     comp_nm = db.Column(db.String(50))
@@ -634,56 +614,18 @@ class Sccompinfo(db.Model, BaseMixin):
     user_host = db.Column(db.String(50))
 
 
-
-class Sclogininfo(db.Model, UserMixin):
-    """로그인정보(내부)"""
-
-    __tablename__ = 'sc_login_info'
-    login_id = db.Column(db.String(100))
-    login_pwd = db.Column(db.String(128),nullable = False)
-    pwd_updated_at = db.Column(db.DateTime, nullable = False, default = db.func.now())
-    emp_no = db.Column(db.String(20),db.ForeignKey('sc_inner_user_info.emp_no'))
-    login_yn = db.Column(db.String(2))
-    login_at = db.Column(db.DateTime, nullable = False, default = db.func.now())
-    logout_at = db.Column(db.DateTime, nullable = False, default = db.func.now())
-    user_ip = db.Column(db.String(20))
-    user_host = db.Column(db.String(50))
-    login_fail_cnt = db.Column(db.Integer)
-    pwd_exp_day = db.Column(db.DateTime, nullable = False, default = db.func.now())
-
-
-    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    use_yn = db.Column(db.String(1))
-    created_at = db.Column(db.DateTime, default=db.func.now())
-    created_by = db.Column(db.String(50))
-    updated_at = db.Column(db.DateTime, default=db.func.now(), onupdate=db.func.now())
-    updated_by = db.Column(db.String(50))
-    end_at = db.Column(db.DateTime, default=db.func.now())
-
-    @hybrid_property
-    def created_date(self):
-        return self.created_at.strftime('%Y-%m-%d')
-
-    @hybrid_property
-    def updated_date(self):
-        return self.updated_at.strftime('%Y-%m-%d')
-
-    @hybrid_method
-    def get_id(self):
-        return self.id
-
-
 class Scinneruserinfo(db.Model, BaseMixin):
     """내부직원정보"""
 
     __tablename__ = 'sc_inner_user_info'
+    tenant_id = db.Column(db.String(50), db.ForeignKey('ssc_tenants.tenant_id'), nullable=False)
     comp_id = db.Column(db.String(20))
     comp_nm = db.Column(db.String(50))
-    emp_no = db.Column(db.String(20), nullable = False, unique=True)
-    emp_nm = db.Column(db.String(50),db.ForeignKey('sc_inner_user_info.emp_no'))
+    emp_no = db.Column(db.String(20), nullable=False, unique=True)
+    emp_nm = db.Column(db.String(50))
     emp_enm = db.Column(db.String(50))
-    emp_ymd = db.Column(db.DateTime, nullable = False, default = db.func.now())
-    ret_ymd = db.Column(db.DateTime, nullable = False, default = db.func.now())
+    emp_ymd = db.Column(db.DateTime)
+    ret_ymd = db.Column(db.DateTime)
     tel_no = db.Column(db.String(20))
     phone = db.Column(db.String(20))
     fax_no = db.Column(db.String(30))
@@ -703,214 +645,50 @@ class Scinneruserinfo(db.Model, BaseMixin):
     if_log = db.Column(db.String(100))
 
 
-
-class Scsystem(db.Model, BaseMixin):
-    """공통시스템관리"""
-    __tablename__ = 'sc_system'
-    sys_id = db.Column(db.String(50),nullable = False, unique=True)
-    sys_nm = db.Column(db.String(50), nullable = False, unique=True)
-
-
-
-
-class Scclass(db.Model, BaseMixin):
-    """공통클래스관리"""
-    __tablename__ = 'sc_class'
-    sys_id = db.Column(db.String(50),nullable = False)
-    sys_nm = db.Column(db.String(50), nullable = False)
-    class_id = db.Column(db.String(30),db.ForeignKey('sc_system.sys_id'), nullable = False, unique=True)
-    class_nm = db.Column(db.String(50), db.ForeignKey('sc_system.sys_nm'), nullable = False, unique=True)
-
-
-
-class Sccode(db.Model, BaseMixin):
-    """공통코드관리"""
-    __tablename__ = 'sc_code'
-    class_id = db.Column(db.String(30),nullable = False)
-    class_nm = db.Column(db.String(50), nullable = False)
-    code_id = db.Column(db.String(30),db.ForeignKey('sc_class.class_id'), nullable = False, unique=True)
-    code_nm = db.Column(db.String(50), db.ForeignKey('sc_class.class_nm'), nullable = False, unique=True)
-
-
-class Scmenugroup(db.Model,BaseMixin):
-    """공통메뉴그룹관리"""
-    __tablename__ = 'sc_menu_group'
-    sys_id = db.Column(db.String(50),nullable = False)
-    sys_nm = db.Column(db.String(50),nullable = False)
-    menugroup_id = db.Column(db.String(30),db.ForeignKey('sc_system.sys_id'),nullable = False,unique=True)
-    menugroup_nm = db.Column(db.String(50),db.ForeignKey('sc_system.sys_nm'),nullable = False,unique=True)
-
-
 class Scmenu(db.Model,BaseMixin):
     """공통메뉴관리"""
     __tablename__ = 'sc_menu'
-    menugroup_id = db.Column(db.String(30),db.ForeignKey('sc_menu.menugroup_id'),nullable = False)
-    menugroup_nm = db.Column(db.String(50),db.ForeignKey('sc_menu.menugroup_nm'),nullable = False)
-    menu_id = db.Column(db.String(50),nullable = False, unique=True)
-    menu_nm = db.Column(db.String(50),nullable = False, unique=True)
+    menu_id = db.Column(db.String(50), nullable=False, unique=True)
+    menu_nm = db.Column(db.String(50))
     depth = db.Column(db.Integer)
     position = db.Column(db.Integer)
-
-class Scgroup(db.Model,BaseMixin):
-    """공통그룹관리"""
-    __tablename__ = 'sc_group'
-    sys_id = db.Column(db.String(50),db.ForeignKey('sc_system.sys_id'),nullable = False)
-    sys_nm = db.Column(db.String(50),db.ForeignKey('sc_system.sys_nm'),nullable = False)
-    auth_group = db.Column(db.String(20),nullable = False, unique=True)
-    group_desc = db.Column(db.String(30),nullable = False, unique=True)
-
-class Scauth(db.Model,BaseMixin):
-    """공통권한관리"""
-    __tablename__ = 'sc_auth'
-    auth_id = db.Column(db.String(50), nullable = False, unique=True)
-    auth_nm = db.Column(db.String(50))
-    sys_id = db.Column(db.String(50),db.ForeignKey('sc_system.sys_nm'),nullable = False)
-    sys_nm = db.Column(db.String(50),db.ForeignKey('sc_system.sys_nm'),nullable = False)
-    auth_group = db.Column(db.String(20),db.ForeignKey('sc_group.auth_group'),nullable = False)
-    group_desc = db.Column(db.String(30),db.ForeignKey('sc_group.group_desc'),nullable = False)
+    group = db.Column(db.String(50))
+    group_nm = db.Column(db.String(200))
 
 
 class Scmenuauth(db.Model,BaseMixin):
     """공통메뉴권한관리"""
     __tablename__ = 'sc_menu_auth'
-    auth_id = db.Column(db.String(50),db.ForeignKey('sc_auth.auth_id'),nullable = False)
-    menugroup_id = db.Column(db.String(30),db.ForeignKey('sc_menu_group.menugroup_id'),nullable = False)
+    auth_id = db.Column(db.String(50), nullable=False)
+    menu_id = db.Column(db.String(30),db.ForeignKey('sc_menu.menu_id'), nullable=False)
 
 
-class Sccodeauth(db.Model,BaseMixin):
-    """공통코드권한관리"""
-    __tablename__ = 'sc_code_auth'
-    auth_id = db.Column(db.String(100),db.ForeignKey('sc_auth.auth_id'),nullable = False)
-    class_id = db.Column(db.String(30),db.ForeignKey('sc_class.class_id'),nullable = False)
+class Scuser(db.Model, BaseMixin):
+    """사용자 정보"""
+    __tablename__ = 'sc_user'
+    tenant_id = db.Column(db.String(50), db.ForeignKey('ssc_tenants.tenant_id'), nullable=False)
+    login_id = db.Column(db.String(100), nullable=False, unique=True)
+    name = db.Column(db.String(256), nullable=False)
+    login_pwd = db.Column(db.String(256), nullable=False)
+    pwd_updated_at = db.Column(db.DateTime)
+    login_fail_cnt = db.Column(db.Integer)
+    user_type = db.Column(db.String(1), nullable=False)
+    auth_id = db.Column(db.String(50))
+    emp_no = db.Column(db.String(20))
+    biz_no = db.Column(db.String(50))
+    comp_nm = db.Column(db.String(50))
+    login_yn = db.Column(db.String(2))
+    phone = db.Column(db.String(512))
+    email = db.Column(db.String(512))
+    fax_no = db.Column(db.String(512))
+    tel_no = db.Column(db.String(512))
+    sms_yn = db.Column(db.String(1))
+    info_agr_yn = db.Column(db.String(1))
+    login_at = db.Column(db.DateTime)
+    logout_at = db.Column(db.DateTime)
+    user_ip = db.Column(db.String(20))
+    user_host = db.Column(db.String(50))
 
-
-
-class Vcapplymaster(db.Model,BaseMixin):
-    """출입신청 마스터"""
-    __tablename__ = 'vc_apply_master'
-    apply_code = db.Column(db.String(50),nullable = False, unique=True)
-    apply_nm = db.Column(db.String(50), nullable = False, unique=True)
-    interviewr = db.Column(db.String(30), nullable = False)
-    applicant = db.Column(db.String(30), nullable = False)
-    phone = db.Column(db.String(20), nullable = False)
-    visit_category = db.Column(db.String(30), nullable = False)
-    biz_no = db.Column(db.String(50), db.ForeignKey('sc_comp_info.biz_no'), nullable = False)
-    visit_period = db.Column(db.DateTime)
-    visit_purpose = db.Column(db.String(50), nullable = False)
-    visit_desc = db.Column(db.String(200), nullable = False)
-    site_id = db.Column(db.String(30),db.ForeignKey('sc_code.site_id'), nullable = False)
-    site_nm = db.Column(db.String(50),db.ForeignKey('sc_code.site_nm'), nullable = False)
-    login_id = db.Column(db.String(100), db.ForeignKey('sc_login_integ.login_no'), nullable = False)
-
-
-class Vcapplyuser(db.Model, BaseMixin):
-    """출입인원 정보"""
-    __tablename__ = 'vc_apply_user'
-    apply_code = db.Column(db.String(50),db.ForeignKey('vc_apply_master.apply_code'),nullable = False)
-    apply_nm = db.Column(db.String(50),db.ForeignKey('vc_apply_master.apply_nm'),nullable = False)
-    visitant = db.Column(db.String(30),nullable = False)
-    phone = db.Column(db.String(20),nullable = False)
-    vehicle_num = db.Column(db.String(10),nullable = False)
-    vehicle_type = db.Column(db.String(30),nullable = False)
-    vehicle_info = db.Column(db.String(100),nullable = False)
-    alien_number = db.Column(db.String(50))
-    identify_validation = db.Column(db.String(1),nullable = False)
-    personal_information_agreement = db.Column(db.String(1),nullable = False)
-    security_agreement = db.Column(db.String(1),nullable = False)
-    apply_test = db.Column(db.String(1))
-    barcode_code = db.Column(db.String(50),db.ForeignKey('vc_barcode_info.barcode_code'))
-    barcode_nm = db.Column(db.String(50),db.ForeignKey('vc_barcode_info.barcode_nm'))
-
-
-class Vcvehiclemaster(db.Model,BaseMixin):
-    """차량출입 마스터"""
-    __tablename__ = 'vc_vehicle_master'
-    vehicle_code = db.Column(db.String(50),  unique=True, nullable=False)
-    vehicle_nm = db.Column(db.String(50), unique=True, nullable=False)
-    applicant = db.Column(db.String(30),nullable = False)
-    phone = db.Column(db.String(20),nullable = False)
-    visit_category = db.Column(db.String(30),nullable = False)
-    biz_no = db.Column(db.String(50),db.ForeignKey('sc_comp_info.biz_no'),nullable = False)
-    visit_period = db.Column(db.DateTime,nullable = False)
-    visit_purpose = db.Column(db.String(50))
-    visit_desc = db.Column(db.String(200))
-    site_id = db.Column(db.String(30),db.ForeignKey('sc_code.site_id'),nullable = False)
-    site_nm = db.Column(db.String(50),db.ForeignKey('sc_code.site_nm'),nullable = False)
-    login_id = db.Column(db.String(100),db.ForeignKey('sc_login_integ.login_id'),nullable = False)
-
-
-class Vcvehicleinfo(db.Model,BaseMixin):
-    """출입차량 정보"""
-    __tablename__ = 'vc_vehicle_info'
-    vehicle_code = db.Column(db.String(50),db.ForeignKey('vc_vehicle_master.vehicle_code'),nullable = False)
-    vehicle_nm = db.Column(db.String(50), db.ForeignKey('vc_vehicle_master.vehicle_nm'),nullable = False)
-    driver = db.Column(db.String(30),nullable = False)
-    vehicle_num = db.Column(db.String(10),nullable = False)
-    vehicle_type = db.Column(db.String(30),nullable = False)
-    vehicle_info = db.Column(db.String(100),nullable = False)
-    vehicle_license = db.Column(db.String(100),nullable = False)
-    identify_validation = db.Column(db.String(1), nullable=False)
-    personal_information_agreement = db.Column(db.String(1), nullable=False)
-    security_agreement = db.Column(db.String(1), nullable=False)
-    apply_test = db.Column(db.String(1), nullable=False)
-    barcode_code = db.Column(db.String(50),db.ForeignKey('vc_barcode_info.barcode_code'), nullable=False)
-    barcode_nm = db.Column(db.String(50), db.ForeignKey('vc_barcode_info.barcode_nm'), nullable=False)
-
-
-class Vcapplyapproval(db.Model,BaseMixin):
-    """출입차량 정보"""
-    __tablename__ = 'vc_apply_approval'
-    approval_code = db.Column(db.String(50),nullable = False, unique= True)
-    approval_nm = db.Column(db.String(50),nullable = False, unique= True)
-    apply_code = db.Column(db.String(50),db.ForeignKey('vc_apply_master.approval_code'))
-    apply_nm = db.Column(db.String(50),db.ForeignKey('vc_apply_master.approval_nm'))
-    vehicle_code = db.Column(db.String(50),db.ForeignKey('vc_vehicle_master.vehicle_code'))
-    vehicle_nm = db.Column(db.String(50),db.ForeignKey('vc_vehicle_master.vehicle_nm'))
-    approval_id = db.Column(db.String(30), nullable=False)
-    approval_state = db.Column(db.String(20), nullable=False)
-    approval_title = db.Column(db.String(50), nullable=False)
-    approval_content = db.Column(db.String(200))
-    approval_type = db.Column(db.String(30), nullable=False)
-
-
-class Vclabelinfo(db.Model,BaseMixin):
-    """표찰정보"""
-    __tablename__ = 'vc_label_info'
-    label_code = db.Column(db.String(50), unique=True, nullable=False)
-    label_nm = db.Column(db.String(50),  unique=True, nullable=False)
-    approval_code = db.Column(db.String(50), db.ForeignKey('vc_apply_master.approval_code'),nullable=False)
-    approval_nm = db.Column(db.String(50,db.ForeignKey('vc_apply_master.approval_nm')),nullable=False)
-    label_type = db.Column(db.String(30))
-    duedate_start = db.Column(db.DateTime)
-    duedate_end = db.Column(db.DateTime)
-
-
-class Vcbarcodeinfo(db.Model, BaseMixin):
-    """바코드정보"""
-    __tablename__ = 'vc_barcode_info'
-    barcode_code = db.Column(db.String(50), unique=True, nullable=False)
-    barcode_nm = db.Column(db.String(50),  unique=True, nullable=False)
-    label_code = db.Column(db.String(50), db.ForeignKey('vc_label_info.label_code'), nullable=False)
-    label_nm = db.Column(db.String(50,db.ForeignKey('vc_label_info.label_nm')), nullable=False)
-    barcode_type = db.Column(db.String(45))
-    duedate_start = db.Column(db.DateTime)
-    duedate_end = db.Column(db.DateTime)
-
-
-
-class Vcinoutinfo(db.Model,BaseMixin):
-    """입출입정보"""
-    __tablename__ = 'vc_inout_info'
-    barcode_code = db.Column(db.String(50), db.ForeignKey('vc_barcode_info.barcode_code'),nullable=False)
-    barcode_nm = db.Column(db.String(50), db.ForeignKey('vc_barcode_info.barcode_nm'),nullable=False)
-    site_id = db.Column(db.String(30), db.ForeignKey('sc_code.code_id'), nullable=False)
-    site_nm = db.Column(db.String(50), db.ForeignKey('sc_code.code_nm'), nullable=False)
-    in_area_code = db.Column(db.Integer)
-    in_area = db.Column(db.String(100))
-    out_area_code = db.Column(db.Integer)
-    out_area = db.Column(db.String(100))
-    in_time = db.Column(db.DateTime)
-    out_time = db.Column(db.DateTime)
 
 
 class Ssctenantdb(db.Model,BaseMixin):
@@ -970,10 +748,86 @@ class Ssctenant(db.Model, BaseMixin):
     logo_img = db.Column(db.String(100))
 
 
+class Vcapplymaster(db.Model,BaseMixin):
+    """출입신청 마스터"""
+    __tablename__ = 'vc_apply_master'
+    tenant_id = db.Column(db.String(50), db.ForeignKey('ssc_tenants.tenant_id'), nullable=False)
+    apply_code = db.Column(db.String(50), nullable=False, unique=True)
+    apply_nm = db.Column(db.String(50), nullable=False)
+    interviewr = db.Column(db.String(30), nullable=False)
+    applicant = db.Column(db.String(30), nullable=False)
+    phone = db.Column(db.String(20), nullable=False)
+    visit_category = db.Column(db.String(30), nullable=False)
+    biz_no = db.Column(db.String(50), db.ForeignKey('sc_comp_info.biz_no'), nullable=False)
+    visit_period = db.Column(db.DateTime, nullable=False)
+    visit_purpose = db.Column(db.String(50), nullable=False)
+    visit_desc = db.Column(db.String(200))
+    site_id = db.Column(db.String(30), nullable=False)
+    site_nm = db.Column(db.String(50), nullable=False)
+    login_id = db.Column(db.String(100), db.ForeignKey('sc_user.login_no'), nullable=False)
+
+
+class Vcapplyuser(db.Model, BaseMixin):
+    """출입인원 정보"""
+    __tablename__ = 'vc_apply_user'
+    tenant_id = db.Column(db.String(50), db.ForeignKey('ssc_tenants.tenant_id'), nullable=False)
+    apply_code = db.Column(db.String(50), db.ForeignKey('vc_apply_master.apply_code'),nullable=False)
+    apply_nm = db.Column(db.String(50))
+    visitant = db.Column(db.String(30))
+    phone = db.Column(db.String(20))
+    vehicle_num = db.Column(db.String(10))
+    vehicle_type = db.Column(db.String(30))
+    vehicle_info = db.Column(db.String(100))
+    alien_number = db.Column(db.String(50))
+    identify_validation = db.Column(db.String(1))
+    personal_information_agreement = db.Column(db.String(1))
+    security_agreement = db.Column(db.String(1))
+    apply_test = db.Column(db.String(1))
+    barcode_code = db.Column(db.String(50),db.ForeignKey('vc_barcode_info.barcode_code'))
+    barcode_nm = db.Column(db.String(50))
 
 
 
+class Vcbarcodeinfo(db.Model, BaseMixin):
+    """바코드정보"""
+    __tablename__ = 'vc_barcode_info'
+    tenant_id = db.Column(db.String(50), db.ForeignKey('ssc_tenants.tenant_id'), nullable=False)
+    barcode_code = db.Column(db.String(50), unique=True,nullable=False)
+    barcode_nm = db.Column(db.String(50))
+    label_code = db.Column(db.String(50),db.ForeignKey('vc_label_info.label_code'), nullable=False)
+    label_nm = db.Column(db.String(50))
+    barcode_type = db.Column(db.String(45))
+    duedate_start = db.Column(db.DateTime)
+    duedate_end = db.Column(db.DateTime)
 
+
+
+class Vcinoutinfo(db.Model,BaseMixin):
+    """입출입정보"""
+    __tablename__ = 'vc_inout_info'
+    tenant_id = db.Column(db.String(50), db.ForeignKey('ssc_tenants.tenant_id'), nullable=False)
+    bracode_code = db.Column(db.String(50),db.ForeignKey('vc_barcode_info.barcode_code'),nullable=False)
+    bracode_nm = db.Column(db.String(50))
+    site_id = db.Column(db.String(30))
+    site_nm = db.Column(db.String(50))
+    in_area_code = db.Column(db.Integer)
+    in_area = db.Column(db.String(100))
+    out_area_code = db.Column(db.Integer)
+    out_area = db.Column(db.String(100))
+    in_time = db.Column(db.DateTime)
+    out_time = db.Column(db.DateTime)
+
+class Vclabelinfo(db.Model, BaseMixin):
+    """표찰정보"""
+    __tablename__ = 'vc_label_info'
+    tenant_id = db.Column(db.String(50), db.ForeignKey('ssc_tenants.tenant_id'), nullable=False)
+    label_code = db.Column(db.String(50), unique=True, nullable=False)
+    label_nm = db.Column(db.String(50))
+    approval_code = db.Column(db.String(50), db.ForeignKey('vc_apply_master.approval_code'), nullable=False)
+    approval_nm = db.Column(db.String(50))
+    label_type = db.Column(db.String(30))
+    duedate_start = db.Column(db.DateTime)
+    duedate_end = db.Column(db.DateTime)
 
 
 class Scrule(db.Model, BaseMixin):
