@@ -1,7 +1,10 @@
 {% extends 'bootstrap/base.html' %}
+
 {% block content %}
+<link href="{{ url_for('static', filename='css/super_approval.css') }}" rel="stylesheet">
+<script src="https://code.jquery.com/jquery-2.2.1.js"></script>
+<script src="https://code.jquery.com/jquery-2.2.1.min.js"></script>
 <div id="mainContent">
-    {% block mainContent %}
-    {% endblock%}
+    {% block mainContent %} {% endblock%}
 </div>
 {% endblock%}
