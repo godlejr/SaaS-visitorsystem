@@ -50,7 +50,8 @@ class Config(object):
     SQLALCHEMY_POOL_TIMEOUT = 10
     SQLALCHEMY_POOL_RECYCLE = 1800
     SQLALCHEMY_TRACK_MODIFICATIONS = False
-    SQLALCHEMY_DATABASE_URI = 'mysql+pymysql://saas:P@ssw0rd@172.19.116.78:3307/hccwebdev'
+    #SQLALCHEMY_DATABASE_URI = 'mysql+pymysql://saas:P@ssw0rd@172.19.116.78:3307/hccwebdev'
+    SQLALCHEMY_DATABASE_URI = 'mysql+pymysql://saas:P@ssw0rd@localhost:3306/hccwebdev'
     SOCIAL_FACEBOOK = {
         'consumer_key': 'xxxxxxxx',
         'consumer_secret': 'xxxxxxxxx'

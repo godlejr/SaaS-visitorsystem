@@ -91,6 +91,10 @@ def create_app(config_name):
 
     @login_manager.user_loader
     def load_user(login_id):
+<<<<<<< HEAD
+=======
+
+>>>>>>> 7854da0... 적용 완료
         return Scuser.query.filter_by(login_id=login_id).first()
 
     return application
