@@ -1,5 +1,7 @@
+from datetime import datetime
+
 from flask_sqlalchemy import xrange
-from wtforms import Form, BooleanField, StringField, PasswordField, validators, RadioField
+from wtforms import Form, BooleanField, StringField, PasswordField, validators, RadioField, DateField
 from wtforms.validators import Email, Length, EqualTo, DataRequired, ValidationError
 from math import ceil
 
@@ -35,7 +37,6 @@ class HomepageCheck(object):
     def __call__(self, form, field):
         if field.data[0:7] != 'http://':
             raise ValidationError(self.message)
-
 
 validators = {
     'email': [
@@ -99,8 +100,8 @@ class JoinForm(Form):
 
 
 class LoginForm(Form):
-    login_id = StringField('아이디', validators['name'])
-    login_pwd = PasswordField('비밀번호', validators['password_login'])
+    email = StringField('이메일', validators['email'])
+    password = PasswordField('비밀번호', validators['password_login'])
 
 
 class Pagination(object):
@@ -136,3 +137,40 @@ class Pagination(object):
 class TestForm(Form):
     email = StringField('이메일', validators['email'])
     password = PasswordField('비밀번호', validators['password_login'])
+
+
+#감독부서승인 조회조건 폼 by 박정은
+class superApprovalSearchForm(Form):
+    # 날짜 유효성 검사 부분 추가 필요 -> 동작한함.
+    # visit_sdate = DateField('시작일')
+    # visit_edate = DateField('종료일')
+    visit_sdate = StringField('시작일')
+    visit_edate = StringField('종료일')
+    visit_category = StringField('방문구분')
+    apply_nm = StringField('작업명')
+    comp_nm = StringField('업체명')
+    approval_state = StringField('진행상태')
+
+
+class ApplyForm(Form):
+    applicant_name = StringField('신청자')
+    applicant_phone = StringField('신청자연락처')
+    applicant_biz_no = StringField('업체번호')
+    applicant_comp_nm = StringField('업체명')
+    interviewer_name = StringField('감독자')
+    interviewer_phone = StringField('감독자연락처')
+    inout_biz_no = StringField('업체번호')
+    inout_comp_nm = StringField('업체명')
+    inout_sdate = StringField('시작시간')
+    inout_edate = StringField('종료시간')
+    inout_purpose_type = StringField('방문유형')
+    input_title = StringField('방문제목')
+    inout_purpose_desc = StringField('방문상세')
+    inout_location = StringField('방문지역')
+    inout_location_desc = StringField('지역상세')
+
+    approve_interviewer = StringField('감독자')
+    approve_state = StringField('출입승인상태')
+    approve_date = StringField('일시')
+    approve_remark = StringField('비고')
+
