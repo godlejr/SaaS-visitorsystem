@@ -9,10 +9,11 @@ from werkzeug.utils import redirect
 import config
 from visitorsystem.lib.redis_session import RedisSessionInterface
 from visitorsystem.models import db, User, File, Photo, Magazine, MagazineComment, PhotoComment, Comment, Board, \
-    Category, Sclogininfo
+    Category, \
+    Residence, Business
 
 
-# from visitorsystem.views import mail
+#from visitorsystem.views import mail
 
 
 def create_app(config_name):
@@ -31,7 +32,7 @@ def create_app(config_name):
 
     config.init_app(application, config_name)
     db.init_app(application)
-    # mail.init_app(application)
+    #mail.init_app(application)
 
     redis = Redis.from_url(application.config['REDIS_URL'])
     application.redis = redis
@@ -74,6 +75,7 @@ def create_app(config_name):
     application.register_blueprint(inout_tag_blueprint, url_prefix='/inoutTag')
     application.register_blueprint(statistics_blueprint, url_prefix='/statistics')
 
+
     from visitorsystem.views.example.test import test as test_blueprint
     application.register_blueprint(test_blueprint, url_prefix='/test')
 
@@ -81,13 +83,15 @@ def create_app(config_name):
     application.errorhandler(404)(lambda e: render_template('error/404.html'))
     application.errorhandler(500)(lambda e: render_template('error/404.html'))
 
+
+
     login_manager = LoginManager()
     login_manager.init_app(application)
     login_manager.login_view = 'main.login'
     login_manager.login_message = '로그인 후 이용해주세요.'
 
     @login_manager.user_loader
-    def load_user(login_id):
-        return Sclogininfo.query.get(login_id)
+    def load_user(user_id):
+        return User.query.get(int(user_id))
 
     return application
