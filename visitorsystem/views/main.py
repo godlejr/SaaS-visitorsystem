@@ -1,9 +1,9 @@
 from flask import Blueprint, render_template, request, current_app, flash, session, redirect, url_for
 from flask_login import login_required, login_user
-from werkzeug.security import generate_password_hash, check_password_hash
+from werkzeug.security import check_password_hash
 
 from visitorsystem.forms import LoginForm
-from visitorsystem.models import Ssctenant, Scuser
+from visitorsystem.models import Scuser
 
 main = Blueprint('main', __name__)
 
@@ -11,7 +11,6 @@ main = Blueprint('main', __name__)
 @main.route('/')
 @login_required
 def index():
-
     return render_template(current_app.config['TEMPLATE_THEME'] + '/main/index.html')
 
 
@@ -34,7 +33,7 @@ def login():
                     session['name'] = user.name
                     session['auth_id'] = user.auth_id
                     session['tenant_id'] = user.tenant_id
-
+                    login_user(user)
                     return redirect(request.args.get("next") or url_for('main.index'))
             else:
                 flash('회원아이디가 잘못되었습니다.')
