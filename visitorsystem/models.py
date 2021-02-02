@@ -570,7 +570,7 @@ class Sccode(db.Model, BaseMixin):
     code_id = db.Column(db.String(30), nullable=False)
     code_nm = db.Column(db.String(50))
     depth = db.Column(db.Integer)
-    group = db.Column(db.String(50))
+    group_id = db.Column(db.String(50))
     position = db.Column(db.Integer)
     user_def_yn = db.Column(db.String(1))
 
@@ -652,8 +652,9 @@ class Scmenu(db.Model,BaseMixin):
     menu_nm = db.Column(db.String(50))
     depth = db.Column(db.Integer)
     position = db.Column(db.Integer)
-    group = db.Column(db.String(50))
+    group_id = db.Column(db.String(50))
     group_nm = db.Column(db.String(200))
+    url = db.Column(db.String(200))
 
 
 class Scmenuauth(db.Model,BaseMixin):
@@ -681,10 +682,10 @@ class Scuser(db.Model, UserMixin):
     login_pwd = db.Column(db.String(256), nullable=False)
     pwd_updated_at = db.Column(db.DateTime)
     login_fail_cnt = db.Column(db.Integer)
-    user_type = db.Column(db.String(1), nullable=False)
+    user_type = db.Column(db.String(1), nullable=False)  #내부0 외부1
     auth_id = db.Column(db.String(50))
     emp_no = db.Column(db.String(20))
-    biz_no = db.Column(db.String(50))
+    biz_no = db.Column(db.String(50))  # 외부1일 경우에만 데이터 있음 sc_comp_info
     comp_nm = db.Column(db.String(50))
     login_yn = db.Column(db.String(2))
     phone = db.Column(db.String(512))

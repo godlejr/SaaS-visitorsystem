@@ -39,3 +39,9 @@ def login():
                 flash('회원아이디가 잘못되었습니다.')
 
     return render_template(current_app.config['TEMPLATE_THEME'] + '/main/login.html', form=form)
+
+@main.route('/logout')
+@login_required
+def logout():
+    session.clear()
+    return redirect(url_for('main.login'))
