@@ -1,12 +1,15 @@
 from flask import Blueprint, render_template, request, redirect, url_for, current_app,jsonify
+from flask_login import current_user, login_required
 from visitorsystem.forms import ApplyForm
-from visitorsystem.models import db,Vcapplymaster
+from visitorsystem.models import db, Vcapplymaster, Ssctenant, Scrule
 
 inout_apply = Blueprint('inout_apply', __name__)
 
 
 @inout_apply.route('/', methods=['GET', 'POST'])
+@login_required
 def index():
+
     if request.method == 'POST':
         print('호출')
         # print('============================')
@@ -57,6 +60,47 @@ def create():
 003. 표 binding 후 보여주기
 """
 
+@inout_apply.route('/rule/search', methods=['POST'])
+def ruleSearch():
+    print('-------------------')
+    print('호출')
+    print('-------------------')
+    ssctenant = Ssctenant.query.filter_by(event_url=request.host).first()
+    tenant_id = ssctenant.tenant_id
+
+    lists = []
+    for row in db.session.query(Scrule).filter(Scrule.tenant_id == tenant_id).all():
+        scrule = {
+            "rule_name": row.rule_name,
+            "rule_type": row.rule_type,
+            "rule_duedate": row.rule_duedate,
+            "rule_desc": row.rule_desc
+        }
+        lists.append(scrule)
+
+    return jsonify({'msg': lists})
+
+
+@inout_apply.route('/rule/validate', methods=['POST'])
+def ruleValidate():
+
+    ssctenant = Ssctenant.query.filter_by(event_url=request.host).first()
+    tenant_id = ssctenant.tenant_id
+
+    lists = []
+    for row in db.session.query(Scrule).filter(Scrule.tenant_id == tenant_id).all():
+        scrule = {
+            "rule_name": row.rule_name,
+            "rule_type": row.rule_type,
+            "rule_duedate": row.rule_duedate,
+            "rule_desc": row.rule_desc
+        }
+        lists.append(scrule)
+
+    return jsonify({'msg': lists})
+
+
+
 @inout_apply.route('/interview/search', methods=['POST'])
 def interviewSearch():
 
@@ -64,7 +108,6 @@ def interviewSearch():
         interviewName = request.form['interviewName'];
         data = '{"name": "Book1", "ISBN": "12345", "author": [{"name": "autho1", "age": 30}, {"name": "autho2", "age": 25}]}'
         return jsonify({'file_name': 'output'});
-
 
 
 # print('============================')

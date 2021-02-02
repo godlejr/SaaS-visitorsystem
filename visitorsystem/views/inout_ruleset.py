@@ -69,7 +69,6 @@ def edit():
 @inout_ruleset.route('/delete', methods=['POST'])
 def delete():
     if request.method == 'POST':
-        print('컴온')
         ssctenant = Ssctenant.query.filter_by(event_url=request.host).first()
         tenant_id = ssctenant.tenant_id
         id = request.form['id']
