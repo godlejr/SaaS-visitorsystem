@@ -9,34 +9,79 @@
             <hr>
 
             <div class="mT-30">
+
+<!--외부업체-->
+                {% if current_user.user_type == '1' %}
+
                 <div class="form-row">
                     <div class="form-group col-md-4" >
                         <label for="applicant_name">신청자</label>
-                        <input type="text" class="form-control" name="applicant_name" id="applicant_name">
+                        <input type="text" class="form-control" name="applicant_name" id="applicant_name" value="{{current_user.name}}" disabled>
                     </div>
 
                     <div class="form-group col-md-3">
                         <label for="applicant_phone">연락처</label>
-                        <input type="text"  class="form-control" name="applicant_phone" id="applicant_phone">
+                        <input type="text"  class="form-control" name="applicant_phone" id="applicant_phone" value="{{current_user.phone}}" disabled>
                     </div>
 
                 </div>
 
                 <div class="form-row">
-                    <div class="form-group col-md-1"><label for="applicant_biz_no">업체명</label> <input type="text"  class="form-control" name="applicant_biz_no" id="applicant_biz_no"></div>
+                    <div class="form-group col-md-1"><label for="applicant_biz_no">업체명</label> <input type="text"  class="form-control" name="applicant_biz_no" id="applicant_biz_no" value="{{current_user.biz_no}}" disabled></div>
                     <div class="form-group col-md-3">
                         <div >
                             <label for="applicant_comp_nm" style="visibility:hidden">업체번호</label>
-                            <input type="text"  class="form-control" name="applicant_comp_nm" id="applicant_comp_nm">
+                            <input type="text"  class="form-control" name="applicant_comp_nm" id="applicant_comp_nm" value="{{current_user.comp_nm}}" disabled>
                         </div>
 
+                    </div>
+                    <div class="form-group col-md-2" >
+                        <label style="visibility:hidden">&nbsp</label>
+                        <button type="button" style="display:block" class="btn btn-primary"  data-toggle="modal" data-target="#interviewModal" disabled>
+                            <i class="search-icon ti-search pdd-right-10"></i>
+                        </button>
                     </div>
 
 
                 </div>
             </div>
+            {% else %}
+<!--내부직원-->
+            <div class="form-row">
+                <div class="form-group col-md-4" >
+                    <label for="applicant_name">신청자</label>
+                    <input type="text" class="form-control" name="applicant_name" id="applicant_name">
+                </div>
+
+                <div class="form-group col-md-3">
+                    <label for="applicant_phone">연락처</label>
+                    <input type="text"  class="form-control" name="applicant_phone" id="applicant_phone">
+                </div>
+
+            </div>
+
+            <div class="form-row">
+                <div class="form-group col-md-1"><label for="applicant_biz_no">업체명</label> <input type="text"  class="form-control" name="applicant_biz_no" id="applicant_biz_no"></div>
+                <div class="form-group col-md-3">
+                    <div >
+                        <label for="applicant_comp_nm" style="visibility:hidden">업체번호</label>
+                        <input type="text"  class="form-control" name="applicant_comp_nm" id="applicant_comp_nm">
+                    </div>
+
+                </div>
+                <div class="form-group col-md-2" >
+                    <label style="visibility:hidden">&nbsp</label>
+                    <button type="button" style="display:block" class="btn btn-primary"  data-toggle="modal" data-target="#interviewModal">
+                        <i class="search-icon ti-search pdd-right-10"></i>
+                    </button>
+                </div>
+
+
+            </div>
         </div>
+        {% endif %}
     </div>
+</div>
 </div>
 
 {% block section2 %}
