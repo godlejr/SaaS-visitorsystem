@@ -7,9 +7,10 @@ init.py - context processor 포함
 import os
 
 from flask import url_for, current_app, request
+from flask_login import current_user
 
 from visitorsystem import create_app
-from visitorsystem.models import Ssctenant
+from visitorsystem.models import Ssctenant ,Scmenu
 
 application = create_app(os.getenv('FLASK_CONFIG') or 'default')
 
@@ -37,8 +38,11 @@ def utility_processor():
         ssctenant = Ssctenant.query.filter_by(event_url=request.host).first()
         return ssctenant
 
-    return dict(url_for_s3=url_for_s3, get_tenant=get_tenant)
+    def get_menu():
+        scMenu  = Scmenu.query.order_by(Scmenu.group_id,Scmenu.depth,Scmenu.position)
+        return scMenu
 
+    return dict(url_for_s3=url_for_s3, get_tenant=get_tenant, get_menu=get_menu)
 
 if __name__ == '__main__':
     from flask_script import Manager
