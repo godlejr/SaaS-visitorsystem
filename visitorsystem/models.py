@@ -6,7 +6,7 @@ from markupsafe import Markup
 from sqlalchemy import func
 from sqlalchemy.ext.hybrid import hybrid_method, hybrid_property
 from flask_login import UserMixin
-from sqlalchemy.orm import backref
+from sqlalchemy.orm import backref, relationship
 
 db = SQLAlchemy()
 
@@ -74,7 +74,6 @@ class User(db.Model, BaseMixin):
     level = db.Column(db.Integer)
     cover = db.Column(db.Unicode(255), default='cover.jpg', nullable=False)
     avatar = db.Column(db.Unicode(255), default='avatar.png', nullable=False)
-
     follow = db.relationship('Follow', back_populates='user')
 
     @hybrid_property
@@ -549,195 +548,18 @@ class Review(db.Model, BaseMixin):
         return self.project_at.strftime('%Y-%m-%d')
 
 
-
-#===============================================================================================================================================
+# ===============================================================================================================================================
 # 방문객 관리 VMS
-#===============================================================================================================================================
-class Scclass(db.Model, BaseMixin):
-    """공통클래스관리"""
-    __tablename__ = 'sc_class'
-    class_id = db.Column(db.String(30), nullable=False, unique=True)
-    class_nm = db.Column(db.String(50))
-    user_def_yn = db.Column(db.String(1))
+# ===============================================================================================================================================
 
-
-class Sccode(db.Model, BaseMixin):
-    """공통코드관리"""
-    __tablename__ = 'sc_code'
-    tenant_id = db.Column(db.String(50), nullable=False)
-    class_id = db.Column(db.String(30), db.ForeignKey('sc_class.class_id'), nullable=False)
-    class_nm = db.Column(db.String(50))
-    code_id = db.Column(db.String(30), nullable=False)
-    code_nm = db.Column(db.String(50))
-    depth = db.Column(db.Integer)
-    group_id = db.Column(db.String(50))
-    position = db.Column(db.Integer)
-    user_def_yn = db.Column(db.String(1))
-
-
-class Sccodeauth(db.Model,BaseMixin):
-    """공통코드권한관리"""
-    __tablename__ = 'sc_code_auth'
-    auth_id = db.Column(db.String(100),nullable = False)
-    class_id = db.Column(db.String(30),db.ForeignKey('sc_class.class_id'),nullable = False)
-
-
-class Sccompinfo(db.Model, BaseMixin):
-    """업체정보"""
-    __tablename__ = 'sc_comp_info'
-    tenant_id = db.Column(db.String(50), db.ForeignKey('ssc_tenants.tenant_id'), nullable=False)
-    comp_id = db.Column(db.String(30))
-    country_id = db.Column(db.String(30))
-    biz_no = db.Column(db.String(50), nullable=False, unique=True)
-    vnd_grp_id = db.Column(db.String(30))
-    sub_biz_no = db.Column(db.String(30))
-    comp_nm = db.Column(db.String(50))
-    comp_enm = db.Column(db.String(50))
-    addr_1 = db.Column(db.String(50))
-    addr_2 = db.Column(db.String(100))
-    addr_no = db.Column(db.String(50))
-    addr_post = db.Column(db.String(50))
-    tel_no = db.Column(db.String(20))
-    fax_no = db.Column(db.String(30))
-    phone = db.Column(db.String(20))
-    vnd_url = db.Column(db.String(100))
-    email = db.Column(db.String(75))
-    president = db.Column(db.String(50))
-    biz_condi = db.Column(db.String(20))
-    biz_sector = db.Column(db.String(20))
-    pymt_type = db.Column(db.String(30))
-    ssn = db.Column(db.String(30))
-    language = db.Column(db.String(30))
-    part_type = db.Column(db.String(30))
-    comp_shrt_nm = db.Column(db.String(30))
-    user_ip = db.Column(db.String(50))
-    user_host = db.Column(db.String(50))
-
-
-class Scinneruserinfo(db.Model, BaseMixin):
-    """내부직원정보"""
-
-    __tablename__ = 'sc_inner_user_info'
-    tenant_id = db.Column(db.String(50), db.ForeignKey('ssc_tenants.tenant_id'), nullable=False)
-    comp_id = db.Column(db.String(20))
-    comp_nm = db.Column(db.String(50))
-    emp_no = db.Column(db.String(20), nullable=False, unique=True)
-    emp_nm = db.Column(db.String(50))
-    emp_enm = db.Column(db.String(50))
-    emp_ymd = db.Column(db.DateTime)
-    ret_ymd = db.Column(db.DateTime)
-    tel_no = db.Column(db.String(20))
-    phone = db.Column(db.String(20))
-    fax_no = db.Column(db.String(30))
-    mail = db.Column(db.String(75))
-    site_id = db.Column(db.String(30))
-    site_nm = db.Column(db.String(50))
-    division_id = db.Column(db.String(30))
-    division_nm = db.Column(db.String(50))
-    dept_id = db.Column(db.String(30))
-    dept_nm = db.Column(db.String(50))
-    cc_id = db.Column(db.String(30))
-    cc_nm = db.Column(db.String(100))
-    location = db.Column(db.String(40))
-    job_rank = db.Column(db.String(30))
-    job_spot = db.Column(db.String(30))
-    if_stat = db.Column(db.String(1))
-    if_log = db.Column(db.String(100))
-
-
-class Scmenu(db.Model,BaseMixin):
-    """공통메뉴관리"""
-    __tablename__ = 'sc_menu'
-    menu_id = db.Column(db.String(50), nullable=False, unique=True)
-    menu_nm = db.Column(db.String(50))
-    depth = db.Column(db.Integer)
-    position = db.Column(db.Integer)
-    group_id = db.Column(db.String(50))
-    group_nm = db.Column(db.String(200))
-    url = db.Column(db.String(200))
-
-
-class Scmenuauth(db.Model,BaseMixin):
-    """공통메뉴권한관리"""
-    __tablename__ = 'sc_menu_auth'
-    auth_id = db.Column(db.String(50), nullable=False)
-    menu_id = db.Column(db.String(30),db.ForeignKey('sc_menu.menu_id'), nullable=False)
-
-
-class Scuser(db.Model, UserMixin):
-    """사용자 정보"""
-    __tablename__ = 'sc_user'
-
-    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    use_yn = db.Column(db.String(1))
-    created_at = db.Column(db.DateTime, default=db.func.now())
-    created_by = db.Column(db.String(50))
-    updated_at = db.Column(db.DateTime, default=db.func.now(), onupdate=db.func.now())
-    updated_by = db.Column(db.String(50))
-    end_at = db.Column(db.DateTime, default=db.func.now())
-
-    tenant_id = db.Column(db.String(50), db.ForeignKey('ssc_tenants.tenant_id'), nullable=False)
-    login_id = db.Column(db.String(100), nullable=False, unique=True)
-    name = db.Column(db.String(256), nullable=False)
-    login_pwd = db.Column(db.String(256), nullable=False)
-    pwd_updated_at = db.Column(db.DateTime)
-    login_fail_cnt = db.Column(db.Integer)
-    user_type = db.Column(db.String(1), nullable=False)  #내부0 외부1
-    auth_id = db.Column(db.String(50))
-    emp_no = db.Column(db.String(20))
-    biz_no = db.Column(db.String(50))  # 외부1일 경우에만 데이터 있음 sc_comp_info
-    comp_nm = db.Column(db.String(50))
-    login_yn = db.Column(db.String(2))
-    phone = db.Column(db.String(512))
-    email = db.Column(db.String(512))
-    fax_no = db.Column(db.String(512))
-    tel_no = db.Column(db.String(512))
-    sms_yn = db.Column(db.String(1))
-    info_agr_yn = db.Column(db.String(1))
-    login_at = db.Column(db.DateTime)
-    logout_at = db.Column(db.DateTime)
-    user_ip = db.Column(db.String(20))
-    user_host = db.Column(db.String(50))
-
-    @hybrid_property
-    def created_date(self):
-        return self.created_at.strftime('%Y-%m-%d')
-
-    @hybrid_property
-    def updated_date(self):
-        return self.updated_at.strftime('%Y-%m-%d')
-
-    @hybrid_method
-    def get_id(self):
-        return self.login_id
-
-
-class Ssctenantdb(db.Model,BaseMixin):
-    """테넌트 DB 정보"""
-    __tablename__ = 'ssc_tenant_db'
-    tenant_id = db.Column(db.String(50),db.ForeignKey('ssc_tenants.tenant_id'),nullable=False)
-    host = db.Column(db.String(30))
-    port = db.Column(db.String(30))
-    user = db.Column(db.String(100))
-    password = db.Column(db.String(128))
-    schema_nm = db.Column(db.String(50))
-
-
-class Ssctenantstorage(db.Model,BaseMixin):
-    """테넌트 STORAGE 정보"""
-    __tablename__ = 'ssc_tenant_storage'
-    tenant_id = db.Column(db.String(50),db.ForeignKey('ssc_tenants.tenant_id'))
-    bucket_nm = db.Column(db.String(100))
-    s3_1 = db.Column(db.String(100))
-    s3_2 = db.Column(db.String(100))
-    s3_3 = db.Column(db.String(100))
-    s3_4 = db.Column(db.String(100))
-
+# ===============================================================================================================================================
+# 001.시스템 공통
+# ===============================================================================================================================================
 
 class Ssctenant(db.Model, BaseMixin):
     """테넌트 정보"""
     __tablename__ = 'ssc_tenants'
-    tenant_id = db.Column(db.String(50))
+    tenant_id = db.Column(db.String(50))  # 테넌트 String정보
     comp_nm = db.Column(db.String(50))
     comp_id = db.Column(db.String(30))
     country_id = db.Column(db.String(30))
@@ -768,96 +590,346 @@ class Ssctenant(db.Model, BaseMixin):
     background_img = db.Column(db.String(100))
     logo_img = db.Column(db.String(100))
 
+    # 1:多 (Ssctenant->Ssctenantdb)
+    sctenantdbs = db.relationship('Ssctenantdb', back_populates='ssctenant')
 
-class Vcapplymaster(db.Model,BaseMixin):
+    # 1:多 (Ssctenantdb->Ssctenantstorage)
+    ssctenantstorages = db.relationship('Ssctenantstorage', back_populates='ssctenant')
+
+    # 1:多 (Ssctenant->Scuser) [Master]
+    scusers = db.relationship('Scuser', back_populates='ssctenant')
+
+
+class Ssctenantdb(db.Model, BaseMixin):
+    """테넌트 DB 정보"""
+    __tablename__ = 'ssc_tenant_db'
+    tenant_id = db.Column(db.Integer, db.ForeignKey('ssc_tenants.id'), nullable=False)
+    host = db.Column(db.String(30))
+    port = db.Column(db.String(30))
+    user = db.Column(db.String(100))
+    password = db.Column(db.String(128))
+    schema_nm = db.Column(db.String(50))
+
+    #Detail
+    ssctenant = db.relationship('Ssctenant', backref=backref('FK_SSC_TENANT_DB_TENANT_ID'))
+
+
+class Ssctenantstorage(db.Model, BaseMixin):
+    """테넌트 STORAGE 정보"""
+    __tablename__ = 'ssc_tenant_storage'
+    tenant_id = db.Column(db.Integer, db.ForeignKey('ssc_tenants.id'))
+    bucket_nm = db.Column(db.String(100))
+    s3_1 = db.Column(db.String(100))
+    s3_2 = db.Column(db.String(100))
+    s3_3 = db.Column(db.String(100))
+    s3_4 = db.Column(db.String(100))
+    # Detail - 자식
+    ssctenant = db.relationship('Ssctenant', backref=backref('FK_SSC_TENANT_storage_TENANT_ID'))
+
+
+# ===============================================================================================================================================
+# 002.내방객 공통
+# ===============================================================================================================================================
+
+class Scclass(db.Model, BaseMixin):
+    """공통클래스관리"""
+    __tablename__ = 'sc_class'
+    class_cd = db.Column(db.String(30), nullable=False, unique=True)
+    class_nm = db.Column(db.String(50))
+    user_def_yn = db.Column(db.String(1))
+
+    # 1:多 (Scclass->Sccode)-Parent class 정의 - childs = db.relationship('Child ', back_populates='Child 클래스에 정의한 parent 변수명')
+    scclasses = db.relationship('Sccode', back_populates='sccode')
+
+class Sccode(db.Model, BaseMixin):
+    """공통코드관리"""
+    __tablename__ = 'sc_code'
+    tenant_id = db.Column(db.Integer, nullable=False)
+    class_id = db.Column(db.Integer, db.ForeignKey('sc_class.id'), nullable=False)
+    class_nm = db.Column(db.String(50))
+    code = db.Column(db.String(30), nullable=False)
+    code_nm = db.Column(db.String(50))
+    attb_a = db.Column(db.String(50))
+    attb_b = db.Column(db.String(50))
+    depth = db.Column(db.Integer)
+    group_id = db.Column(db.String(50))
+    position = db.Column(db.Integer)
+    user_def_yn = db.Column(db.String(1))
+
+    # [Detail] -Child class 정의 - parent = db.relationship('Parent', backref=backref('실제 DB FK명'))
+    sccode = db.relationship('Scclass', backref=backref('FK_SC_CODE_CLASS_ID'))
+
+
+# 권한 매핑 필요
+class Sccodeauth(db.Model, BaseMixin):
+    """공통코드권한관리"""
+    __tablename__ = 'sc_code_auth'
+    auth_id = db.Column(db.String(100), nullable=False)
+    class_id = db.Column(db.String(30), db.ForeignKey('sc_class.class_id'), nullable=False)
+
+
+class Sccompinfo(db.Model, BaseMixin):
+    """업체정보"""
+    __tablename__ = 'sc_comp_info'
+    tenant_id = db.Column(db.Integer, db.ForeignKey('ssc_tenants.id'), nullable=False)
+    comp_id = db.Column(db.String(30))
+    country_id = db.Column(db.String(30))
+    biz_no = db.Column(db.String(50), nullable=False, unique=True)
+    vnd_grp_id = db.Column(db.String(30))
+    sub_biz_no = db.Column(db.String(30))
+    comp_nm = db.Column(db.String(50))
+    comp_enm = db.Column(db.String(50))
+    addr_1 = db.Column(db.String(50))
+    addr_2 = db.Column(db.String(100))
+    addr_no = db.Column(db.String(50))
+    addr_post = db.Column(db.String(50))
+    tel_no = db.Column(db.String(20))
+    fax_no = db.Column(db.String(30))
+    phone = db.Column(db.String(20))
+    vnd_url = db.Column(db.String(100))
+    email = db.Column(db.String(75))
+    president = db.Column(db.String(50))
+    biz_condi = db.Column(db.String(20))
+    biz_sector = db.Column(db.String(20))
+    pymt_type = db.Column(db.String(30))
+    ssn = db.Column(db.String(30))
+    language = db.Column(db.String(30))
+    part_type = db.Column(db.String(30))
+    comp_shrt_nm = db.Column(db.String(30))
+    user_ip = db.Column(db.String(50))
+    user_host = db.Column(db.String(50))
+
+    # 1:多 (Sccompinfo->Scuser) [Master]
+    scusers = db.relationship('Scuser', back_populates='sccompinfo')
+
+    # 1:多 (Sccompinfo->Scuser) [Master]
+    vcapplymasters = db.relationship('Vcapplymaster', back_populates='sccompinfo')
+
+
+class Scinneruserinfo(db.Model, BaseMixin):
+    """내부직원정보"""
+
+    __tablename__ = 'sc_inner_user_info'
+    tenant_id = db.Column(db.Integer, db.ForeignKey('ssc_tenants.id'), nullable=False)
+    comp_id = db.Column(db.String(20))
+    comp_nm = db.Column(db.String(50))
+    emp_no = db.Column(db.String(20), nullable=False, unique=True)
+    emp_nm = db.Column(db.String(50))
+    emp_enm = db.Column(db.String(50))
+    emp_ymd = db.Column(db.DateTime)
+    ret_ymd = db.Column(db.DateTime)
+    tel_no = db.Column(db.String(20))
+    phone = db.Column(db.String(20))
+    fax_no = db.Column(db.String(30))
+    mail = db.Column(db.String(75))
+    site_id = db.Column(db.String(30))
+    site_nm = db.Column(db.String(50))
+    division_id = db.Column(db.String(30))
+    division_nm = db.Column(db.String(50))
+    dept_id = db.Column(db.String(30))
+    dept_nm = db.Column(db.String(50))
+    cc_id = db.Column(db.String(30))
+    cc_nm = db.Column(db.String(100))
+    location = db.Column(db.String(40))
+    job_rank = db.Column(db.String(30))
+    job_spot = db.Column(db.String(30))
+    if_stat = db.Column(db.String(1))
+    if_log = db.Column(db.String(100))
+
+    # 1:多 (Scinneruserinfo->Scuser) [Master]
+    scusers = db.relationship('Scuser', back_populates='scinneruserinfo')
+
+
+class Scmenu(db.Model, BaseMixin):
+    """공통메뉴관리"""
+    __tablename__ = 'sc_menu'
+    menu_cd = db.Column(db.String(50), nullable=False, unique=True)
+    menu_nm = db.Column(db.String(50))
+    depth = db.Column(db.Integer)
+    position = db.Column(db.Integer)
+    group_id = db.Column(db.String(50))
+    group_nm = db.Column(db.String(200))
+    url = db.Column(db.String(200))
+
+    # 1:多 (Scmenu->Scmenuauth) [Master]
+    scmenuauths = db.relationship('Scmenuauth', back_populates='scmenu')
+
+class Scmenuauth(db.Model, BaseMixin):
+    """공통메뉴권한관리"""
+    __tablename__ = 'sc_menu_auth'
+    auth_id = db.Column(db.String(50), nullable=False)
+    menu_id = db.Column(db.String(30), db.ForeignKey('sc_menu.id'), nullable=False)
+
+    # [Detail]
+    scmenu = db.relationship('Scmenu', backref=backref('FK_sc_menu_auth_menu_ID'))
+
+
+class Scuser(db.Model, UserMixin):
+    """사용자 정보"""
+    __tablename__ = 'sc_user'
+
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    use_yn = db.Column(db.String(1))
+    created_at = db.Column(db.DateTime, default=db.func.now())
+    created_by = db.Column(db.String(50))
+    updated_at = db.Column(db.DateTime, default=db.func.now(), onupdate=db.func.now())
+    updated_by = db.Column(db.String(50))
+    end_at = db.Column(db.DateTime, default=db.func.now())
+
+    tenant_id = db.Column(db.Integer, db.ForeignKey('ssc_tenants.id'), nullable=False)
+    login_id = db.Column(db.String(100), nullable=False, unique=True)
+    name = db.Column(db.String(256), nullable=False)
+    login_pwd = db.Column(db.String(256), nullable=False)
+    pwd_updated_at = db.Column(db.DateTime)
+    login_fail_cnt = db.Column(db.Integer)
+    user_type = db.Column(db.String(1), nullable=False)  # 내부0 외부1
+    auth_id = db.Column(db.String(50))
+    emp_id = db.Column(db.Integer,db.ForeignKey('sc_inner_user_info.id'))
+    biz_id = db.Column(db.Integer,db.ForeignKey('sc_comp_info.id'))  # 외부1일 경우에만 데이터 있음 sc_comp_info
+    comp_nm = db.Column(db.String(50))
+    login_yn = db.Column(db.String(2))
+    phone = db.Column(db.String(512))
+    email = db.Column(db.String(512))
+    fax_no = db.Column(db.String(512))
+    tel_no = db.Column(db.String(512))
+    sms_yn = db.Column(db.String(1))
+    info_agr_yn = db.Column(db.String(1))
+    login_at = db.Column(db.DateTime)
+    logout_at = db.Column(db.DateTime)
+    user_ip = db.Column(db.String(20))
+    user_host = db.Column(db.String(50))
+
+    # [Detail] : Child class 정의 - parent = db.relationship('Parent', backref=backref('실제 DB FK명'))
+    ssctenant = db.relationship('Ssctenant', backref=backref('FK_SC_USER_TENANT_ID'))
+
+    # [Detail]
+    scinneruserinfo = db.relationship('Scinneruserinfo', backref=backref('FK_SC_USER_EMP_ID'))
+
+    # [Detail]
+    sccompinfo = db.relationship('Sccompinfo', backref=backref('FK_SC_USER_BIZ_ID'))
+
+    # 1:多 Parent class 정의 - childs = db.relationship('Child ', back_populates='Child 클래스에 정의한 parent 변수명')
+    vcapplymasters = db.relationship('Vcapplymaster', back_populates='scuser')
+
+    @hybrid_property
+    def created_date(self):
+        return self.created_at.strftime('%Y-%m-%d')
+
+    @hybrid_property
+    def updated_date(self):
+        return self.updated_at.strftime('%Y-%m-%d')
+
+    @hybrid_method
+    def get_id(self):
+        return self.login_id
+
+
+class Vcapplymaster(db.Model, BaseMixin):
     """출입신청 마스터"""
     __tablename__ = 'vc_apply_master'
-    tenant_id = db.Column(db.String(50), db.ForeignKey('ssc_tenants.tenant_id'), nullable=False)
-    apply_code = db.Column(db.String(50), nullable=False, unique=True)
-    apply_nm = db.Column(db.String(50), nullable=False)
+    tenant_id = db.Column(db.Integer, db.ForeignKey('ssc_tenants.id'), nullable=False)
     interviewr = db.Column(db.String(30), nullable=False)
     applicant = db.Column(db.String(30), nullable=False)
     phone = db.Column(db.String(20), nullable=False)
     visit_category = db.Column(db.String(30), nullable=False)
-    biz_no = db.Column(db.String(50), db.ForeignKey('sc_comp_info.biz_no'), nullable=False)
-    visit_period = db.Column(db.DateTime, nullable=False)
+    biz_id = db.Column(db.Integer, db.ForeignKey('sc_comp_info.id'), nullable=False)
+    visit_sdate = db.Column(db.String(50), nullable=False)
+    visit_edate = db.Column(db.String(50), nullable=False)
     visit_purpose = db.Column(db.String(50), nullable=False)
     visit_desc = db.Column(db.String(200))
     site_id = db.Column(db.String(30), nullable=False)
     site_nm = db.Column(db.String(50), nullable=False)
-    login_id = db.Column(db.String(100), db.ForeignKey('sc_user.login_no'), nullable=False)
+    login_id = db.Column(db.Integer, db.ForeignKey('sc_user.id'), nullable=False)
+    approval_state = db.Column(db.String(20), nullable=False)
+
+    # [Detail] Child class 정의 - parent = db.relationship('Parent', backref=backref('실제 DB FK명'))
+    sccompinfo = db.relationship('Sccompinfo', backref=backref('FK_VC_APPLY_MASTER_BIZ_ID'))
+    # [Detail]
+    scuser = db.relationship('Scuser', backref=backref('FK_VC_APPLY_MASTER_LOGIN_ID'))
+    # 1:多 (Vcapplymaster->Vcapplyuser) [Master]
+    vcapplyusers = db.relationship('Vcapplyuser', back_populates='vcapplymaster')
 
 
 class Vcapplyuser(db.Model, BaseMixin):
     """출입인원 정보"""
     __tablename__ = 'vc_apply_user'
-    tenant_id = db.Column(db.String(50), db.ForeignKey('ssc_tenants.tenant_id'), nullable=False)
-    apply_code = db.Column(db.String(50), db.ForeignKey('vc_apply_master.apply_code'),nullable=False)
-    apply_nm = db.Column(db.String(50))
+    tenant_id = db.Column(db.Integer, db.ForeignKey('ssc_tenants.id'), nullable=False)
+    apply_id = db.Column(db.Integer, db.ForeignKey('vc_apply_master.id'), nullable=False)
+
     visitant = db.Column(db.String(30))
     phone = db.Column(db.String(20))
     vehicle_num = db.Column(db.String(10))
     vehicle_type = db.Column(db.String(30))
-    vehicle_info = db.Column(db.String(100))
-    alien_number = db.Column(db.String(50))
-    identify_validation = db.Column(db.String(1))
-    personal_information_agreement = db.Column(db.String(1))
-    security_agreement = db.Column(db.String(1))
-    apply_test = db.Column(db.String(1))
-    barcode_code = db.Column(db.String(50),db.ForeignKey('vc_barcode_info.barcode_code'))
-    barcode_nm = db.Column(db.String(50))
+    barcode = db.Column(db.String(50))
+    barcode_type = db.Column(db.String(50))
+    start_date = db.Column(db.String(50))
+    end_date = db.Column(db.String(50))
+
+    # [Detail]
+    vcapplymaster = db.relationship('Vcapplymaster', backref=backref('FK_VC_APPLY_USER_APPLY_ID'))
+    # 1:多 (Vcapplyuser->Vcinoutinfo) [Master]
+    vcinoutinfos = db.relationship('Vcinoutinfo', back_populates='vcapplyuser')
 
 
-
-class Vcbarcodeinfo(db.Model, BaseMixin):
-    """바코드정보"""
-    __tablename__ = 'vc_barcode_info'
-    tenant_id = db.Column(db.String(50), db.ForeignKey('ssc_tenants.tenant_id'), nullable=False)
-    barcode_code = db.Column(db.String(50), unique=True,nullable=False)
-    barcode_nm = db.Column(db.String(50))
-    label_code = db.Column(db.String(50),db.ForeignKey('vc_label_info.label_code'), nullable=False)
-    label_nm = db.Column(db.String(50))
-    barcode_type = db.Column(db.String(45))
-    duedate_start = db.Column(db.DateTime)
-    duedate_end = db.Column(db.DateTime)
-
-
-
-class Vcinoutinfo(db.Model,BaseMixin):
+class Vcinoutinfo(db.Model, BaseMixin):
     """입출입정보"""
     __tablename__ = 'vc_inout_info'
-    tenant_id = db.Column(db.String(50), db.ForeignKey('ssc_tenants.tenant_id'), nullable=False)
-    bracode_code = db.Column(db.String(50),db.ForeignKey('vc_barcode_info.barcode_code'),nullable=False)
-    bracode_nm = db.Column(db.String(50))
+    tenant_id = db.Column(db.Integer, db.ForeignKey('ssc_tenants.tenant_id'), nullable=False)
+    apply_user_id = db.Column(db.Integer, db.ForeignKey('vc_apply_user.id'), nullable=False)
+
     site_id = db.Column(db.String(30))
     site_nm = db.Column(db.String(50))
-    in_area_code = db.Column(db.Integer)
-    in_area = db.Column(db.String(100))
-    out_area_code = db.Column(db.Integer)
-    out_area = db.Column(db.String(100))
-    in_time = db.Column(db.DateTime)
-    out_time = db.Column(db.DateTime)
+    in_area_cd = db.Column(db.String(30))
+    in_area_nm = db.Column(db.String(50))
+    out_area_cd = db.Column(db.String(30))
+    out_area_nm = db.Column(db.String(50))
+    in_time = db.Column(db.String(50))
+    out_time = db.Column(db.String(50))
 
-class Vclabelinfo(db.Model, BaseMixin):
-    """표찰정보"""
-    __tablename__ = 'vc_label_info'
-    tenant_id = db.Column(db.String(50), db.ForeignKey('ssc_tenants.tenant_id'), nullable=False)
-    label_code = db.Column(db.String(50), unique=True, nullable=False)
-    label_nm = db.Column(db.String(50))
-    approval_code = db.Column(db.String(50), db.ForeignKey('vc_apply_master.approval_code'), nullable=False)
-    approval_nm = db.Column(db.String(50))
-    label_type = db.Column(db.String(30))
-    duedate_start = db.Column(db.DateTime)
-    duedate_end = db.Column(db.DateTime)
+    # [Detail]
+    vcapplyuser = db.relationship('Vcapplyuser', backref=backref('FK_VC_INOUT_INFO_APPLY_USER_ID'))
 
 
 class Scrule(db.Model, BaseMixin):
     """테넌트 정보"""
     __tablename__ = 'sc_rule'
-
-    tenant_id = db.Column(db.String(50), nullable=False)
+    tenant_id = db.Column(db.Integer, db.ForeignKey('ssc_tenants.tenant_id'), nullable=False)
+    tenant_id = db.Column(db.Integer, nullable=False)
     rule_name = db.Column(db.String(50), nullable=False, unique=True)
     rule_type = db.Column(db.String(50), nullable=False)
     rule_duedate = db.Column(db.String(50), nullable=False)
     rule_desc = db.Column(db.String(100), nullable=False)
     rule_tlocation = db.Column(db.String(50), nullable=False, default='test')
+
+    # 1:多 (Scrule->Vcvisituser) [Master]
+    vcvisitusers = db.relationship('Vcvisituser', back_populates='scrule')
+
+    # 1:多 (Scrule->ScRuleFile) [Master]
+    scrulefiles = db.relationship('ScRuleFile', back_populates='scrule')
+
+
+class Vcvisituser(db.Model, BaseMixin):
+    """작업자 정보"""
+    __tablename__ = 'vc_visit_user'
+    tenant_id = db.Column(db.Integer, db.ForeignKey('ssc_tenants.tenant_id'), nullable=False)
+    rule_id = db.Column(db.Integer, db.ForeignKey('sc_rule.id'), nullable=False)
+    name = db.Column(db.String(50), nullable=False)
+    phone = db.Column(db.String(50), nullable=False)
+    text_desc = db.Column(db.String(100))
+    s_date = db.Column(db.String(50))
+    e_date = db.Column(db.String(50))
+
+    # [Detail]
+    scrule = db.relationship('Scrule', backref=backref('VC_VISIT_USER_RULE_ID'))
+
+
+class ScRuleFile(db.Model, BaseMixin):
+    """파일 정보"""
+    __tablename__ = 'sc_rule_file'
+    tenant_id = db.Column(db.Integer, db.ForeignKey('ssc_tenants.tenant_id'), nullable=False)
+    rule_id = db.Column(db.Integer, db.ForeignKey('sc_rule.id'), nullable=False)     # phone_ / user_id
+    file_dir = db.Column(db.String(100), nullable=False, unique=True)                # S3_dir + Scrule.id
+    file_name_ = db.Column(db.String(100), nullable=False)
+
+    # [Detail]
+    scrule = db.relationship('Scrule', backref=backref('sc_rule_file_sc_rule'))
