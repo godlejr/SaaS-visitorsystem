@@ -31,7 +31,7 @@ def login():
         if form.validate():
             ssctenant = Ssctenant.query.filter_by(event_url=request.host).first()
             # 사용자 조회
-            user = Scuser.query.filter_by(login_id=form.login_id.data, tenant_id=ssctenant.tenant_id).first()
+            user = Scuser.query.filter_by(login_id=form.login_id.data, tenant_id=ssctenant.id).first()
 
             if user:
                 # 비밀번호 비교
