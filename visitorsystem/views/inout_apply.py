@@ -102,6 +102,7 @@ def ruleValidate():
 
     ruleList = []
     lists = []
+    dict = {}
 
     #1.현재 등록된 모든 Rule을 모두 가져온다.
     for row in db.session.query(Scrule).all():

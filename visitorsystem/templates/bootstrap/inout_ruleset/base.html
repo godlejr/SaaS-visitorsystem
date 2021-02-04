@@ -63,7 +63,7 @@ $(document).ready(function () {
      function editController(dataSet) {
         $('#rule_name').val(dataSet.msg.rule_name);
         $('#rule_type').val(dataSet.msg.rule_type);
-        $('#rule_duedate').val(dataSet.msg.rule_duedate+'개월');
+        $('#rule_duedate').val(dataSet.msg.rule_duedate);
         $('#rule_desc').val(dataSet.msg.rule_desc);
      }
 
@@ -124,13 +124,6 @@ $(document).ready(function () {
                     var value = $('#' + key).val()
                     if(key == 'rule_type'&& value=='선택')
                         value = 'text';
-
-                    if(key =='rule_duedate'){
-                        if(value=='선택')
-                            value = '12';
-                        else
-                            value = value.split('개월')[0];
-                    }
 
                     dataSet[key] = value;
                }
