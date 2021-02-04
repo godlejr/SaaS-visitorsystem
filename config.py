@@ -10,6 +10,10 @@ class Config(object):
     TEMPLATE_THEME = 'bootstrap'
     NO_IMG = 'noimg.JPG'
 
+    #코로나 공공데이터 키
+    COVID_SECURITY_KEY = '5%2FCy2c2pZ4DIwEYhfel4ZahBvrStmGZiu%2BGUkXLq2YwUdNDt%2FZLzLoRhzGAd9DtKi2Jhq%2Bg9WriseQNNPgsTbg%3D%3D'
+    COVID_SERVICE_URL = ' http://openapi.data.go.kr/openapi/service/rest/Covid19/getCovid19InfStateJson'
+
     #개발
     REDIS_URL = 'redis://127.0.0.1:6379/0'
 
@@ -35,6 +39,8 @@ class Config(object):
     S3_IMG_MAIN_DIRECTORY_VMS = '/data/img/main/'  # 메인이미지
     S3_IMG_MAIN_LOGO_DIRECTORY_VMS = '/data/img/main/logo/'  # 회사이미지
 
+    S3_IMG_MAIN_BANNER_DIRECTORY_VMS = '/data/img/main/banner/' # 배너 이미지 (banner1.jpg / banner2.jpg / banner3.jpg )
+
     MAIL_SERVER = 'smtp.gmail.com'
     MAIL_PORT = 587
     MAIL_USERNAME = 'dev@inotone.co.kr'
@@ -50,8 +56,8 @@ class Config(object):
     SQLALCHEMY_POOL_TIMEOUT = 10
     SQLALCHEMY_POOL_RECYCLE = 1800
     SQLALCHEMY_TRACK_MODIFICATIONS = False
-    #SQLALCHEMY_DATABASE_URI = 'mysql+pymysql://saas:P@ssw0rd@172.19.116.78:3307/hccwebdev'
-    SQLALCHEMY_DATABASE_URI = 'mysql+pymysql://saas:P@ssw0rd@localhost:3306/hccwebdev'
+    SQLALCHEMY_DATABASE_URI = 'mysql+pymysql://saas:P@ssw0rd@172.19.116.78:3307/hccwebdev'
+    #SQLALCHEMY_DATABASE_URI = 'mysql+pymysql://saas:P@ssw0rd@localhost:3306/hccwebdev'
     SOCIAL_FACEBOOK = {
         'consumer_key': 'xxxxxxxx',
         'consumer_secret': 'xxxxxxxxx'

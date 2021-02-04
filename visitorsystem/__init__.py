@@ -1,11 +1,12 @@
+import logging
 import os
 
-from flask import Flask, render_template, current_app
+from flask import Flask, render_template
 from flask_debugtoolbar import DebugToolbarExtension
 from flask_login import LoginManager
 from redis import Redis
 from werkzeug.utils import redirect
-
+import sys
 import config
 from visitorsystem.lib.redis_session import RedisSessionInterface
 from visitorsystem.models import db,  File, Photo, Magazine, MagazineComment, PhotoComment, Comment, Board, \
@@ -83,6 +84,12 @@ def create_app(config_name):
     application.errorhandler(404)(lambda e: render_template('error/404.html'))
     application.errorhandler(500)(lambda e: render_template('error/404.html'))
 
+
+    log = logging.getLogger('Redis')
+    handler = logging.StreamHandler(sys.stderr)
+    handler.setFormatter(logging.Formatter('%(name)s - %(levelname)s - %(message)s'))
+    log.addHandler(handler)
+    log.setLevel(logging.INFO)
 
     login_manager = LoginManager()
     login_manager.init_app(application)
