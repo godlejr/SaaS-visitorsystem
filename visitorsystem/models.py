@@ -775,7 +775,6 @@ class Scuser(db.Model, UserMixin):
     updated_at = db.Column(db.DateTime, default=db.func.now(), onupdate=db.func.now())
     updated_by = db.Column(db.String(50))
     end_at = db.Column(db.DateTime, default=db.func.now())
-
     tenant_id = db.Column(db.Integer, db.ForeignKey('ssc_tenants.id'), nullable=False)
     login_id = db.Column(db.String(100), nullable=False, unique=True)
     name = db.Column(db.String(256), nullable=False)
