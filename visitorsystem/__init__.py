@@ -1,7 +1,7 @@
 import logging
 import os
 
-from flask import Flask, render_template
+from flask import Flask, render_template,session
 from flask_debugtoolbar import DebugToolbarExtension
 from flask_login import LoginManager
 from redis import Redis
@@ -98,6 +98,7 @@ def create_app(config_name):
 
     @login_manager.user_loader
     def load_user(login_id):
-        return Scuser.query.filter_by(login_id=login_id).first()
+        print(session['id'])
+        return Scuser.query.filter_by(id=session['id']).first()
 
     return application
