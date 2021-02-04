@@ -1,5 +1,6 @@
 alabaster==0.7.12
 Babel==2.9.0
+beautifulsoup4==4.9.3
 blinker==1.4
 boto3==1.16.51
 botocore==1.19.51
@@ -50,6 +51,7 @@ shortuuid==1.0.1
 simplejson==3.17.2
 six==1.15.0
 snowballstemmer==2.0.0
+soupsieve==2.1
 Sphinx==3.4.3
 sphinxcontrib-applehelp==1.0.2
 sphinxcontrib-devhelp==1.0.2

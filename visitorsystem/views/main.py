@@ -1,33 +1,33 @@
-import shortuuid
-from flask import Blueprint, render_template, request, flash, redirect, url_for, current_app, session, jsonify
-from flask_mail import Mail, Message
-from werkzeug.security import generate_password_hash, check_password_hash
+import datetime
+import re
+import time
+import xml.etree.cElementTree as et
+from urllib import parse
 
-from visitorsystem.forms import JoinForm, LoginForm
-from visitorsystem.models import db, User, Professional,Ssctenant
+import requests
+from bs4 import BeautifulSoup
+from flask import Blueprint, render_template, request, current_app, flash, session, redirect, url_for
+from flask_login import login_required, login_user, current_user
+from sqlalchemy import and_
+from werkzeug.security import check_password_hash
+
+from visitorsystem.forms import LoginForm
+from visitorsystem.models import Scuser, Ssctenant
 
 main = Blueprint('main', __name__)
-mail = Mail()
-
-
-@main.context_processor
-def utility_processor():
-    def url_for_s3(s3path, filename=''):
-        return ''.join((current_app.config['S3_BUCKET_NAME'], current_app.config[s3path], filename))
-
-    return dict(url_for_s3=url_for_s3)
 
 
 @main.route('/')
+@login_required
 def index():
+    today_covid = get_covid()
+    day = get_day()
+    today = time.strftime('%Y.%m.%d', time.localtime(time.time()))
 
+    articles = get_article(current_user.ssctenant.comp_nm)
 
-    ssctenant = Ssctenant.query.filter_by(event_url=request.host).first()
-
-
-    return render_template(current_app.config['TEMPLATE_THEME'] + '/main/signin.html',
-                           current_app=current_app,
-                           ssctenant=ssctenant)
+    return render_template(current_app.config['TEMPLATE_THEME'] + '/main/index.html', today_covid=today_covid, day=day,
+                           today=today, articles=articles)
 
 
 @main.route('/login', methods=['GET', 'POST'])
@@ -35,170 +35,217 @@ def login():
     form = LoginForm(request.form)
     if request.method == 'POST':
         if form.validate():
-            user = User.query.filter_by(email=form.email.data).first()
+            ssctenant = Ssctenant.query.filter_by(event_url=request.host).first()
+            # 사용자 조회
+            user = Scuser.query.filter(and_(Scuser.login_id == form.login_id.data, Scuser.tenant_id == ssctenant.id)).first()
+
             if user:
-                if not check_password_hash(user.password, form.password.data):
-                    flash('비밀번호가 잘못되었습니다.')
+                # 비밀번호 비교
+                if not check_password_hash(user.login_pwd, form.login_pwd.data):
+                    flash('비밀번호가 잘못 되었습니다.')
                 else:
-                    session['user_id'] = user.id
-                    session['user_email'] = user.email
-                    session['user_level'] = user.level
+                    # 정상 로그인 - 세션
+                    session['id'] = user.id
+                    session['_user_id'] = user.id
+                    session['login_id'] = user.login_id
+                    session['name'] = user.name
+                    session['auth_id'] = user.auth_id
+                    session['tenant_id'] = user.tenant_id
+                    login_user(user)
+
                     return redirect(request.args.get("next") or url_for('main.index'))
             else:
                 flash('회원아이디가 잘못되었습니다.')
 
-    # print('-------------------')
-    # print(Ssctenant.query)
-    # print('-------------------')
-    # ssctenants = Ssctenant.query.all()
     return render_template(current_app.config['TEMPLATE_THEME'] + '/main/login.html', form=form)
-    # return render_template(current_app.config['TEMPLATE_THEME'] + '/main/test.html', ssctenants=ssctenants)
 
 
 @main.route('/logout')
+@login_required
 def logout():
     session.clear()
-    return redirect(url_for('main.index'))
+    return redirect(url_for('main.login'))
 
 
-@main.route('/join', methods=['GET', 'POST'])
-def join():
-    form = JoinForm(request.form)
-    if request.method == 'POST':
-        if User.query.filter_by(email=request.form.get('email')).first():
-            flash('사용중인 이메일입니다.')
-        if form.validate():
-            user = User()
-            if User.query.filter_by(email=request.form.get('email')).first():
-                return redirect(url_for('main.join'))
+def get_covid():
+    # 코로나 관련
+    serviceUrl = current_app.config['COVID_SERVICE_URL']
+    serviceKey = current_app.config['COVID_SECURITY_KEY']
+    serviceKey_decode = parse.unquote(serviceKey)
+    pageNo = '1'
+    numOfRows = '10'
 
-            user.email = form.email.data
-            user.name = form.name.data
-            user.password = generate_password_hash(form.password.data)
+    startCreateDt = time.strftime('%Y%m%d', time.localtime(time.time() - 172800))  # 2일전
+    endCreateDt = time.strftime('%Y%m%d', time.localtime(time.time()))
 
-            if form.joiner.data == '2':
-                user.level = 2
-                db.session.add(user)
-                db.session.commit()
+    covid_param = {"serviceKey": serviceKey_decode, "pageNo": pageNo, "numOfRows": numOfRows,
+                   "startCreateDt": startCreateDt, "endCreateDt": endCreateDt}
 
-                professional = Professional()
-                professional.business_no = form.business_no.data
-                professional.user_id = user.id
-                db.session.add(professional)
-                db.session.commit()
-            else:
-                user.level = 1
-                db.session.add(user)
-                db.session.commit()
+    response = requests.get(serviceUrl, params=covid_param)
 
-            flash('가입을 축하합니다.')
-            return redirect(url_for('main.login'))
+    print(response.text)
+    covid_list = []
+    if response.status_code == 200:
+        dataTree = et.fromstring(response.text)
+        iterData = dataTree.iter(tag='item')
 
-    return render_template(current_app.config['TEMPLATE_THEME'] + '/main/join.html', form=form)
+        for element in iterData:
+            accDefRate = element.find("accDefRate")
+            print(accDefRate)
+            accExamCnt = element.find("accExamCnt")
+            accExamCompCnt = element.find("accExamCompCnt")
+            careCnt = element.find("careCnt")
+            clearCnt = element.find("clearCnt")
+            createDt = element.find("createDt")
+            deathCnt = element.find("deathCnt")
+            decideCnt = element.find("decideCnt")
+            examCnt = element.find("examCnt")
+            resutlNegCnt = element.find("resutlNegCnt")
+            seq = element.find("seq")
+            stateDt = element.find("stateDt")
+            stateTime = element.find("stateTime")
+            updateDt = element.find("updateDt")
 
+            data = {
+                "accDefRate": accDefRate.text, "accExamCnt": accExamCnt.text, "accExamCompCnt": accExamCompCnt.text,
+                "careCnt": careCnt.text, "clearCnt": clearCnt.text, "createDt": createDt.text,
+                "deathCnt": deathCnt.text, "decideCnt": decideCnt.text, "examCnt": examCnt.text,
+                "resutlNegCnt": resutlNegCnt.text, "seq": seq.text, "stateDt": stateDt.text,
+                "stateTime": stateTime.text, "updateDt": updateDt.text
+            }
+            covid_list.append(data)
 
-@main.route('/privacy', methods=['GET', 'POST'])
-def privacy():
-    return render_template(current_app.config['TEMPLATE_THEME'] + '/main/privacy.html')
+    index = 0
 
+    today_covid = covid_list[index]
+    yesterday_covid = covid_list[index + 1]
+    stateDt = today_covid.get("stateDt")
+    print("ddd" + stateDt)
 
-@main.route('/agreement', methods=['GET', 'POST'])
-def agreement():
-    return render_template(current_app.config['TEMPLATE_THEME'] + '/main/agreement.html')
+    today_total_decideCnt = today_covid.get("decideCnt")  # 확진자
+    today_total_examCnt = today_covid.get("examCnt")  # 검사자
+    today_total_clearCnt = today_covid.get("clearCnt")  # 격리해제
+    today_total_deathCnt = today_covid.get("deathCnt")  # 사망자
 
+    yesterday_total_decideCnt = yesterday_covid.get("decideCnt")  # 확진자
+    yesterday_total_examCnt = yesterday_covid.get("examCnt")  # 검사자
+    yesterday_total_clearCnt = yesterday_covid.get("clearCnt")  # 격리해제
+    yesterday_total_deathCnt = yesterday_covid.get("deathCnt")  # 사망자
 
-@main.route('/confirm_key', methods=['GET', 'POST'])
-def confirm_key():
-    if current_app.redis.get(request.args.get('key')):
-        return redirect(url_for('main.edit_password', key=request.args.get('key')))
-    return redirect(url_for('main.index'))
+    today_decideCnt = "{:,}".format(int(today_total_decideCnt) - int(yesterday_total_decideCnt))
+    today_examCnt = "{:,}".format(int(today_total_examCnt))
+    today_clearCnt = "{:,}".format(int(today_total_clearCnt) - int(yesterday_total_clearCnt))
+    today_deathCnt = "{:,}".format(int(today_total_deathCnt) - int(yesterday_total_deathCnt))
 
+    today_total_decideCnt = "{:,}".format(int(today_total_decideCnt))  # 확진자
+    today_total_clearCnt = "{:,}".format(int(today_total_clearCnt))  # 격리해제
+    today_total_deathCnt = "{:,}".format(int(today_total_deathCnt))  # 사망자
 
-@main.route('/edit_password/<key>', methods=['GET', 'POST'])
-def edit_password(key):
-    form = JoinForm(request.form)
-    if request.method == 'POST':
-        if form.password.data.__eq__(form.confirm.data):
-            email = current_app.redis.get(key)
-            current_app.redis.delete(key)
-            user = User.query.filter_by(email=email).first()
-            user.password = generate_password_hash(form.password.data)
-            db.session.add(user)
-            db.session.commit()
+    cr_date = datetime.datetime.strptime(stateDt, '%Y%m%d')
+    stateDt = cr_date.strftime('%Y.%m.%d')
+    today_covid = {
+        "stateDt": stateDt, "today_decideCnt": today_decideCnt, "today_examCnt": today_examCnt,
+        "today_examCnt": today_examCnt, "today_clearCnt": today_clearCnt, "today_deathCnt": today_deathCnt,
+        "today_total_decideCnt": today_total_decideCnt,
+        "today_total_clearCnt": today_total_clearCnt, "today_total_deathCnt": today_total_deathCnt
+    }
 
-            return redirect(url_for('main.index'))
-        else:
-            flash('동일한 비밀번호를 입력하세요')
-    return render_template(current_app.config['TEMPLATE_THEME'] + '/main/edit_password.html', form=form)
-
-
-@main.route('/password', methods=['GET', 'POST'])
-def password():
-    print('------------ss-------')
-    print(User.query)
-    print('-------------------')
-    form = LoginForm(request.form)
-    if request.method == 'POST':
-        user = User.query.filter_by(email=form.email.data).first()
-        if user:
-            password_token = shortuuid.uuid()
-            current_app.redis.append(password_token, form.email.data)
-            current_app.redis.expire(password_token, 3600)
-
-            msg = Message('해피홈 비밀번호 변경 메일', sender='해피홈', recipients=[form.email.data])
-            msg.html = '''
-                <div style="width:600px;border:1px solid #e0e0e0">
-                    <div style="padding:8px 20px">
-                        <div style="float:left;margin-top:8px;"><span style="cursor:pointer;display:inline-block;line-height:33px;width:112px;height:33px;background-size:112px 33px;background-repeat:no-repeat;background-position:center;background-image:url(http://static.inotone.co.kr/img/happyathome.png)"></span></div>
-                        <div style="text-align:right;margin-left:100px;padding-top:30px;font-size:14px;font-family:'맑은 고딕',sans-serif">행복공간 크리에이터</div>
-                    </div>
-                    <div style="font-size:14px;padding:60px 40px;background-color:#f4f4f4;border-top:3px solid #303030;box-sizing:border-box">
-                        <div style="font-family:'맑은 고딕',sans-serif">
-                            <p style="font-size:14px;margin:10px 0">{0}님, 안녕하세요.</p>
-                            <p style="font-size:14px;margin:10px 0">비밀번호 재설정 안내 메일입니다.</p>
-                            <p style="font-size:14px;margin:10px 0">* 만약 본인이 비밀번호 재설정 신청을 한 것이 아니라면, 본 메일을 무시해주세요.</p>
-                            <p style="font-size:14px;margin:10px 0">{0}님이 비밀번호를 변경하기 전에는 계정의 비밀번호는 바뀌지 않습니다.</p>
-                        </div>
-                        <div style="margin-top:60px;text-align:center">
-                            <a href="http://www.happyathome.co.kr/confirm_key?key={1}" target="_blank" style="cursor:pointer;color:#ffffff;font-size:14px;font-weight:700;padding:7px 30px;border:1px solid #46AB76;background-color:#5EB788;text-decoration:none;font-family:'맑은 고딕',sans-serif">비밀번호 재설정 하러가기</a>
-                        </div>
-                    </div>
-                    <div style="padding:10px 40px;color:#b4b4b4;background-color:#54595D;box-sizing:border-box;font-family:'맑은 고딕',sans-serif">
-                        <p style="font-size:12px;margin:2px 0">상호명 | INOTONE</p>
-                        <p style="font-size:12px;margin:2px 0">대표이사 | 김경태</p>
-                        <p style="font-size:12px;margin:2px 0">사업자등록번호 | 478-86-00420</p>
-                        <p style="font-size:12px;margin:2px 0">주소 | 서울특별시 강남구 봉은사로84길 8, 5층(삼성동, 유승빌딩)</p>
-                        <p style="font-size:12px;margin:2px 0">이메일 | contact@inotone.co.kr</p>
-                        <p style="font-size:12px;margin:2px 0">Copyright (C)2016 by Inotone Co., LTD. All Rights Reserved</p>
-                    </div>
-                </div>
-            '''.format(user.name, password_token)
-            mail.send(msg)
-            flash('기존 이메일로 비밀번호변경 관련 url을 보냈습니다. 확인해주세요.')
-        return redirect(url_for('main.login'))
-    return render_template(current_app.config['TEMPLATE_THEME'] + '/main/password.html', form=form)
+    return today_covid
 
 
-@main.route('/facebook_login', methods=['POST'])
-def facebook_login():
-    userName = request.form.get('user_name')
-    userEmail = request.form.get('user_email')
-    user = db.session.query(User).filter(User.email == userEmail).first()
+def get_day():
+    days = ['월요일', '화요일', '수요일', '목요일', '금요일', '토요일', '일요일']
+    aday = time.localtime().tm_mday
+    return days[aday - 1]
 
-    if not user:
-        user = User()
-        user.email = userEmail
-        user.name = userName
-        user.password = "ABLFJBDALSJFBU10!@*#!2820"
-        user.level = 1
-        db.session.add(user)
-        db.session.flush()
-        db.session.commit()
 
-    session['user_id'] = user.id
-    session['user_email'] = user.email
-    session['user_level'] = user.level
+def get_article(keyword):
+    # 쿼리에 검색어를 입력하고 검색 시작날짜부터 끝 날짜까지를 입력합니다.
+    query = keyword  # url 인코딩 에러는 encoding parse.quote(query)
+    s_date = time.strftime('%Y.%m.%d', time.localtime(time.time() - 2592000))  # 한달지
+    e_date = time.strftime('%Y.%m.%d', time.localtime(time.time()))
+    s_from = s_date.replace(".", "")
+    e_to = e_date.replace(".", "")
+    page = 1
+    no = 1
+    maxpage_t = (5) * 10 + 1
 
-    return jsonify({
-        'ok': 1
-    })
+    articles = []
+
+    while page < maxpage_t:
+        print(page)
+
+        url = "https://search.naver.com/search.naver?where=news&query=" + query + "&sort=1&ds=" + s_date + "&de=" + e_date + "&nso=so%3Ar%2Cp%3Afrom" + s_from + "to" + e_to + "%2Ca%3A&start=" + str(
+            page)
+        # header 추가
+        header = {
+            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.36',
+        }
+        req = requests.get(url, headers=header,verify=False)
+        cont = req.content
+        soup = BeautifulSoup(cont, 'html.parser')
+
+        try:
+            urls = soup.findAll('a', href=re.compile('^http(s)?:\/\/(news)\.(naver)\.(com)\/(main)\/(read)\.(nhn)'))[0]
+
+            if urls["href"].startswith("https://news.naver.com"):
+                print("naver.com으로 시작하는 href만 추출")
+                print(urls['href'])
+
+                # print(urls["href"])
+                print("get_new 함수 시작")
+                news_detail = get_news(urls["href"])
+
+                print("news_detail[1](url): " + news_detail[0])
+
+                # f.write(news_detail[1] + "&&&")
+                print("news_detail[1](날짜): " + news_detail[2])
+
+                # # f.write(news_detail[4] + "&&&")
+                print("news_detail[4](언론사) : " + news_detail[4])
+
+                # f.write(news_detail[0] + "&&&")
+                print("news_detail[0](제목) : " + news_detail[1])
+
+                # f.write(news_detail[2] + "&&&")
+                print("news_detail[2](기사내용) : 기사내용")
+                print(news_detail[3])
+
+            articles.append(news_detail)
+        except Exception as e:
+            print(e)
+        page += 10
+
+    return articles
+
+
+def get_news(n_url):
+    news_detail = []
+    print(n_url)
+    header = {
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.36',
+    }
+    breq = requests.get(n_url, headers=header,verify=False)
+    bsoup = BeautifulSoup(breq.content, 'html.parser')
+
+    # URL
+    news_detail.append(n_url)
+
+    # html 파싱
+    title = bsoup.select('h3#articleTitle')[0].text
+    news_detail.append(title)
+
+    # 날짜 파싱
+    pdate = bsoup.select('.t11')[0].get_text()[:11]
+    news_detail.append(pdate)
+
+    # 기사 본문 크롤링
+    _text = bsoup.select('#articleBodyContents')[0].get_text().replace('\n', " ")
+    btext = _text.replace("// flash 오류를 우회하기 위한 함수 추가 function _flash_removeCallback() {}", "")
+    news_detail.append(btext.strip())
+
+    # 신문사 크롤링
+    pcompany = bsoup.select('#footer address')[0].a.get_text()
+    news_detail.append(pcompany)
+
+    return news_detail

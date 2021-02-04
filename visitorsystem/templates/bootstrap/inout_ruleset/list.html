@@ -1,0 +1,119 @@
+{% extends "bootstrap/inout_ruleset/base.html" %}
+
+{% block mainContent %}
+<!-- 여기서 html 작성하세요-->
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-md-4">
+            <div class="bdrs-3 ov-h bgc-white bd">
+
+                <div class="bgc-deep-purple-500 ta-c p-30">
+                    <h2 class="fw-300 mB-5 lh-1 c-white">방문객 규칙설정</h2>
+                </div>
+
+                <div class="pos-r">
+                    <button id="creteBtn" type="button" class="mT-nv-50 pos-a r-10 t-2 btn cur-p bdrs-50p p-0 w-3r h-3r btn-warning">
+                        <i class="ti-plus"></i>
+                    </button>
+                    <ul class="m-0 p-0 mT-20">
+
+                        {% for scrule in scrules %}
+                        <li id={{scrule.id}} class="bdB peers ai-c jc-sb fxw-nw">
+                            <a class="td-n p-20 peers fxw-nw mR-20 peer-greed c-grey-900" href="javascript:void(0);" data-toggle="modal" data-target="#calendar-edit">
+                                <div class="peer mR-15"><i class="fa fa-fw fa-clock-o c-indigo-500"></i></div>
+                                <div class="peer">
+                                    <span class="fw-600">{{scrule.rule_name}}</span>
+                                    <div class="c-grey-600"><span class="c-grey-700">방문규칙 - </span><i>{{scrule.rule_name}}</i></div>
+                                </div>
+                            </a>
+                            <div class="peers mR-15">
+                                <div class="peer"><button class="btn btn-link td-n c-deep-purple-500 cH-blue-500 fsz-md p-5 editBtn"><i class="ti-pencil"></i></button></div>
+                                <div class="peer"><button class="btn btn-link td-n c-red-500 cH-blue-500 fsz-md p-5"><i class="ti-trash delBtn"></i></button></div>
+                            </div>
+                        </li>
+                        {% endfor %}
+                    </ul>
+                </div>
+
+            </div>
+        </div>
+
+
+        <div class="col-md-8">
+            <div class="row gap-20 masonry pos-r">
+                <div class="masonry-sizer col-md-12"></div>
+                <div class="masonry-item col-md-12">
+                    <div class="bgc-white p-20 bd">
+                        <h6 class="c-grey-900">방문객 규칙정보</h6>
+                        <hr>
+
+                        <div class="mT-30">
+                            <div class="form-row">
+                                <div class="form-group col-md-4" >
+                                    <label for="rule_name">규칙명</label>
+                                    <input type="text" class="form-control" name="rule_name"  id="rule_name">
+                                </div>
+                            </div>
+
+                            <div class="form-row">
+                                <div class="form-group col-md-4">
+                                    <label for="rule_type">파일유형</label>
+                                    <select id="rule_type" name="rule_type" class="form-control">
+                                        <option selected="텍스트">텍스트</option>
+                                        <option value="파일">파일</option>
+                                        <option value="달력">달력</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="form-row">
+                                <div class="form-group col-md-4">
+                                    <label for="rule_duedate">Day</label>
+                                    <input type="text" class="form-control" name="rule_name"  id="rule_duedate">
+                                </div>
+                            </div>
+
+
+                            <div class="form-row">
+                                <div class="form-group col-md-6">
+                                    <label for="rule_desc">규칙설명</label>
+                                    <textarea class="form-control" placeholder="규칙명 - 규칙내용" id="rule_desc" name="rule_desc" style="height:100px"/></textarea>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col text-left">
+                                    <button id ='saveBtn' type="button" class="btn btn-primary" >저장</button>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<div id = "alertModal" class="modal" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">방문규칙 설정</h5>
+                <button id="exitModal" type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                {% with messages = get_flashed_messages() %}
+                <p id="modalContent"></p>
+                {% endwith %}
+            </div>
+            <div class="modal-footer">
+                <button id="confirmModal" type="button" class="btn btn-primary ">확인</button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

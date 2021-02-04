@@ -1,20 +1,137 @@
-{% extends "bootstrap/base.html" %}
-{% from "bootstrap/main/_formhelpers.html" import render_field %}
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1,shrink-to-fit=no">
+    <title>VMS - Visitor Management System</title>
+    <style>
+#loader {
+    transition: all .3s ease-in-out;
+    opacity: 1;
+    visibility: visible;
+    position: fixed;
+    height: 100vh;
+    width: 100%;
+    background: #fff;
+    z-index: 90000
+}
+
+#loader.fadeOut {
+    opacity: 0;
+    visibility: hidden
+}
+
+.spinner {
+    width: 40px;
+    height: 40px;
+    position: absolute;
+    top: calc(50% - 20px);
+    left: calc(50% - 20px);
+    background-color: #333;
+    border-radius: 100%;
+    -webkit-animation: sk-scaleout 1s infinite ease-in-out;
+    animation: sk-scaleout 1s infinite ease-in-out
+}
+
+@-webkit-keyframes sk-scaleout {
+    0% {
+        -webkit-transform: scale(0)
+    }
+
+    100% {
+        -webkit-transform: scale(1);
+        opacity: 0
+    }
+}
+
+@keyframes sk-scaleout {
+    0% {
+        -webkit-transform: scale(0);
+        transform: scale(0)
+    }
+
+    100% {
+        -webkit-transform: scale(1);
+        transform: scale(1);
+        opacity: 0
+    }
+}
 
 
-{% block content %}
-<div class="content">
+
+    </style>
+    <link href="{{ url_for('static', filename='css/bootstrap_vms.css') }}" rel="stylesheet">
+    <link href="{{ url_for('static', filename='css/vms_style.css') }}" rel="stylesheet">
+    <script src="{{ url_for('static', filename='js/vendor.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/bundle.js') }}"></script>
+</head>
+<body class="app">
+<div id="loader">
+    <div class="spinner"></div>
+</div>
+<script>window.addEventListener('load', () => {
+        const loader = document.getElementById('loader');
+        setTimeout(() => {
+          loader.classList.add('fadeOut');
+        }, 300);
+      });
+
+
+
+</script>
+
+<!--&lt;!&ndash; top start &ndash;&gt;-->
+<!--<div id="header">-->
+<!--    <div class="top">-->
+<!--        <div class="col-md-12 top-bar">-->
+<!--            <h1>Visitor Management System</h1>-->
+<!--        </div>-->
+<!--    </div>-->
+<!--</div>-->
+<!--&lt;!&ndash; top end &ndash;&gt;-->
+
+<div class="peers ai-s fxw-nw h-100vh">
+    <!--<div class="d-n@sm- peer peer-greed h-100 pos-r bgr-n bgpX-c bgpY-c bgsz-cv"
+         style="background-image:url(assets/static/images/background.jpg)">
+    </div>-->
+
+    <!-- 좌측 회사 이미지 -->
+    <!--    <div class="d-n@sm- peer peer-greed h-100 pos-r bgr-n bgpX-c bgpY-c bgsz-cv tenant-bg"
+             style="background-image:url(/static/img/company/tenant_bg_img_HanwhaSolution.jpg)"/>
+        </div>-->
+
+    {% set tenant = get_tenant() %}
+
+    <div class="d-n@sm- peer peer-greed h-100 pos-r bgr-n bgpX-c bgpY-c bgsz-cv tenant-bg"
+         style="background-image:url( {{ url_for_s3(tenant.tenant_id, 'S3_IMG_MAIN_DIRECTORY_VMS',tenant.background_img)  }})"/>
+</div>
+
+
+<!-- 우측 로그인 부분 -->
+<div class="col-12 col-md-4 peer pX-40 pY-80 h-100 bgc-white scrollable pos-r">
+    <!-- 회사 로고 위치 -->
+    <div class="tenant-logo">
+        <!-- 테넌트 정보를 통해 S3에서 알맞은 회사로고 띄우기 -->
+
+        <!-- S3_IMG_MAIN_LOGO_DIRECTORY_VMS 앞에 테넌트 ID 붙여야함 -->
+        <img src="{{ url_for_s3(tenant.tenant_id, 'S3_IMG_MAIN_LOGO_DIRECTORY_VMS',tenant.logo_img)  }}"
+             width="170" height="60"/>
+        <br/>
+
+        <h3 style="font-weight:bold">Visitor Management System</h3>
+        <hr/>
+    </div>
+
+    <!-- 로그인 폼 -->
     <div class="login-form">
         <form method="POST">
-            <div class="login-header">
-                <img src="{{ url_for('static', filename='img/main/log_img.jpg') }}" width="98" height="97">
-            </div>
-            <div class="login-form-group">
-                {{ form.email(class="login-form-field", placeholder="e메일을 입력하세요.") }}
-            </div>
 
-            <div class="login-form-group">
-                {{ form.password(class="login-form-field", placeholder="비밀번호를 입력하세요.") }}
+            <div class="form-group"><label class="text-normal text-dark">ID</label>
+                {{ form.login_id(class="form-control", placeholder="아이디를 입력하세요.") }}
+            </div>
+            <div class="form-group"><label class="text-normal text-dark">Password</label>
+                {{ form.login_pwd(class="form-control", placeholder="패스워드를 입력하세요.") }}
+
             </div>
 
             {% with messages = get_flashed_messages() %}
@@ -27,128 +144,37 @@
                 </ul>
             </div>
             {% endif %}
-
-            {% if form.email.errors %}
-            <div class="message">
-                <ul>
-                    {% for message in form.email.errors %}
-                    <li>{{ message }}</li>
-                    {% endfor %}
-                </ul>
-            </div>
-            {% endif %}
             {% endwith %}
 
-            <div class="login-form-group">
-                <button type="submit" class="btn-submit">로그인</button>
+            <div class="form-group">
+                <div class="peers ai-c jc-sb fxw-nw">
+                    <div class="peer">
+                        <div class="checkbox checkbox-circle checkbox-info peers ai-c"><input type="checkbox"
+                                                                                              id="inputCall1"
+                                                                                              name="inputCheckboxesCall"
+                                                                                              class="peer"> <label
+                                for="inputCall1" class="peers peer-greed js-sb ai-c"><span class="peer peer-greed">Remember Me</span></label>
+                        </div>
+                    </div>
+                    <div class="peer">
+                        <button class="btn btn-primary">로그인</button>
+                        <button class="btn btn-primary">회원가입</button>
+                    </div>
+                </div>
             </div>
         </form>
-        <div class="login-anchor">
-            <a href="{{ url_for('main.password') }}">비밀번호 재설정하기</a>
-        </div>
-
-        <div class="login-anchor">아이디가 없으신가요?
-            <a href="{{ url_for('main.join') }}">회원가입</a>
-        </div>
-        <hr>
-
-        <div name="fbForm"  class="login-form-group" method="post">
-            <div class="login-form-group">
-                <button type="button" id="fb-btn" class="btn-default">facebook로그인</button>
-            </div>
-        </div>
-
     </div>
-
+</div>
 </div>
 
+<!--&lt;!&ndash; footer start &ndash;&gt;-->
+<!--<div id="footer">-->
+<!--    <div class="footer-container">-->
+<!--        <div class="col-md-12 footer-bar">-->
+<!--            <h1>Visitor Management System</h1>-->
+<!--        </div>-->
+<!--    </div>-->
+<!--</div>&lt;!&ndash; footer end &ndash;&gt;-->
 
-<!--facebook login-->
-<script>
-//button event
-$('#fb-btn').click(function(){
-    checkLoginState();
-});
-
-//facebook 초기 설정
-function statusChangeCallback(response) {
-    console.log('statusChangeCallback');
-    console.log(response);
-
-    if (response.status === 'connected') {                   // Logged into your app and Facebook.
-            FB.login(function (response) {handleFacebookRegist(response); },
-            {scope: 'public_profile, email'});
-    } else if (response.status === 'not_authorized') {       // The person is logged into Facebook, but not your app.
-            FB.login(function (response) {handleFacebookRegist(response); },
-            {scope: 'public_profile, email'});
-    } else {
-            FB.login(function (response) {handleFacebookRegist(response); },
-            {scope: 'public_profile, email'});
-    }
-}
-
-
-
-function handleFacebookRegist(response) {
-    var accessToken = response.authResponse.accessToken;
-    var userName, userEmail;
-
-    FB.api('/me', {fields: 'name'}, function (user) {
-        userName = user.name;  
-
-        FB.api('/me',{fields: 'email'}, function (user) {
-            userEmail = user.email;
-
-            $.ajax({
-                type:"POST",
-                url: "{{ url_for('main.facebook_login')}}",
-                data:{
-                    user_name: userName,
-                    user_email: userEmail
-                }
-            }).success(function(data) {
-                document.location.href = "{{ url_for('main.index') }}";
-            }).error(function(request, status, error) {
-                alert('facebook error: facebook 로그인을 확인 후 다시 시도해주세요.')
-                document.location.href = "{{ url_for('main.login') }}";
-            });
-        });
-    });
-} 
-
-function checkLoginState() {
-    FB.getLoginStatus(function(response) {
-        statusChangeCallback(response);
-    });
-}
-
-window.fbAsyncInit = function() {
-    FB.init({
-        appId      : '588264208044970',
-        cookie     : true,  // enable cookies to allow the server to access
-                            // the session
-        xfbml      : true,  // parse social plugins on this page
-        version    : 'v2.5' // use graph api version 2.5
-    });
-};
-
-
-(function(d, s, id) {
-    var js, fjs = d.getElementsByTagName(s)[0];
-    if (d.getElementById(id)) return;
-    js = d.createElement(s); js.id = id;
-    js.src = "//connect.facebook.net/en_US/sdk.js";
-    fjs.parentNode.insertBefore(js, fjs);
-}(document, 'script', 'facebook-jssdk'));
-
-
-function testAPI() {
-    console.log('Welcome!  Fetching your information.d대다받애ㅐ해... ');
-    FB.api('/me', function(response) {
-          console.log('Successful login for: ' + response.name);
-
-    });
-}
-</script>
-
-{% endblock %}
+</body>
+</html>
