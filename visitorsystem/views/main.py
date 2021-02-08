@@ -155,7 +155,7 @@ def get_covid():
 
 def get_day():
     days = ['월요일', '화요일', '수요일', '목요일', '금요일', '토요일', '일요일']
-    aday = time.localtime().tm_mday
+    aday = (time.localtime().tm_mday)%7
     return days[aday - 1]
 
 

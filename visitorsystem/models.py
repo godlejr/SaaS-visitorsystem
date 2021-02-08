@@ -788,6 +788,10 @@ class Scuser(db.Model, UserMixin):
     biz_id = db.Column(db.Integer,db.ForeignKey('sc_comp_info.id'))  # 외부1일 경우에만 데이터 있음 sc_comp_info
     comp_nm = db.Column(db.String(50))
     login_yn = db.Column(db.String(2))
+    #dept_id/dept_nm 추가
+    dept_id = db.Column(db.String(30))
+    dept_nm = db.Column(db.String(50))
+
     phone = db.Column(db.String(512))
     email = db.Column(db.String(512))
     fax_no = db.Column(db.String(512))
