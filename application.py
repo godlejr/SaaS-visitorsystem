@@ -4,17 +4,17 @@ gunicorn 실행 모듈
 init.py - context processor 포함
 
 """
-import os, logging, json_logging, sys
+import os
 
 from flask import url_for, current_app, request
-from flask_login import current_user
 
+from logger_json import loggerSet
 from visitorsystem import create_app
 from visitorsystem.models import Ssctenant, Scmenu
-from logger_json import loggerSet, log
 
 application = create_app(os.getenv('FLASK_CONFIG') or 'default')
 logger = loggerSet()
+
 
 @application.context_processor
 def override_url_for():
@@ -40,10 +40,11 @@ def utility_processor():
         return ssctenant
 
     def get_menu():
-        scMenu  = Scmenu.query.order_by(Scmenu.group_id,Scmenu.depth,Scmenu.position)
+        scMenu = Scmenu.query.order_by(Scmenu.group_id, Scmenu.depth, Scmenu.position)
         return scMenu
 
     return dict(url_for_s3=url_for_s3, get_tenant=get_tenant, get_menu=get_menu)
+
 
 if __name__ == '__main__':
     from flask_script import Manager
