@@ -6,7 +6,7 @@ from flask_debugtoolbar import DebugToolbarExtension
 from flask_login import LoginManager
 from redis import Redis
 from werkzeug.utils import redirect
-import sys
+import sys, json_logging
 import config
 from visitorsystem.lib.redis_session import RedisSessionInterface
 from visitorsystem.models import db,  File, Photo, Magazine, MagazineComment, PhotoComment, Comment, Board, \
@@ -41,6 +41,11 @@ def create_app(config_name):
 
     toolbar = DebugToolbarExtension()
     toolbar.init_app(application)
+
+    # 2021.02.08 json-logging
+    json_logging.ENABLE_JSON_LOGGING = False
+    json_logging.init_flask()
+    json_logging.init_request_instrument(application)
 
     # admin example
     # admin = Admin(application, name='Happy@Home', template_mode='bootstrap3', index_view=MyAdminIndexView())
@@ -85,11 +90,11 @@ def create_app(config_name):
     application.errorhandler(500)(lambda e: render_template('error/404.html'))
 
 
-    log = logging.getLogger('Redis')
-    handler = logging.StreamHandler(sys.stderr)
-    handler.setFormatter(logging.Formatter('%(name)s - %(levelname)s - %(message)s'))
-    log.addHandler(handler)
-    log.setLevel(logging.INFO)
+    # log = ('Redis')
+    # handler = logging.StreamHandler(sys.stderr)
+    # handler.setFormatter(logging.Formatter('%(name)s - %(levelname)s - %(message)s'))
+    # log.addHandler(handler)
+    # log.setLevel(logging.INFO)
 
     login_manager = LoginManager()
     login_manager.init_app(application)

@@ -4,16 +4,17 @@ gunicorn 실행 모듈
 init.py - context processor 포함
 
 """
-import os
+import os, logging, json_logging, sys
 
 from flask import url_for, current_app, request
 from flask_login import current_user
 
 from visitorsystem import create_app
-from visitorsystem.models import Ssctenant ,Scmenu
+from visitorsystem.models import Ssctenant, Scmenu
+from logger_json import loggerSet, log
 
 application = create_app(os.getenv('FLASK_CONFIG') or 'default')
-
+logger = loggerSet()
 
 @application.context_processor
 def override_url_for():
