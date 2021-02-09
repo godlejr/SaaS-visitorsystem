@@ -4,13 +4,17 @@ from flask import Flask, render_template, session
 from flask_debugtoolbar import DebugToolbarExtension
 from flask_login import LoginManager
 from redis import Redis
+
+from loggers import log, LoggerSet
 from werkzeug.utils import redirect
 
 import config
+
 from visitorsystem.lib.redis_session import RedisSessionInterface
 from visitorsystem.models import db, File, Photo, Magazine, MagazineComment, PhotoComment, Comment, Board, \
     Category, \
     Residence, Scuser
+
 
 # from visitorsystem.views import mail
 
@@ -31,7 +35,6 @@ def create_app(config_name):
     config.init_app(application, config_name)
     db.init_app(application)
     # mail.init_app(application)
-
 
     redis = Redis.from_url(application.config['REDIS_URL'])
     application.redis = redis
@@ -92,7 +95,6 @@ def create_app(config_name):
     login_manager.login_view = 'main.login'
     login_manager.login_message = '로그인 후 이용해주세요.'
 
-    from loggers import loggerSet
     loggerSet()
 
     @login_manager.user_loader
@@ -102,4 +104,3 @@ def create_app(config_name):
         return Scuser.query.filter_by(id=session['id']).first()
 
     return application
-
