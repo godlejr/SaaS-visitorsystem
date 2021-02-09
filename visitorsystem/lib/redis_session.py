@@ -60,8 +60,6 @@ class RedisSessionInterface(SessionInterface):
         val = self.serializer.dumps(dict(session))
         self.redis.setex(self.prefix + session.sid, int(redis_exp.total_seconds()),val)
 
-        log("Redis").info("[tenant_id:%s][login_id:%s]", session['ssc_tenant_id'], session['id'])
-
         response.set_cookie(app.session_cookie_name, session.sid,
                             expires=cookie_exp, httponly=True,
                             domain=domain)
