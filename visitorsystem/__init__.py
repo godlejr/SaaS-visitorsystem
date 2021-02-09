@@ -97,6 +97,8 @@ def create_app(config_name):
     @login_manager.user_loader
     def load_user(login_id):
         # print(session['id'])
+        log("Redis").info("[tenant_id:%s][login_id:%s]", session['ssc_tenant_id'], session['id'])
+
         return Scuser.query.filter_by(id=session['id']).first()
 
     return application
