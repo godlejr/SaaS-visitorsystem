@@ -1,21 +1,18 @@
-import logging
 import os
 
-from flask import Flask, render_template,session
+from flask import Flask, render_template, session
 from flask_debugtoolbar import DebugToolbarExtension
 from flask_login import LoginManager
 from redis import Redis
 from werkzeug.utils import redirect
-import sys
+
 import config
 from visitorsystem.lib.redis_session import RedisSessionInterface
-from visitorsystem.models import db,  File, Photo, Magazine, MagazineComment, PhotoComment, Comment, Board, \
+from visitorsystem.models import db, File, Photo, Magazine, MagazineComment, PhotoComment, Comment, Board, \
     Category, \
     Residence, Scuser
 
-
-#from visitorsystem.views import mail
-
+# from visitorsystem.views import mail
 
 def create_app(config_name):
     """
@@ -33,7 +30,7 @@ def create_app(config_name):
 
     config.init_app(application, config_name)
     db.init_app(application)
-    #mail.init_app(application)
+    # mail.init_app(application)
 
 
     redis = Redis.from_url(application.config['REDIS_URL'])
@@ -77,7 +74,6 @@ def create_app(config_name):
     application.register_blueprint(inout_tag_blueprint, url_prefix='/inoutTag')
     application.register_blueprint(statistics_blueprint, url_prefix='/statistics')
 
-
     from visitorsystem.views.example.test import test as test_blueprint
     application.register_blueprint(test_blueprint, url_prefix='/test')
 
@@ -85,21 +81,24 @@ def create_app(config_name):
     application.errorhandler(404)(lambda e: render_template('error/404.html'))
     application.errorhandler(500)(lambda e: render_template('error/404.html'))
 
-
-    log = logging.getLogger('Redis')
-    handler = logging.StreamHandler(sys.stderr)
-    handler.setFormatter(logging.Formatter('%(name)s - %(levelname)s - %(message)s'))
-    log.addHandler(handler)
-    log.setLevel(logging.INFO)
+    # log = ('Redis')
+    # handler = logging.StreamHandler(sys.stderr)
+    # handler.setFormatter(logging.Formatter('%(name)s - %(levelname)s - %(message)s'))
+    # log.addHandler(handler)
+    # log.setLevel(logging.INFO)
 
     login_manager = LoginManager()
     login_manager.init_app(application)
     login_manager.login_view = 'main.login'
     login_manager.login_message = '로그인 후 이용해주세요.'
 
+    from loggers import loggerSet
+    loggerSet()
+
     @login_manager.user_loader
     def load_user(login_id):
-        print(session['id'])
+        # print(session['id'])
         return Scuser.query.filter_by(id=session['id']).first()
 
     return application
+
