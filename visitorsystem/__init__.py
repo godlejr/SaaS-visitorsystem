@@ -5,7 +5,7 @@ from flask_debugtoolbar import DebugToolbarExtension
 from flask_login import LoginManager
 from redis import Redis
 
-from loggers import log, LoggerSet
+from loggers import log, loggerSet
 from werkzeug.utils import redirect
 
 import config
