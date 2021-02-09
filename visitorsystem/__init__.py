@@ -1,21 +1,18 @@
-import logging
 import os
 
-from flask import Flask, render_template,session
+from flask import Flask, render_template, session
 from flask_debugtoolbar import DebugToolbarExtension
 from flask_login import LoginManager
 from redis import Redis
 from werkzeug.utils import redirect
-import sys, json_logging
+
 import config
 from visitorsystem.lib.redis_session import RedisSessionInterface
-from visitorsystem.models import db,  File, Photo, Magazine, MagazineComment, PhotoComment, Comment, Board, \
+from visitorsystem.models import db, File, Photo, Magazine, MagazineComment, PhotoComment, Comment, Board, \
     Category, \
     Residence, Scuser
 
-
-#from visitorsystem.views import mail
-
+# from visitorsystem.views import mail
 
 def create_app(config_name):
     """
@@ -33,7 +30,7 @@ def create_app(config_name):
 
     config.init_app(application, config_name)
     db.init_app(application)
-    #mail.init_app(application)
+    # mail.init_app(application)
 
     redis = Redis.from_url(application.config['REDIS_URL'])
     application.redis = redis
@@ -41,11 +38,6 @@ def create_app(config_name):
 
     toolbar = DebugToolbarExtension()
     toolbar.init_app(application)
-
-    # 2021.02.08 json-logging
-    json_logging.ENABLE_JSON_LOGGING = False
-    json_logging.init_flask()
-    json_logging.init_request_instrument(application)
 
     # admin example
     # admin = Admin(application, name='Happy@Home', template_mode='bootstrap3', index_view=MyAdminIndexView())
@@ -81,14 +73,12 @@ def create_app(config_name):
     application.register_blueprint(inout_tag_blueprint, url_prefix='/inoutTag')
     application.register_blueprint(statistics_blueprint, url_prefix='/statistics')
 
-
     from visitorsystem.views.example.test import test as test_blueprint
     application.register_blueprint(test_blueprint, url_prefix='/test')
 
     application.errorhandler(403)(lambda e: redirect('/'))
     application.errorhandler(404)(lambda e: render_template('error/404.html'))
     application.errorhandler(500)(lambda e: render_template('error/404.html'))
-
 
     # log = ('Redis')
     # handler = logging.StreamHandler(sys.stderr)
@@ -101,9 +91,13 @@ def create_app(config_name):
     login_manager.login_view = 'main.login'
     login_manager.login_message = '로그인 후 이용해주세요.'
 
+    from loggers import loggerSet
+    loggerSet()
+
     @login_manager.user_loader
     def load_user(login_id):
-        print(session['id'])
+        # print(session['id'])
         return Scuser.query.filter_by(id=session['id']).first()
 
     return application
+

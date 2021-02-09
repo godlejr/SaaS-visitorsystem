@@ -7,13 +7,14 @@ init.py - context processor 포함
 import os
 
 from flask import url_for, current_app, request
+from flask_script import Manager
+from flask_login import current_user
 
-from logger_json import loggerSet
 from visitorsystem import create_app
 from visitorsystem.models import Ssctenant, Scmenu
+from loggers import log
 
 application = create_app(os.getenv('FLASK_CONFIG') or 'default')
-logger = loggerSet()
 
 
 @application.context_processor
@@ -33,6 +34,11 @@ def dated_url_for(endpoint, **values):
 @application.context_processor
 def utility_processor():
     def url_for_s3(tenant_id, s3path, filename=''):
+        # 로그인 전, 사용자 정보 모를 때 tenant_id만 출력
+        if current_user.is_anonymous:
+            log("S3").info("[tenant_id:%s]", get_tenant().tenant_id)
+        else:
+            log("S3").info("[tenant_id:%s][login_id:%s]", get_tenant().tenant_id, current_user.id)
         return ''.join((current_app.config['S3_BUCKET_NAME_VMS'], tenant_id, current_app.config[s3path], filename))
 
     def get_tenant():
@@ -45,9 +51,6 @@ def utility_processor():
 
     return dict(url_for_s3=url_for_s3, get_tenant=get_tenant, get_menu=get_menu)
 
-
 if __name__ == '__main__':
-    from flask_script import Manager
-
     manager = Manager(application)
     manager.run()

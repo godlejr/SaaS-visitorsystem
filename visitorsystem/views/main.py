@@ -11,6 +11,7 @@ from flask_login import login_required, login_user, current_user
 from sqlalchemy import and_
 from werkzeug.security import check_password_hash
 
+from loggers import log
 from visitorsystem.forms import LoginForm
 from visitorsystem.models import Scuser, Ssctenant
 
@@ -38,6 +39,10 @@ def login():
             ssctenant = Ssctenant.query.filter_by(event_url=request.host).first()
             # 사용자 조회
             user = Scuser.query.filter(and_(Scuser.login_id == form.login_id.data, Scuser.tenant_id == ssctenant.id)).first()
+            if current_user.is_anonymous:
+                log("Transaction").info("[tenant_id:%s]", ssctenant.tenant_id)
+            else:
+                log("Transaction").info("[tenant_id:%s][login_id:%s]", ssctenant.tenant_id, current_user.id)
 
             if user:
                 # 비밀번호 비교
@@ -51,6 +56,7 @@ def login():
                     session['name'] = user.name
                     session['auth_id'] = user.auth_id
                     session['tenant_id'] = user.tenant_id
+                    session['ssc_tenant_id'] = ssctenant.tenant_id
                     login_user(user)
 
                     return redirect(request.args.get("next") or url_for('main.index'))
@@ -83,7 +89,7 @@ def get_covid():
 
     response = requests.get(serviceUrl, params=covid_param)
 
-    print(response.text)
+    # print(response.text)
     covid_list = []
     if response.status_code == 200:
         dataTree = et.fromstring(response.text)
@@ -120,7 +126,7 @@ def get_covid():
     today_covid = covid_list[index]
     yesterday_covid = covid_list[index + 1]
     stateDt = today_covid.get("stateDt")
-    print("ddd" + stateDt)
+    # print("ddd" + stateDt)
 
     today_total_decideCnt = today_covid.get("decideCnt")  # 확진자
     today_total_examCnt = today_covid.get("examCnt")  # 검사자
@@ -173,7 +179,7 @@ def get_article(keyword):
     articles = []
 
     while page < maxpage_t:
-        print(page)
+        # print(page)
 
         url = "https://search.naver.com/search.naver?where=news&query=" + query + "&sort=1&ds=" + s_date + "&de=" + e_date + "&nso=so%3Ar%2Cp%3Afrom" + s_from + "to" + e_to + "%2Ca%3A&start=" + str(
             page)
@@ -189,27 +195,27 @@ def get_article(keyword):
             urls = soup.findAll('a', href=re.compile('^http(s)?:\/\/(news)\.(naver)\.(com)\/(main)\/(read)\.(nhn)'))[0]
 
             if urls["href"].startswith("https://news.naver.com"):
-                print("naver.com으로 시작하는 href만 추출")
-                print(urls['href'])
+                # print("naver.com으로 시작하는 href만 추출")
+                # print(urls['href'])
 
                 # print(urls["href"])
-                print("get_new 함수 시작")
+                # print("get_new 함수 시작")
                 news_detail = get_news(urls["href"])
 
-                print("news_detail[1](url): " + news_detail[0])
-
-                # f.write(news_detail[1] + "&&&")
-                print("news_detail[1](날짜): " + news_detail[2])
-
-                # # f.write(news_detail[4] + "&&&")
-                print("news_detail[4](언론사) : " + news_detail[4])
-
-                # f.write(news_detail[0] + "&&&")
-                print("news_detail[0](제목) : " + news_detail[1])
-
-                # f.write(news_detail[2] + "&&&")
-                print("news_detail[2](기사내용) : 기사내용")
-                print(news_detail[3])
+                # print("news_detail[1](url): " + news_detail[0])
+                #
+                # # f.write(news_detail[1] + "&&&")
+                # print("news_detail[1](날짜): " + news_detail[2])
+                #
+                # # # f.write(news_detail[4] + "&&&")
+                # print("news_detail[4](언론사) : " + news_detail[4])
+                #
+                # # f.write(news_detail[0] + "&&&")
+                # print("news_detail[0](제목) : " + news_detail[1])
+                #
+                # # f.write(news_detail[2] + "&&&")
+                # print("news_detail[2](기사내용) : 기사내용")
+                # print(news_detail[3])
 
             articles.append(news_detail)
         except Exception as e:
@@ -221,7 +227,7 @@ def get_article(keyword):
 
 def get_news(n_url):
     news_detail = []
-    print(n_url)
+    # print(n_url)
     header = {
         'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.36',
     }
