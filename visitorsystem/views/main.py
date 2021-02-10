@@ -11,7 +11,7 @@ from flask_login import login_required, login_user, current_user
 from sqlalchemy import and_
 from werkzeug.security import check_password_hash, generate_password_hash
 
-from loggers import log
+from loggers import log, loggerSet
 from visitorsystem.forms import LoginForm
 from visitorsystem.models import db, Scuser, Ssctenant, Sccompinfo
 
