@@ -20,7 +20,7 @@
 
 {% macro render_pagination(endpoint, pagination, id=None, query_string=None) %}
 <!-- pagination -->
-<div class="custom-pagination btn-group mr-2">
+<div class="custom-pagination btn-group mr-2" style="display: flex">
     <div class="custom-pagination-center" style="margin: 0 auto">
         {% if pagination.has_prev %}
             <button type="button" class="btn btn-primary"

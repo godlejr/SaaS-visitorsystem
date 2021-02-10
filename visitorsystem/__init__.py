@@ -7,6 +7,7 @@ from redis import Redis
 from werkzeug.utils import redirect
 
 import config
+from loggers import log, loggerSet
 from visitorsystem.lib.redis_session import RedisSessionInterface
 from visitorsystem.models import db, File, Photo, Magazine, MagazineComment, PhotoComment, Comment, Board, \
     Category, \
@@ -91,14 +92,12 @@ def create_app(config_name):
     login_manager.login_view = 'main.login'
     login_manager.login_message = '로그인 후 이용해주세요.'
 
-    from loggers import loggerSet
     loggerSet()
 
     @login_manager.user_loader
     def load_user(login_id):
         # print(session['id'])
         log("Redis").info("[tenant_id:%s][login_id:%s]", session['ssc_tenant_id'], session['id'])
-
         return Scuser.query.filter_by(id=session['id']).first()
 
     return application
