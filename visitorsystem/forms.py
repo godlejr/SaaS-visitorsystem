@@ -43,12 +43,14 @@ validators = {
         DataRequired(message='이메일을 입력해주세요'),
         Email(message='Email 형식이 맞지 않습니다.')
     ],
+    'phone': [
+        DataRequired(message='전화번호를 입력해주세요')
+    ],
     'password': [
         DataRequired(message='비밀번호를 입력해주세요'),
         Length(min=6, max=50, message='6자 이상의 비밀번호를 입력하세요'),
         EqualTo('confirm', message='동일한 비밀번호를 입력해주세요.')
     ],
-
     'password_login': [
         DataRequired()
     ],
@@ -175,3 +177,14 @@ class ApplyForm(Form):
     approve_date = StringField('일시')
     approve_remark = StringField('비고')
 
+
+class UserAccountFrom(Form):
+    """사용자 폼"""
+    login_id = StringField('아이디', validators['name'])
+    login_pwd = PasswordField('비밀번호', validators['password_login'])
+    login_pw_conf = PasswordField('비밀번호확인', validators['password_login'])
+    name = StringField('이름', validators['name'])
+    phone = StringField('핸드폰', validators['phone'])
+    email = StringField('이메일', validators['email'])
+    comp_nm = StringField('회사명')
+    biz_no = StringField('업체번호')

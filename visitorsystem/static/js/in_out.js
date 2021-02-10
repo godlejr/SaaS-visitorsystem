@@ -1,19 +1,11 @@
+var gb;
+var gb2;
+var ruleList = [];
 $(document).ready(function() {
-    //URL에 해당하는 컨트롤러 호출
-    function apiCallGet(url, controller, option) {
-        $.ajax({
-                url: url,
-                method: "GET"
-            })
-            .done(function(dataSet) {
-                controller(dataSet, option);
-            })
-            .fail(function(xhr, status, errorThrown) {
-                console.log(errorThrown);
-            })
-    }
 
-    function apiCallPost(url, controller, data, option) {
+    //URL에 해당하는 컨트롤러 호출
+
+    function apiCallPost(url, controller, data, opt) {
         $.ajax({
                 type: 'POST',
                 url: url,
@@ -22,7 +14,7 @@ $(document).ready(function() {
                 data: data
             })
             .success(function(data) {
-                controller(data);
+                controller(data, opt);
             });
     }
 
@@ -75,29 +67,29 @@ $(document).ready(function() {
         newTr = `
          <tr class="hide">
              <td>
-                     <input type="checkbox" id="checkbox" class="peer">
+                     <input type="checkbox" id="checkbox" class="peer leave">
              </td>
 
              <td>
                 <div class="form-group">
-                     <input type="text" class="form-control" id="tvisitor" style="width:80%; float:left" >
+                     <input type="text" class="form-control leave" id="tvisitor" style="width:80%; float:left" >
                  </div>
              </td>
 
              <td>
                  <div class="form-group">
-                     <input type="text" id="tphone"  class="form-control">
+                     <input type="text" id="tphone"  class="form-control leave ctphone">
                  </div>
              </td>
 
              <td>
                 <div class="form-group" >
-                         <select id="" name="" class="form-control">
+                         <select id="" name="" class="form-control leave">
                                 ${str}
                          </select>
                  </div>
              </td>
-             <td><input type="text" class="form-control"></td>
+             <td><input type="text" class="form-control leave"></td>
              `
 
         for (var i = 0; i < dataSet.length; i++) {
@@ -105,28 +97,26 @@ $(document).ready(function() {
             var type = obj.rule_type;
             var ruleName = obj.rule_name;
             theadContext = theadContext + `<th style="">${ruleName}</th>`;
+            ruleList.push(ruleName);
 
             if (type == '텍스트') {
-                append = append + `<td>
-                                                 <div class="input-group">
-                                                     <input type="text" class="form-control" disabled>
-                                                 </div>
-                                    </td>`
+                append = append + `<td><input type="text" class="form-control rule-text leave" rule=${ruleName}></td>`
             } else if (type == '달력') {
                 append = append + `<td>
-                                             <div class="input-group">
-                                              <div class="input-group-addon bgc-white bd bdwR-0"><i class="ti-calendar"></i></div>
-                                              <input type="text" class="form-control bdc-grey-200 start-date" placeholder="Datepicker" data-provide="datepicker" name ="inout_sdate" id="inout_sdate" disabled>
-                                             </div>
-                                         </td> `
+                                       <div class="input-group">
+                                       <div class="input-group-addon bgc-white bd bdwR-0"><i class="ti-calendar"></i></div>
+                                       <input type="text" class="form-control start-date rule-calendar leave rule" placeholder="달력" data-provide="datepicker" name ="inout_sdate" id="inout_sdate" rule=${ruleName}>
+                                       </div>
+                                    </td> `
             } else if (type == '파일') {
-                append = append + `<td><input id="input-b1" name="input-b1" type="file" class="file" data-browse-on-zone-click="true" disabled></td> `
+                append = append + `<td><input name="file" id="file" accept="image/*,video/*" type="file" class="file rule-file leave file-upload rule" data-browse-on-zone-click="true" rule=${ruleName}></td>`
             }
         }
 
-        $('#thead').append(theadContext);
-        newTr = newTr + append + '</tr>';
 
+        $('#thead').append(theadContext);
+        append = append + `<td style="visibility:hidden" is-valid="1"></td>`
+        newTr = newTr + append + '</tr>';
     }
 
     //출입신청 컨트롤러
@@ -156,13 +146,68 @@ $(document).ready(function() {
 
         $('#interviewTbody').append(str);
         $('.interviewTtr').click(function() {
+            $('#interviewer_dept').val($(this).children('td:eq(0)').text());
             $('#interviewer_name').val($(this).children('td:eq(1)').text());
             $('#interviewer_phone').val($(this).children('td:eq(2)').text());
+
         });
     }
 
     //규칙검증 컨트롤러
-    function rulevalidController(dataSet) {}
+    function rulevalidController(dataSet, opt) {
+        var dataSet = dataSet.msg;
+        var msg = '';
+        var check = false;
+        gb = opt.parent().parent().next().next().next(); //rule1부터 시작
+        temp = opt.parent().parent().next().next().next();
+
+        for (var i = 0; i < dataSet.length; i++) {
+            var rule_name = dataSet[i].rule_name;
+            var rule_desc = dataSet[i].rule_desc;
+            var rule_type = dataSet[i].rule_type;
+            var state = dataSet[i].state;
+
+            //state 상태체크
+            if (!state) {
+                msg = msg + rule_name + " ";
+                check = true;
+                if (rule_type == '달력') {
+                    temp.children().children('input').addClass('is-invalid');
+                } else {
+                    temp.children().addClass('is-invalid');
+                }
+            } else {
+                if (rule_type == '달력') {
+                    temp.children().children('input').removeClass('is-invalid');
+
+                } else {
+                    temp.children().removeClass('is-invalid');
+                }
+            }
+            temp = temp.next();
+        }
+
+
+
+        if (check) {
+            msg = msg + '의 유효기간이 만료되었습니다.';
+            console.log('----------------------------in')
+            temp.attr("is-valid", "0"); //0은 검증X
+            console.log(temp.attr("is-valid"));
+            console.log('----------------------------in')
+
+        } else {
+            console.log('----------------------------out')
+            temp.attr("is-valid", "1"); //1은 검증0
+            console.log(temp.attr("is-valid"));
+            console.log('----------------------------out')
+        }
+
+
+        $('#errorMsg').text(msg);
+    }
+
+
 
     //업체조회 컨트롤러
     function compSearchController(dataSet) {
@@ -176,7 +221,7 @@ $(document).ready(function() {
                                  <th scope="row">${i+1}</th>
                                  <td>${comp_nm}</td>
                                  <td>${biz_no}</td>
-                            </tr>`;
+                         </tr>`;
             str += temp;
         }
 
@@ -235,45 +280,159 @@ $(document).ready(function() {
             const $clone = $tableID.find('tbody tr').last().clone(true).removeClass('hide table-line');
             if ($tableID.find('tbody tr').length === 0) {
                 $('#tableBody').append(newTr);
-                $('#tphone').keydown(function(e) {
-                    if (e.keyCode == 13) {
-                        $(this).val($(this).val().replace(/[^0-9]/g, "").replace(/(^02|^0505|^1[0-9]{3}|^0[0-9]{2})([0-9]+)?([0-9]{4})$/, "$1-$2-$3").replace("--", "-"));
-                        var sdate = $('#inout_sdate').val();
-                        var edate = $('#inout_edate').val();
-                        var date = [];
-                        var year, month, day;
-                        var dataSet = {};
-                        if (!sdate || !edate){
-                            alert('날짜를 입력해주세요')
-                            return;
-                        }
 
-
-                        sdate = sdate.split('/')
-                        year = sdate[2]; //년
-                        month = sdate[0]; //월
-                        day = sdate[1]; //일
-                        dataSet['sdate'] = year + "-" + month + "-" + day;
-                        date = [];
-
-                        edate = edate.split('/')
-                        year = edate[2]; //년
-                        month = edate[0]; //월
-                        day = edate[1]; //일
-                        dataSet['edate'] = year + "-" + month + "-" + day;
-                        data = [];
-
-                        var userName = $(this).parent().parent().prev().children().children().val();
-                        var userPhone = $(this).val();
-                        dataSet['userName'] = userName;
-                        dataSet['userPhone'] = userPhone;
-                        apiCallPost(urlMake('RULE_VALID'), rulevalidController, dataSet)
-
-                    }
-                });
-
+            } else {
+                $tableID.find('tbody').last().append(newTr);
+                //$tableID.find('table').append($clone);
             }
-            $tableID.find('table').append($clone);
+
+            $('.leave').focusout(function(e) {
+                var sdate = $('#inout_sdate').val();
+                var edate = $('#inout_edate').val();
+                var date = [];
+                var year, month, day;
+                var dataSet = {};
+
+                if (!sdate || !edate) {
+                    return;
+                }
+
+                sdate = sdate.split('/')
+                year = sdate[2]; //년
+                month = sdate[0]; //월
+                day = sdate[1]; //일
+                dataSet['sdate'] = year + "-" + month + "-" + day;
+
+                edate = edate.split('/')
+                year = edate[2]; //년
+                month = edate[0]; //월
+                day = edate[1]; //일
+                dataSet['edate'] = year + "-" + month + "-" + day;
+
+                var userName = $(this).parent().parent().first().children().children().children().val() || false;
+                var userPhone = $(this).parent().parent().first().children().next().next().children().children().val() || false;
+                if (!userName || !userPhone)
+                    return;
+
+                dataSet['userName'] = userName;
+                dataSet['userPhone'] = userPhone;
+
+
+                var option = $(this);
+
+                apiCallPost(urlMake('RULE_VALID'), rulevalidController, dataSet, option)
+            });
+
+            $('.rule-text').focusout(function(e) {
+                var userName = $(this).parent().parent().first().children().children().children().val() || '';
+                var userPhone = $(this).parent().parent().first().children().next().next().children().children().val() || '';
+                var rule = $(this).attr('rule');
+                var ruleText = $(this).val() || '';
+
+                if (userName.length == 0 || userPhone.length == 0 || ruleText.length == 0)
+                    return;
+
+                var dataSet = {};
+                dataSet['userName'] = userName;
+                dataSet['userPhone'] = userPhone;
+                dataSet['ruleText'] = ruleText;
+                dataSet['type'] = '텍스트';
+                dataSet['rule'] = rule;
+                $.ajax({
+                        type: 'POST',
+                        url: "/inoutApply/rule/text/update",
+                        async: false,
+                        cache: false,
+                        data: dataSet
+                    })
+                    .success(function(data) {
+                        alert('성공')
+                    });
+            });
+
+
+            $('.rule-calendar').focusout(function(e) {
+                gb2 = $(this);
+                var userName = $(this).parent().parent().parent().first().children().children().children().val() || '';
+                var userPhone = $(this).parent().parent().parent().first().children().next().next().children().children().val() || '';
+                var rule = $(this).attr('rule');
+                var ruleCalender = $(this).val() || '';
+
+                if (userName.length == 0 || userPhone.length == 0 || ruleCalender.length == 0)
+                    return;
+
+                var dataSet = {};
+                dataSet['userName'] = userName;
+                dataSet['userPhone'] = userPhone;
+                dataSet['rule'] = rule;
+                dataSet['type'] = '캘린더';
+                ruleCalender = ruleCalender.split('/')
+                year = ruleCalender[2]; //년
+                month = ruleCalender[0]; //월
+                day = ruleCalender[1]; //일
+                dataSet['ruleCalender'] = year + "-" + month + "-" + day;
+
+
+
+                $.ajax({
+                        type: 'POST',
+                        url: "/inoutApply/rule/calendar/update",
+                        async: false,
+                        cache: false,
+                        data: dataSet
+                    })
+                    .success(function(data) {
+                        alert('성공')
+                    });
+
+            });
+
+
+            $('.file-upload').change(function(e) {
+                if (confirm('해당 파일을 업로드하시겠습니까?')) {
+                    var data = new FormData();
+                    data.append("file", $('#file').prop('files')[0]);
+                    var applicantName = $('#applicant_name').val() || '';
+                    var applicantPhone = $('#applicant_phone').val() || '';
+                    var userName = $(this).parent().parent().first().children().children().children().val() || '';
+                    var userPhone = $(this).parent().parent().first().children().next().next().children().children().val() || '';
+
+                    var rule = $(this).attr('rule');
+
+
+                    if (applicantName.length==0 || applicant_phone.length==0 || userName.length == 0 || userPhone.length == 0)
+                        return;
+                    data.append('applicantName',applicantName);
+                    data.append('applicantPhone',applicantPhone);
+                    data.append('userName',userName);
+                    data.append('phone',userPhone);
+                    data.append('type','파일');
+                    data.append('rule',rule);
+
+
+
+                    $.ajax({
+                        type: "POST",
+                        enctype: 'multipart/form-data',
+                        url: "/inoutApply/rule/file/upload",
+                        data: data,
+                        processData: false,
+                        contentType: false,
+                        cache: false,
+                        timeout: 600000,
+                        success: function(result) {
+                            console.log("SUCCESS : ");
+                        },
+
+                        error: function(e) {
+                            console.log("ERROR : ", e);
+                        }
+                    });
+                };
+            });
+
+
+
         });
 
         $('#delUser').click(function(e) {
@@ -309,34 +468,6 @@ $(document).ready(function() {
         });
 
 
-
-        var autoHypenPhone = function(str) {
-            str = str.replace(/[^0-9]/g, '');
-            var tmp = '';
-            if (str.length < 4) {
-                return str;
-            } else if (str.length < 7) {
-                tmp += str.substr(0, 3);
-                tmp += '-';
-                tmp += str.substr(3);
-                return tmp;
-            } else if (str.length < 11) {
-                tmp += str.substr(0, 3);
-                tmp += '-';
-                tmp += str.substr(3, 3);
-                tmp += '-';
-                tmp += str.substr(6);
-                return tmp;
-            } else {
-                tmp += str.substr(0, 3);
-                tmp += '-';
-                tmp += str.substr(3, 4);
-                tmp += '-';
-                tmp += str.substr(7);
-                return tmp;
-            }
-            return str;
-        }
     }
     init();
 })

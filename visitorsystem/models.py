@@ -38,7 +38,7 @@ class BaseMixin(object):
     # updated_at = db.Column(db.DateTime, default=db.func.now(), onupdate=db.func.now())
 
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    use_yn = db.Column(db.String(1))
+    use_yn = db.Column(db.String(1),default='1')
     created_at = db.Column(db.DateTime, default=db.func.now())
     created_by = db.Column(db.String(50))
     updated_at = db.Column(db.DateTime, default=db.func.now(), onupdate=db.func.now())
@@ -878,7 +878,7 @@ class Vcapplyuser(db.Model, BaseMixin):
 class Vcinoutinfo(db.Model, BaseMixin):
     """입출입정보"""
     __tablename__ = 'vc_inout_info'
-    tenant_id = db.Column(db.Integer, db.ForeignKey('ssc_tenants.tenant_id'), nullable=False)
+    tenant_id = db.Column(db.Integer, db.ForeignKey('ssc_tenants.id'), nullable=False)
     apply_user_id = db.Column(db.Integer, db.ForeignKey('vc_apply_user.id'), nullable=False)
 
     site_id = db.Column(db.String(30))
@@ -897,8 +897,7 @@ class Vcinoutinfo(db.Model, BaseMixin):
 class Scrule(db.Model, BaseMixin):
     """테넌트 정보"""
     __tablename__ = 'sc_rule'
-    tenant_id = db.Column(db.Integer, db.ForeignKey('ssc_tenants.tenant_id'), nullable=False)
-    tenant_id = db.Column(db.Integer, nullable=False)
+    tenant_id = db.Column(db.Integer, db.ForeignKey('ssc_tenants.id'), nullable=False)
     rule_name = db.Column(db.String(50), nullable=False, unique=True)
     rule_type = db.Column(db.String(50), nullable=False)
     rule_duedate = db.Column(db.String(50), nullable=False)
@@ -915,7 +914,7 @@ class Scrule(db.Model, BaseMixin):
 class Vcvisituser(db.Model, BaseMixin):
     """작업자 정보"""
     __tablename__ = 'vc_visit_user'
-    tenant_id = db.Column(db.Integer, db.ForeignKey('ssc_tenants.tenant_id'), nullable=False)
+    tenant_id = db.Column(db.Integer, db.ForeignKey('ssc_tenants.id'), nullable=False)
     rule_id = db.Column(db.Integer, db.ForeignKey('sc_rule.id'), nullable=False)
     name = db.Column(db.String(50), nullable=False)
     phone = db.Column(db.String(50), nullable=False)
@@ -926,14 +925,20 @@ class Vcvisituser(db.Model, BaseMixin):
     # [Detail]
     scrule = db.relationship('Scrule', backref=backref('VC_VISIT_USER_RULE_ID'))
 
+    # 1:多 (Vcvisituser->ScRuleFile) [Master]
+    scrulefiles = db.relationship('ScRuleFile', back_populates='vcvisituser')
+
 
 class ScRuleFile(db.Model, BaseMixin):
     """파일 정보"""
     __tablename__ = 'sc_rule_file'
-    tenant_id = db.Column(db.Integer, db.ForeignKey('ssc_tenants.tenant_id'), nullable=False)
-    rule_id = db.Column(db.Integer, db.ForeignKey('sc_rule.id'), nullable=False)     # phone_ / user_id
-    file_dir = db.Column(db.String(100), nullable=False, unique=True)                # S3_dir + Scrule.id
-    file_name_ = db.Column(db.String(100), nullable=False)
+    tenant_id = db.Column(db.Integer, db.ForeignKey('ssc_tenants.id'), nullable=False)
+    rule_id = db.Column(db.Integer, db.ForeignKey('sc_rule.id'), nullable=False)
+    visit_id = db.Column(db.Integer, db.ForeignKey('vc_visit_user.id'), nullable=False)
+    file_dir = db.Column(db.String(100))
+    file_name = db.Column(db.String(100))
+    s3_url = db.Column(db.String(200))
 
     # [Detail]
     scrule = db.relationship('Scrule', backref=backref('sc_rule_file_sc_rule'))
+    vcvisituser = db.relationship('Vcvisituser', backref=backref('sc_rule_file_vc_visit_user'))

@@ -6,14 +6,14 @@ from urllib import parse
 
 import requests
 from bs4 import BeautifulSoup
-from flask import Blueprint, render_template, request, current_app, flash, session, redirect, url_for
+from flask import Blueprint, render_template, request, current_app, flash, session, redirect, url_for, jsonify
 from flask_login import login_required, login_user, current_user
 from sqlalchemy import and_
-from werkzeug.security import check_password_hash
+from werkzeug.security import check_password_hash, generate_password_hash
 
-from loggers import log
+from loggers import log, loggerSet
 from visitorsystem.forms import LoginForm
-from visitorsystem.models import Scuser, Ssctenant
+from visitorsystem.models import db, Scuser, Ssctenant, Sccompinfo
 
 main = Blueprint('main', __name__)
 
@@ -38,7 +38,8 @@ def login():
         if form.validate():
             ssctenant = Ssctenant.query.filter_by(event_url=request.host).first()
             # 사용자 조회
-            user = Scuser.query.filter(and_(Scuser.login_id == form.login_id.data, Scuser.tenant_id == ssctenant.id)).first()
+            user = Scuser.query.filter(
+                and_(Scuser.login_id == form.login_id.data, Scuser.tenant_id == ssctenant.id)).first()
             if current_user.is_anonymous:
                 log("Transaction").info("[tenant_id:%s]", ssctenant.tenant_id)
             else:
@@ -161,7 +162,7 @@ def get_covid():
 
 def get_day():
     days = ['월요일', '화요일', '수요일', '목요일', '금요일', '토요일', '일요일']
-    aday = (time.localtime().tm_mday)%7
+    aday = (time.localtime().tm_mday) % 7
     return days[aday - 1]
 
 
@@ -187,7 +188,7 @@ def get_article(keyword):
         header = {
             'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.36',
         }
-        req = requests.get(url, headers=header,verify=False)
+        req = requests.get(url, headers=header, verify=False)
         cont = req.content
         soup = BeautifulSoup(cont, 'html.parser')
 
@@ -231,7 +232,7 @@ def get_news(n_url):
     header = {
         'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.36',
     }
-    breq = requests.get(n_url, headers=header,verify=False)
+    breq = requests.get(n_url, headers=header, verify=False)
     bsoup = BeautifulSoup(breq.content, 'html.parser')
 
     # URL
@@ -255,3 +256,113 @@ def get_news(n_url):
     news_detail.append(pcompany)
 
     return news_detail
+
+
+@main.route('/compsearch', methods=['POST'])
+def compsearch():
+    """ 회원 가입 시 업체 정보 조회"""
+
+    if request.method == 'POST':
+        # host로 테넌트 정보 조회
+        ssctenant = Ssctenant.query.filter_by(event_url=request.host).first()
+        # 회사 조회 - 1건만. 사업자등록번호로
+        compInfo = Sccompinfo.query.filter_by(tenant_id=ssctenant.id, biz_no=request.form['biz_no']).first()
+
+        # 데이터 여부 체크 있으면 true 없으면 false
+        if (compInfo):
+            # 튜플로 변경
+            comp = {
+                'biz_id': compInfo.id,
+                'biz_no': compInfo.biz_no,
+                'comp_nm': compInfo.comp_nm,
+                'addr_1': compInfo.addr_1,
+                'addr_2': compInfo.addr_2,
+                'tel_no': compInfo.tel_no
+            }
+        else:
+            # 데이터 없는 경우
+            comp = {'biz_id': 0}
+
+        return jsonify({'msg': comp});
+
+
+@main.route('/check', methods=['POST'])
+def joincheck():
+    """ 회원 가입 시 ID 중복 체크"""
+
+    if request.method == 'POST':
+        # host로 테넌트 정보 조회
+        ssctenant = Ssctenant.query.filter_by(event_url=request.host).first()
+        # 아이디가 있는지 조회
+        user = Scuser.query.filter_by(tenant_id=ssctenant.id, login_id=request.form['login_id']).first()
+
+        # 데이터 여부 체크 - 데이터가 있어 가입 가능하면 true 불가능 false
+        if (user):
+            # 동일 ID 있는 경우
+            comp = {'check': "true"}
+        else:
+            # 데이터 없는 경우
+            comp = {'check': "false"}
+
+    return jsonify({'msg': comp});
+
+
+@main.route('/join', methods=['POST'])
+def join():
+    """ 회원 가입, 회사정보 저장"""
+
+    if request.method == 'POST':
+        # host로 테넌트 정보 조회
+        ssctenant = Ssctenant.query.filter_by(event_url=request.host).first()
+
+        # 회사 정보가 저장되어 있는지 확인 - bizId가 있는지 확인
+        biz_id = int(request.form['biz_id'])
+        print(biz_id)
+        if (biz_id > 0):
+            pass
+        else:
+            # 회사 정보 저장한다.
+            compInfo = Sccompinfo()
+            compInfo.tenant_id = ssctenant.id
+            compInfo.biz_no = request.form['biz_no']
+            compInfo.comp_nm = request.form['comp_nm']
+            compInfo.addr_1 = request.form['addr_1']
+            compInfo.addr_2 = request.form['addr_2']
+            compInfo.tel_no = request.form['tel_no']
+            db.session.add(compInfo)
+
+            # biz_id조회
+            # 회사 조회 - 1건만. 사업자등록번호로
+            temp_comp = Sccompinfo.query.filter_by(tenant_id=ssctenant.id, biz_no=compInfo.biz_no).first()
+            biz_id = int(temp_comp.id)
+
+        print(biz_id)
+
+        # 회원 저장
+        user = Scuser()
+        user.tenant_id = ssctenant.id
+        user.login_id = request.form['login_id']
+        user.login_pwd = generate_password_hash(request.form['login_pwd'])
+        user.name = request.form['name']
+        user.phone = request.form['phone']
+        user.email = request.form['email']
+
+        user.biz_id = biz_id
+        user.comp_nm = request.form['comp_nm']
+        user.user_type = "1"  # 외부인력
+        user.auth_id = "1000"  # 기본권한
+        user.sms_yn = 'Y'
+        user.info_agr_yn = 'Y'
+
+        db.session.add(user)
+        db.session.commit()
+
+        # 저장 되면 로그인-검토
+        # login_user(user)
+
+        # return redirect(request.args.get("next") or url_for('main.index'))
+
+        comp = {'check': "true"}
+
+
+    return jsonify({'msg': comp});
