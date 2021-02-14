@@ -49,7 +49,7 @@ $(document).ready(function() {
             $('#lblComp').text("조회 되었습니다.");
             $('#inputID').focus();
         }else {
-            $('#lblComp').text("새로운 회사 정보를 입력하세요");
+            $('#lblComp').text("등록되어 있지 않은 사업자 등록 번호 입니다.");
             $('#inputBizNo').focus();
             $('#inputBizId').val("0");
         }
@@ -137,21 +137,62 @@ $(document).ready(function() {
 
             //중복확인 했는지 확인
             var checkDup = $('#chkDuplicate').val();
+
             if(!checkDup){
                 //중복체크 확인
                 $('#lblcheckID').text("ID중복 체크를 해주세요");
                 $('#inputID').focus();
                 return
             }
-
             //pw값이 같은지 확인
             if($('#inputPassword').val()!=$('#inputPasswordCfm').val()){
                 $('#lblcheckID').text("패스워드가 틀립니다. 확인 해 주세요.");
                 $('#inputPassword').focus();
                 return
             }
-
-            //값들이 다 들어가 있는지 확인           
+            //값들이 다 들어가 있는지 확인
+            if(!$('#inputBizNo').val()){
+                //값이 없음. ID를 넣어주세요
+                $('#lblComp').text("회사정보를 검색하거나 입력해주세요");
+                $('#inputBizNo').focus();
+                return
+            }
+            if(!$('#inputCompName').val()){
+                //값이 없음. ID를 넣어주세요
+                $('#lblComp').text("회사정보를 검색하거나 입력해주세요");
+                $('#inputCompName').focus();
+                return
+            }
+            if(!$('#inputID').val()){
+                //값이 없음. ID를 넣어주세요
+                $('#lblcheckID').text("ID를 넣어주세요");
+                $('#inputID').focus();
+                return
+            }
+            if(!$('#inputName').val()){
+                //값이 없음. ID를 넣어주세요
+                $('#lblcheckID').text("성명을 넣어주세요");
+                $('#inputName').focus();
+                return
+            }
+            if(!$('#inputPassword').val()){
+                //값이 없음. ID를 넣어주세요
+                $('#lblcheckID').text("패스워드를 넣어주세요");
+                $('#inputPassword').focus();
+                return
+            }
+            if(!$('#inputEmail').val()){
+                //값이 없음. ID를 넣어주세요
+                $('#lblcheckID').text("이메일을 넣어주세요");
+                $('#inputEmail').focus();
+                return
+            }
+            if(!$('#inputPhone').val()){
+                //값이 없음. ID를 넣어주세요
+                $('#lblcheckID').text("핸드폰을 넣어주세요");
+                $('#inputPhone').focus();
+                return
+            }
 
             var dataSet = {};
             dataSet['biz_id'] = $('#inputBizId').val();

@@ -333,7 +333,7 @@ def join():
 
             # biz_id조회
             # 회사 조회 - 1건만. 사업자등록번호로
-            temp_comp = Sccompinfo.query.filter_by(tenant_id=ssctenant.id, biz_no=compInfo.biz_no).first()
+            temp_comp = Sccompinfo.query.filter_by(tenant_id=ssctenant.id, biz_no=compInfo.biz_no, use_yn="1").first()
             biz_id = int(temp_comp.id)
 
         print(biz_id)
@@ -353,6 +353,7 @@ def join():
         user.auth_id = "1000"  # 기본권한
         user.sms_yn = 'Y'
         user.info_agr_yn = 'Y'
+        user.use_yn = '1'
 
         db.session.add(user)
         db.session.commit()
