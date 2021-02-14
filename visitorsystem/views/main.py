@@ -17,6 +17,9 @@ from visitorsystem.models import db, Scuser, Ssctenant, Sccompinfo
 
 main = Blueprint('main', __name__)
 
+@main.route('/pricing')
+def pricing():
+    return render_template(current_app.config['TEMPLATE_THEME'] + '/main/pricing.html')
 
 @main.route('/')
 @login_required
