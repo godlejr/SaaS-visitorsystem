@@ -845,6 +845,10 @@ class Vcapplymaster(db.Model, BaseMixin):
     site_nm = db.Column(db.String(50), nullable=False)
     login_id = db.Column(db.Integer, db.ForeignKey('sc_user.id'), nullable=False)
     approval_state = db.Column(db.String(20), nullable=False)
+    # 추가부분
+    site_id2 = db.Column(db.String(30), nullable=False)
+    site_nm2 = db.Column(db.String(50), nullable=False)
+    visit_type = db.Column(db.String(50)) #0(로그인 한 사용자, 작업자용) #1(로그인 안 함 사용자, 일반사용자용)
 
     # [Detail] Child class 정의 - parent = db.relationship('Parent', backref=backref('실제 DB FK명'))
     sccompinfo = db.relationship('Sccompinfo', backref=backref('FK_VC_APPLY_MASTER_BIZ_ID'))

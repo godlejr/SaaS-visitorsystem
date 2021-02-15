@@ -20,7 +20,7 @@
                         <table name="user_info"  class="table table-bordered" cellspacing="0" width="100%">
                             <thead>
                             <tr id="thead">
-                                <th style="width: 30px;"></th>
+                                <th style="width: 15px;"></th>
                                 <th style="">방문자</th>
                                 <th style="">휴대폰번호</th>
                                 <th style="">차량종류</th>
@@ -41,7 +41,7 @@
 
 
 
-<!-- Modal -->
+<!-- 신청자정보 -->
 <div class="modal fade" id="visitModal" tabindex="-1" role="dialog"
      aria-labelledby="interviewModalCenterTitle" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered" role="document">
@@ -58,8 +58,8 @@
                         <div class="bgc-white bd bdrs-3 p-20">
 
                             <div>
-                                <input type="text" class="form-control" style="width:90%;float:left">
-                                <button type="button" class="btn btn-primary" style="float:right">
+                                <input type="text"  id="visitInput" class="form-control" style="width:90%;float:left">
+                                <button type="button" id="visitSearchView" class="btn btn-primary" style="float:right">
                                     <i class="search-icon ti-search pdd-right-10"></i>
                                 </button>
                             </div>
@@ -70,30 +70,14 @@
                                 <thead>
                                 <tr>
                                     <th scope="col">#</th>
-                                    <th scope="col">부서</th>
-                                    <th scope="col">이름</th>
-                                    <th scope="col">휴대폰번호</th>
+                                    <th scope="col">신청자</th>
+                                    <th scope="col">연락처</th>
+                                    <th scope="col">업체명</th>
+                                    <th scope="col">업체번호</th>
                                 </tr>
                                 </thead>
-                                <tbody>
-                                <tr>
-                                    <th scope="row">1</th>
-                                    <td>유화1팀</td>
-                                    <td>한호정</td>
-                                    <td>010-4882-2298</td>
-                                </tr>
-                                <tr>
-                                    <th scope="row">2</th>
-                                    <td>방산1팀</td>
-                                    <td>이용식</td>
-                                    <td>010-2239-9993</td>
-                                </tr>
-                                <tr>
-                                    <th scope="row">3</th>
-                                    <td>서비스1팀</td>
-                                    <td>조용식</td>
-                                    <td>010-2239-9993</td>
-                                </tr>
+                                <tbody id="applyTbody">
+
                                 </tbody>
                             </table>
                         </div>
@@ -102,7 +86,7 @@
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-dismiss="modal">취소</button>
-                <button type="button" class="btn btn-primary">확인</button>
+                <button type="button" class="btn btn-primary" data-dismiss="modal">확인</button>
             </div>
         </div>
     </div>
@@ -110,7 +94,7 @@
 <br>
 
 
-<!-- Modal -->
+<!-- 감독자정보 -->
 <div class="modal fade" id="interviewModal" tabindex="-1" role="dialog"
      aria-labelledby="interviewModalCenterTitle" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered" role="document">
@@ -145,24 +129,7 @@
                                 </tr>
                                 </thead>
                                 <tbody id="interviewTbody">
-                                <!--                                <tr>-->
-                                <!--                                    <th scope="row">1</th>-->
-                                <!--                                    <td>유화1팀</td>-->
-                                <!--                                    <td>한호정</td>-->
-                                <!--                                    <td>010-4882-2298</td>-->
-                                <!--                                </tr>-->
-                                <!--                                <tr>-->
-                                <!--                                    <th scope="row">2</th>-->
-                                <!--                                    <td>방산1팀</td>-->
-                                <!--                                    <td>이용식</td>-->
-                                <!--                                    <td>010-2239-9993</td>-->
-                                <!--                                </tr>-->
-                                <!--                                <tr>-->
-                                <!--                                    <th scope="row">3</th>-->
-                                <!--                                    <td>서비스1팀</td>-->
-                                <!--                                    <td>조용식</td>-->
-                                <!--                                    <td>010-2239-9993</td>-->
-                                <!--                                </tr>-->
+
                                 </tbody>
                             </table>
                         </div>
@@ -180,7 +147,7 @@
 
 
 
-<!-- Modal -->
+<!-- 출입정보 -->
 <div class="modal fade" id="compSearchModal" tabindex="-1" role="dialog"
      aria-labelledby="interviewModalCenterTitle" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered" role="document">
