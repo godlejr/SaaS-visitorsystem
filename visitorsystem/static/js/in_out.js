@@ -38,12 +38,12 @@ $(document).ready(function() {
                 reqUrl = reqUrl + `rule/valid`;
                 break;
 
-            case 'COMP_SEARCH':
-                reqUrl = reqUrl + `comp/search`;
+            case 'APPLY_SEARCH':
+                reqUrl = reqUrl + `apply/search`;
                 break;
 
-            case 'CAR_SEARCH':
-                reqUrl = reqUrl + `car/search`;
+            case 'COMP_SEARCH':
+                reqUrl = reqUrl + `comp/search`;
                 break;
 
         }
@@ -67,29 +67,29 @@ $(document).ready(function() {
         newTr = `
          <tr class="hide">
              <td>
-                     <input type="checkbox" id="checkbox" class="peer leave">
+                     <input type="checkbox" id="checkbox" class="peer leave resposiveTd">
              </td>
 
              <td>
                 <div class="form-group">
-                     <input type="text" class="form-control leave" id="tvisitor" style="width:80%; float:left" >
+                     <input type="text" class="form-control leave resposiveTd" id="tvisitor"  >
                  </div>
              </td>
 
              <td>
                  <div class="form-group">
-                     <input type="text" id="tphone"  class="form-control leave ctphone">
+                     <input type="text" id="tphone"  class="form-control leave ctphone resposiveTd">
                  </div>
              </td>
 
              <td>
                 <div class="form-group" >
-                         <select id="" name="" class="form-control leave">
+                         <select id="" name="" class="form-control leave resposiveTd resposiveSelect">
                                 ${str}
                          </select>
                  </div>
              </td>
-             <td><input type="text" class="form-control leave"></td>
+             <td><input type="text" class="form-control leave resposiveTd"></td>
              `
 
         for (var i = 0; i < dataSet.length; i++) {
@@ -100,28 +100,66 @@ $(document).ready(function() {
             ruleList.push(ruleName);
 
             if (type == '텍스트') {
-                append = append + `<td><input type="text" class="form-control rule-text leave" rule=${ruleName}></td>`
+                append = append + `<td><input type="text" class="form-control rule-text leave resposiveTd" rule=${ruleName}></td>`
             } else if (type == '달력') {
                 append = append + `<td>
-                                       <div class="input-group">
+                                       <div class="input-group resposiveTd">
                                        <div class="input-group-addon bgc-white bd bdwR-0"><i class="ti-calendar"></i></div>
                                        <input type="text" class="form-control start-date rule-calendar leave rule" placeholder="달력" data-provide="datepicker" name ="inout_sdate" id="inout_sdate" rule=${ruleName}>
                                        </div>
                                     </td> `
             } else if (type == '파일') {
-                append = append + `<td><input name="file" id="file" accept="image/*,video/*" type="file" class="file rule-file leave file-upload rule" data-browse-on-zone-click="true" rule=${ruleName}></td>`
+                append = append +
+                    `<td><input name="file" id="file" accept="image/*,video/*" type="file" class="file rule-file leave file-upload rule resposiveTd" data-browse-on-zone-click="true" rule=${ruleName}>
+                        <a id='download' href ='' target="_new" class='resposiveTd' download hidden>다운로드</a>
+                </td>`
             }
         }
 
 
         $('#thead').append(theadContext);
-        append = append + `<td style="visibility:hidden" is-valid="1"></td>`
+        append = append + `<td style="visibility:hidden" is-valid="0" is-user="0"></td>`
         newTr = newTr + append + '</tr>';
     }
 
     //출입신청 컨트롤러
     function applyController(dataSet) {
-        console.log(JSON.stringify(dataSet));
+
+    }
+
+    //신청자조회 컨트롤러
+    function applySearchController(dataSet) {
+
+        dataSet = dataSet.msg
+        var str = ''
+        $('#interviewTbody').children().remove()
+        for (var i = 0; i < dataSet.length; i++) {
+            var name = dataSet[i].name;
+            var phone = dataSet[i].phone;
+            var comp_nm = dataSet[i].comp_nm;
+            var biz_no = dataSet[i].biz_no;
+
+            var temp = `<tr class='applyTtr'>
+                                 <th scope="row">${i+1}</th>
+                                 <td>${name}</td>
+                                 <td>${phone}</td>
+                                 <td>${comp_nm}</td>
+                                 <td>${biz_no}</td>
+                            </tr>`;
+            str += temp;
+        }
+
+
+
+        $('#applyTbody').append(str);
+        $('.applyTtr').click(function() {
+            $('#applicant_name').val($(this).children('td:eq(0)').text());
+            $('#applicant_phone').val($(this).children('td:eq(1)').text());
+            $('#applicant_comp_nm').val($(this).children('td:eq(2)').text());
+            $('#applicant_biz_no').val($(this).children('td:eq(3)').text());
+
+        });
+
     }
 
     //감독자조회 컨트롤러
@@ -158,56 +196,57 @@ $(document).ready(function() {
         var dataSet = dataSet.msg;
         var msg = '';
         var check = false;
-        gb = opt.parent().parent().next().next().next(); //rule1부터 시작
-        temp = opt.parent().parent().next().next().next();
+        var rule = opt.closest('tr').children();
+        var offset = 5;
 
         for (var i = 0; i < dataSet.length; i++) {
             var rule_name = dataSet[i].rule_name;
             var rule_desc = dataSet[i].rule_desc;
             var rule_type = dataSet[i].rule_type;
             var state = dataSet[i].state;
+            var nextRule = rule.eq(offset + i);
+
+            console.log(state)
 
             //state 상태체크
             if (!state) {
                 msg = msg + rule_name + " ";
                 check = true;
                 if (rule_type == '달력') {
-                    temp.children().children('input').addClass('is-invalid');
-                } else {
-                    temp.children().addClass('is-invalid');
+                    nextRule.children().children('input').addClass('is-invalid');
+                } else if (rule_type == '텍스트') {
+                    nextRule.children().addClass('is-invalid');
                 }
             } else {
                 if (rule_type == '달력') {
-                    temp.children().children('input').removeClass('is-invalid');
+                    nextRule.children().children('input').removeClass('is-invalid');
 
-                } else {
-                    temp.children().removeClass('is-invalid');
+                } else if (rule_type == '텍스트') {
+                    nextRule.children().removeClass('is-invalid');
                 }
             }
-            temp = temp.next();
+
         }
-
-
 
         if (check) {
             msg = msg + '의 유효기간이 만료되었습니다.';
             console.log('----------------------------in')
-            temp.attr("is-valid", "0"); //0은 검증X
-            console.log(temp.attr("is-valid"));
+            rule.eq(-1).attr("is-valid", "0"); //0은 검증X
+            console.log(rule.eq(-1).attr("is-valid"));
             console.log('----------------------------in')
+            $('#errorMsg').text(msg);
 
         } else {
             console.log('----------------------------out')
-            temp.attr("is-valid", "1"); //1은 검증0
-            console.log(temp.attr("is-valid"));
+            rule.eq(-1).attr("is-valid", "1"); //1은 검증0
+            console.log(rule.eq(-1).attr("is-valid"));
             console.log('----------------------------out')
+            $('#errorMsg').text('');
         }
 
 
-        $('#errorMsg').text(msg);
+
     }
-
-
 
     //업체조회 컨트롤러
     function compSearchController(dataSet) {
@@ -217,7 +256,8 @@ $(document).ready(function() {
         for (var i = 0; i < dataSet.length; i++) {
             var comp_nm = dataSet[i].comp_nm;
             var biz_no = dataSet[i].biz_no;
-            var temp = `<tr class='compTtr'>
+            var bizId = dataSet[i].biz_id;
+            var temp = `<tr class='compTtr' bizId = ${bizId}>
                                  <th scope="row">${i+1}</th>
                                  <td>${comp_nm}</td>
                                  <td>${biz_no}</td>
@@ -227,8 +267,11 @@ $(document).ready(function() {
 
         $('#compTbody').append(str);
         $('.compTtr').click(function() {
+            var bizId = $(this).attr("bizId");
+
             $('#inout_comp_nm').val($(this).children('td:eq(0)').text());
             $('#inout_biz_no').val($(this).children('td:eq(1)').text());
+            $('#inout_biz_no').attr('bizId', bizId);
 
         });
     }
@@ -259,21 +302,102 @@ $(document).ready(function() {
         $('#appylbtn').click(function() {
             var htmlIdList = [];
             var dataSet = {};
-            htmlIdList = ['applicant_name', 'applicant_phone', 'applicant_biz_no',
-                'applicant_comp_nm', 'interviewer_name', 'interviewer_phone',
-                'inout_biz_no', 'inout_comp_nm', 'inout_sdate',
-                'inout_edate', 'inout_comp_nm', 'inout_sdate',
-                'inout_purpose_type', 'inout_title', 'inout_location',
-                'inout_location_desc', 'inout_purpose_desc'
+            htmlIdList = ['applicant_name', 'applicant_phone', 'applicant_biz_no', 'applicant_comp_nm',
+                'interviewer_dept', 'interviewer_name', 'interviewer_phone',
+                'inout_biz_no', 'inout_comp_nm', 'inout_sdate', 'inout_edate',
+                'inout_purpose_type', 'inout_title', 'inout_location', 'inout_location2',
+                'inout_purpose_desc', 'visitors'
             ]
+
 
             for (var i = 0; i < htmlIdList.length; i++) {
                 var key = htmlIdList[i];
+                if (key == "visitors")
+                    break;
+
+                if(key=='inout_sdate' || key=='inout_edate'){
+                  var str = $('#'+key).val();
+                  var date = str.split('/')
+                  var year = date[2]; //년
+                  var month = date[0]; //월
+                  var day = date[1];//일
+                  dataSet[key] = year + "-" + month + "-" + day;
+                    continue;
+                }
                 var value = $('#' + key).val()
                 dataSet[key] = value;
 
+
             }
-            apiCallPost(urlMake('CREATE'), applyController, dataSet)
+
+            var lists = [];
+            //visitors설정
+            $('#tableBody tr').each(function() {
+                var cellItem = $(this).find(":input")
+                var itemObj = new Object()
+                itemObj.name = cellItem.eq(1).val()
+                itemObj.phone = cellItem.eq(2).val()
+                itemObj.carType = cellItem.eq(3).val()
+                itemObj.carNum = cellItem.eq(4).val()
+
+                var obj = {
+                    "name": itemObj.name,
+                    "phone": itemObj.phone,
+                    "carType": itemObj.carType,
+                    "carNum": itemObj.carNum
+                }
+
+                lists.push(obj)
+
+            });
+
+            //사업자번호 설정
+            dataSet["inout_biz_id"] = $('#inout_biz_no').attr('bizId');
+
+            //출입지역 code
+            dataSet["inout_location_code"] = $("#inout_location option:selected").attr('code')
+            dataSet["inout_location_code2"] = $("#inout_location2 option:selected").attr('code')
+
+            dataSet["visitors"] = JSON.stringify(lists);
+
+
+            //신청자 정보 check
+            var check = dataSet['applicant_name'];
+            var check2 = dataSet['inout_biz_no'];
+
+
+            if (check.length == 0 || check2.length == 0) {
+                alert('신청자 정보를 입력해주세요');
+                return;
+            }
+
+            //감독자 정보 check
+            check = dataSet['interviewer_name'];
+            if (check.length == 0) {
+                alert('신청자 정보를 입력해주세요');
+                return;
+            }
+
+            //출입 정보 check
+            check = dataSet['inout_title'];
+            if (check.length == 0) {
+                alert('출입정보를 입력해주세요');
+                return;
+            }
+
+            //출입유효성 check
+            $('#tableBody tr').each(function() {
+                check = $(this).children().eq(-1).attr('is-valid')
+                if (check == '0')
+                    alert('출입 유효성을 점검해주세요')
+
+            });
+
+            if (check == '1')
+                apiCallPost(urlMake('CREATE'), applyController, dataSet)
+
+
+
         });
 
         $('#addUser').click(function(e) {
@@ -294,6 +418,7 @@ $(document).ready(function() {
                 var dataSet = {};
 
                 if (!sdate || !edate) {
+                    console.log("날짜가 선택되지 않았습니다.")
                     return;
                 }
 
@@ -309,23 +434,61 @@ $(document).ready(function() {
                 day = edate[1]; //일
                 dataSet['edate'] = year + "-" + month + "-" + day;
 
-                var userName = $(this).parent().parent().first().children().children().children().val() || false;
-                var userPhone = $(this).parent().parent().first().children().next().next().children().children().val() || false;
-                if (!userName || !userPhone)
+                var userName = $(this).closest('tr').children().eq(1).children().children().val() || '';
+                var userPhone = $(this).closest('tr').children().eq(2).children().children().val() || '';
+
+                console.log(userName);
+                console.log(userPhone);
+                gb2 = $(this)
+                if (userName.length == 0 || userPhone.length == 0)
                     return;
+
+
+                var str = userPhone.trim();
+                var phone = str.replace(/(^02.{0}|^01.{1}|[0-9]{3})([0-9]+)([0-9]{4})/, "$1-$2-$3");
+                var regExp = /^01(?:0|1|[6-9])-(?:\d{3}|\d{4})-\d{4}$/;
+                var check = regExp.test(phone);
+                if (!check) {
+                    console.log("검증에 실패하였습니다.")
+                    return;
+                }
+
+
+                $(this).closest('tr').children().eq(2).children().children().val(phone);
+                userPhone = phone;
+
 
                 dataSet['userName'] = userName;
                 dataSet['userPhone'] = userPhone;
-
-
                 var option = $(this);
 
-                apiCallPost(urlMake('RULE_VALID'), rulevalidController, dataSet, option)
+                $.ajax({
+                        type: "POST",
+                        url: "/inoutApply/user/search",
+                        async: false,
+                        cache: false,
+                        data: dataSet
+                    })
+                    .success(function(data) {
+                        var msg = data.msg;
+                        if (msg.length == 0) {
+                            //empty user
+                            console.log('사용자 없음')
+                            option.closest('tr').children().eq(-1).attr('is-user', '0')
+
+                        } else {
+                            console.log('사용자 있음')
+                            option.closest('tr').children().eq(-1).attr('is-user', '1')
+                            apiCallPost(urlMake('RULE_VALID'), rulevalidController, dataSet, option)
+                        }
+                    });
+
+
             });
 
             $('.rule-text').focusout(function(e) {
-                var userName = $(this).parent().parent().first().children().children().children().val() || '';
-                var userPhone = $(this).parent().parent().first().children().next().next().children().children().val() || '';
+                var userName = $(this).closest('tr').children().eq(1).children().children().val() || '';
+                var userPhone = $(this).closest('tr').children().eq(2).children().children().val() || '';
                 var rule = $(this).attr('rule');
                 var ruleText = $(this).val() || '';
 
@@ -346,15 +509,15 @@ $(document).ready(function() {
                         data: dataSet
                     })
                     .success(function(data) {
-                        alert('성공')
+
                     });
             });
 
 
             $('.rule-calendar').focusout(function(e) {
                 gb2 = $(this);
-                var userName = $(this).parent().parent().parent().first().children().children().children().val() || '';
-                var userPhone = $(this).parent().parent().parent().first().children().next().next().children().children().val() || '';
+                var userName = $(this).closest('tr').children().eq(1).children().children().val() || '';
+                var userPhone = $(this).closest('tr').children().eq(2).children().children().val() || '';
                 var rule = $(this).attr('rule');
                 var ruleCalender = $(this).val() || '';
 
@@ -382,7 +545,7 @@ $(document).ready(function() {
                         data: dataSet
                     })
                     .success(function(data) {
-                        alert('성공')
+
                     });
 
             });
@@ -390,26 +553,31 @@ $(document).ready(function() {
 
             $('.file-upload').change(function(e) {
                 if (confirm('해당 파일을 업로드하시겠습니까?')) {
+                    var current = $(this);
                     var data = new FormData();
-                    data.append("file", $('#file').prop('files')[0]);
+                    data.append("file", $(this).prop('files')[0]);
                     var applicantName = $('#applicant_name').val() || '';
                     var applicantPhone = $('#applicant_phone').val() || '';
-                    var userName = $(this).parent().parent().first().children().children().children().val() || '';
-                    var userPhone = $(this).parent().parent().first().children().next().next().children().children().val() || '';
+                    var userName = $(this).closest('tr').children().eq(1).children().children().val() || '';
+                    var userPhone = $(this).closest('tr').children().eq(2).children().children().val() || '';
 
                     var rule = $(this).attr('rule');
+                    console.log(userName)
+                    console.log(userPhone)
 
-
-                    if (applicantName.length==0 || applicant_phone.length==0 || userName.length == 0 || userPhone.length == 0)
+                    if (applicantName.length == 0 || applicant_phone.length == 0 || userName.length == 0 || userPhone.length == 0) {
+                        console.log(applicant_name)
+                        console.log(applicant_phone)
+                        console.log(userName)
+                        console.log(userPhone)
                         return;
-                    data.append('applicantName',applicantName);
-                    data.append('applicantPhone',applicantPhone);
-                    data.append('userName',userName);
-                    data.append('phone',userPhone);
-                    data.append('type','파일');
-                    data.append('rule',rule);
-
-
+                    }
+                    data.append('applicantName', applicantName);
+                    data.append('applicantPhone', applicantPhone);
+                    data.append('userName', userName);
+                    data.append('phone', userPhone);
+                    data.append('type', '파일');
+                    data.append('rule', rule);
 
                     $.ajax({
                         type: "POST",
@@ -421,7 +589,11 @@ $(document).ready(function() {
                         cache: false,
                         timeout: 600000,
                         success: function(result) {
-                            console.log("SUCCESS : ");
+                            var href = result.msg;
+
+                            gb2 = current;
+                            current.next().removeAttr('hidden');
+                            current.next().attr('href', href);
                         },
 
                         error: function(e) {
@@ -449,7 +621,16 @@ $(document).ready(function() {
             });
 
         });
+        //신청자조회 모달
+        $('#visitSearchView').click(function(e) {
+            var dataSet = {};
+            var visitInput = $('#visitInput').val();
+            dataSet['visitInput'] = visitInput;
 
+            apiCallPost(urlMake('APPLY_SEARCH'), applySearchController, dataSet)
+        });
+
+        //감독자조회 모달
         $('#interviewSearch').click(function(e) {
             var dataSet = {};
             var interviewName = $('#interviewInput').val();
@@ -458,7 +639,7 @@ $(document).ready(function() {
 
         });
 
-
+        //업체조회 모달
         $('#compSearchView').click(function(e) {
             var dataSet = {};
             var compSearchInput = $('#compSearchInput').val();
@@ -467,6 +648,80 @@ $(document).ready(function() {
 
         });
 
+
+        //방문유형
+        $.ajax({
+                type: "POST",
+                url: "/inoutApply/visit/type",
+                async: false,
+                cache: false,
+                data: ""
+            })
+            .success(function(data) {
+
+                data = data.msg;
+                //                var str = '<option selected="selected">선택</option>';
+                var str = '';
+                for (var i = 0; i < data.length; i++) {
+                    var code_nm = data[i].code_nm
+                    var temp = `<option value=${code_nm}>${code_nm}</option>`
+                    str = str + temp;
+
+                }
+
+                $('#inout_purpose_type').append(str);
+
+            });
+
+        //방문지역
+        $.ajax({
+                type: "POST",
+                url: "/inoutApply/door/search",
+                async: false,
+                cache: false,
+                data: ""
+            })
+            .success(function(dataSet) {
+
+                data = dataSet.msg;
+                var str = '';
+
+                for (var i = 0; i < data.length; i++) {
+                    var code_nm = data[i].code_nm
+                    var code = data[i].code
+                    var temp = `<option code = ${code} value=${code_nm}>${code_nm}</option>`
+                    str = str + temp;
+
+                }
+
+                data = dataSet.msg2;
+                $('#inout_location').append(str);
+                str = '';
+                for (var i = 0; i < data.length; i++) {
+                    var code_nm = data[i].code_nm
+                    var code = data[i].code
+                    var temp = `<option code = ${code} value=${code_nm}>${code_nm}</option>`
+                    str = str + temp;
+
+                }
+                $('#inout_location2').append(str);
+
+            });
+
+        var date = new Date();
+        var year = date.getFullYear();
+        var month = new String(date.getMonth() + 1);
+        var day = new String(date.getDate());
+
+        if (month.length == 1)
+            month = '0' + month;
+
+
+
+        var thisYear = month + "/" + day + "/" + year;
+
+        $('#inout_sdate').val(thisYear);
+        $('#inout_edate').val(thisYear);
 
     }
     init();

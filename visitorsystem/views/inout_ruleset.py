@@ -24,7 +24,7 @@ def save():
         if not result:
             scrule = Scrule()
             scrule.tenant_id = tenant_id  # 테넌트ID
-            scrule.rule_name = request.form['rule_name']  # 규칙이름
+            scrule.rule_name = request.form['rule_name'].strip()  # 규칙이름
             scrule.rule_type = request.form['rule_type']  # 규칙유형
             scrule.rule_duedate = request.form['rule_duedate']  # 규칙기간
             scrule.rule_desc = request.form['rule_desc']  # 규칙설명
