@@ -1,7 +1,8 @@
 var ruleList = [];
+var gb;
 $(document).ready(function() {
     //URL에 해당하는 컨트롤러 호출
-    function apiCallPost(url, controller, data, opt) {
+    function apiCallPost(url, handler, data, opt) {
         $.ajax({
                 type: 'POST',
                 url: url,
@@ -10,7 +11,7 @@ $(document).ready(function() {
                 data: data
             })
             .success(function(data) {
-                controller(data, opt);
+                handler(data, opt);
             });
     }
 
@@ -47,7 +48,7 @@ $(document).ready(function() {
     }
 
     //규칙정보 컨트롤러
-    function ruleSearchController(dataSet) {
+    function ruleSearchhandler(dataSet) {
         var temp = dataSet;
         var dataSet = temp.msg;
         var dataSet2 = temp.msg2;
@@ -62,7 +63,7 @@ $(document).ready(function() {
 
         newTr = `
          <tr class="hide mediaTable mediaTableTbodyTr">
-             <td class='mediaTable mediaTableTbodyTd'>
+             <td class='mediaTable mediaTableTbodyTd' valueChange = '0' ::before='wow'>
                      <input type="checkbox" id="checkbox" class="peer leave resposiveTd mediaTable">
              </td>
 
@@ -88,12 +89,17 @@ $(document).ready(function() {
              <td class='mediaTable mediaTableTbodyTd'><input type="text" class="form-control leave resposiveTd mediaTable"></td>
              `
 
+
+
         for (var i = 0; i < dataSet.length; i++) {
             var obj = dataSet[i];
             var type = obj.rule_type;
             var ruleName = obj.rule_name;
+            var cnt = i+1;
+
             theadContext = theadContext + `<th style="">${ruleName}</th>`;
             ruleList.push(ruleName);
+
 
             if (type == '텍스트') {
                 append = append + `<td class='mediaTable mediaTableTbodyTd'><input type="text" class="form-control rule-text leave resposiveTd mediaTable" rule=${ruleName}></td>`
@@ -119,12 +125,12 @@ $(document).ready(function() {
     }
 
     //출입신청 컨트롤러
-    function applyController(dataSet) {
+    function applyhandler(dataSet) {
 
     }
 
     //신청자조회 컨트롤러
-    function applySearchController(dataSet) {
+    function applySearchhandler(dataSet) {
 
         dataSet = dataSet.msg
         var str = ''
@@ -159,7 +165,7 @@ $(document).ready(function() {
     }
 
     //감독자조회 컨트롤러
-    function interViewSearchController(dataSet) {
+    function interViewSearchhandler(dataSet) {
         dataSet = dataSet.msg
         var str = ''
         $('#interviewTbody').children().remove()
@@ -188,7 +194,7 @@ $(document).ready(function() {
     }
 
     //규칙검증 컨트롤러
-    function rulevalidController(dataSet, opt) {
+    function rulevalidhandler(dataSet, opt) {
         var dataSet = dataSet.msg;
         var msg = '';
         var check = false;
@@ -206,11 +212,12 @@ $(document).ready(function() {
 
             var state = dataSet[i].state;
             var nextRule = rule.eq(offset + i);
-
+            var writeCheck = rule.eq(0).attr('valueChange');
             console.log(state)
 
+
             //state 상태체크
-            if (!state) { //remove
+            if (!state) { //remove, Rule False(Rule 무효인 상태)
                 msg = msg + rule_name + " ";
                 check = true;
                 if (rule_type == '달력') {
@@ -221,26 +228,37 @@ $(document).ready(function() {
                     nextRule.children().next().attr('hidden', true)
                 }
 
-            } else { //add
+            } else { //add, Rule True(Rule이 유효한 상태)
                 if (rule_type == '달력') {
                     nextRule.children().children('input').removeClass('is-invalid');
-                    //                    var date = rule_sdate.split('-')
-                    //                    var year = date[0]; //년
-                    //                    var month = date[1]; //월
-                    //                    var day = date[2]; //일
-                    //                    output = month + "/" + day + "/" + year;
-                    //                    nextRule.children().children('input').val(output);
+                    if(writeCheck=='0'){
+                          var date = rule_sdate.split('-')//달력
+                          var year = date[0]; //년
+                          var month = date[1]; //월
+                          var day = date[2]; //일
+                          output = month + "/" + day + "/" + year;
+                          nextRule.children().children('input').val(output);
+                    }
+
 
                 } else if (rule_type == '텍스트') {
                     nextRule.children().removeClass('is-invalid');
-                    //                    nextRule.children().val(rule_textDesc);
+                    if(writeCheck=='0'){
+                         nextRule.children().val(rule_textDesc);//텍스트
+                    }
 
                 } else if (rule_type == '파일') {
                     nextRule.children().next().removeAttr('hidden');
-                    //                    nextRule.children().attr('href', rule_bucketUrl);
+                    if(writeCheck=='0'){
+                        nextRule.children().attr('href', rule_bucketUrl);
+                    }
                 }
             }
         }
+
+        if(writeCheck =='0'){
+                rule.eq(0).attr('valueChange','1');}
+
 
         if (check) {
             msg = msg + '의 유효기간이 만료되었습니다.';
@@ -261,7 +279,7 @@ $(document).ready(function() {
     }
 
     //업체조회 컨트롤러
-    function compSearchController(dataSet) {
+    function compSearchhandler(dataSet) {
         dataSet = dataSet.msg
         var str = ''
         $('#compTbody').children().remove()
@@ -289,13 +307,13 @@ $(document).ready(function() {
     }
 
     //감독자조회 컨트롤러
-    function interviewSearchController(dataSet) {
+    function interviewSearchhandler(dataSet) {
         dataSet = dataSet.msg
         var str = '';
     }
 
     //차량조회 컨트롤러
-    function carSearchController(dataSet) {
+    function carSearchhandler(dataSet) {
         dataSet = dataSet.msg
         var str = '';
         for (var i = 0; i < dataSet.length; i++) {
@@ -309,7 +327,7 @@ $(document).ready(function() {
     //event리스너
     function init() {
         const $tableID = $('#table');
-        apiCallPost(urlMake('RULE_SEARCH'), ruleSearchController);
+        apiCallPost(urlMake('RULE_SEARCH'), ruleSearchhandler);
 
         $('#appylbtn').click(function() {
             var htmlIdList = [];
@@ -404,7 +422,7 @@ $(document).ready(function() {
             });
 
             if (check == '1')
-                apiCallPost(urlMake('CREATE'), applyController, dataSet)
+                apiCallPost(urlMake('CREATE'), applyhandler, dataSet)
 
         });
 
@@ -484,7 +502,7 @@ $(document).ready(function() {
                         } else {
                             console.log('사용자 있음')
                             option.closest('tr').children().eq(-1).attr('is-user', '1')
-                            apiCallPost(urlMake('RULE_VALID'), rulevalidController, dataSet, option)
+                            apiCallPost(urlMake('RULE_VALID'), rulevalidhandler, dataSet, option)
                         }
                     });
 
@@ -636,7 +654,7 @@ $(document).ready(function() {
             var visitInput = $('#visitInput').val();
             dataSet['visitInput'] = visitInput;
 
-            apiCallPost(urlMake('APPLY_SEARCH'), applySearchController, dataSet)
+            apiCallPost(urlMake('APPLY_SEARCH'), applySearchhandler, dataSet)
         });
 
         //감독자조회 모달
@@ -644,7 +662,7 @@ $(document).ready(function() {
             var dataSet = {};
             var interviewName = $('#interviewInput').val();
             dataSet['interviewName'] = interviewName;
-            apiCallPost(urlMake('INTERVIEW_SEARCH'), interViewSearchController, dataSet)
+            apiCallPost(urlMake('INTERVIEW_SEARCH'), interViewSearchhandler, dataSet)
 
         });
 
@@ -653,7 +671,7 @@ $(document).ready(function() {
             var dataSet = {};
             var compSearchInput = $('#compSearchInput').val();
             dataSet['compSearchInput'] = compSearchInput;
-            apiCallPost(urlMake('COMP_SEARCH'), compSearchController, dataSet)
+            apiCallPost(urlMake('COMP_SEARCH'), compSearchhandler, dataSet)
 
         });
 

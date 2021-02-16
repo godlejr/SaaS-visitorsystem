@@ -863,10 +863,15 @@ class Vcapplymaster(db.Model, BaseMixin):
 
     # [Detail] Child class 정의 - parent = db.relationship('Parent', backref=backref('실제 DB FK명'))
     sccompinfo = db.relationship('Sccompinfo', backref=backref('FK_VC_APPLY_MASTER_BIZ_ID'))
+
     # [Detail]
     scuser = db.relationship('Scuser', backref=backref('FK_VC_APPLY_MASTER_LOGIN_ID'))
+
     # 1:多 (Vcapplymaster->Vcapplyuser) [Master]
     vcapplyusers = db.relationship('Vcapplyuser', back_populates='vcapplymaster')
+
+    # 1:多 (Vcapplymaster->Vcvisituser) [Master] 신규
+    Vcvisitusers = db.relationship('Vcvisituser', back_populates='vcapplymaster')
 
 
 class Vcapplyuser(db.Model, BaseMixin):
@@ -886,6 +891,7 @@ class Vcapplyuser(db.Model, BaseMixin):
 
     # [Detail]
     vcapplymaster = db.relationship('Vcapplymaster', backref=backref('FK_VC_APPLY_USER_APPLY_ID'))
+
     # 1:多 (Vcapplyuser->Vcinoutinfo) [Master]
     vcinoutinfos = db.relationship('Vcinoutinfo', back_populates='vcapplyuser')
 
@@ -931,6 +937,7 @@ class Vcvisituser(db.Model, BaseMixin):
     __tablename__ = 'vc_visit_user'
     tenant_id = db.Column(db.Integer, db.ForeignKey('ssc_tenants.id'), nullable=False)
     rule_id = db.Column(db.Integer, db.ForeignKey('sc_rule.id'), nullable=False)
+    apply_id = db.Column(db.Integer, db.ForeignKey('vc_apply_master.id'), nullable=False)
     name = db.Column(db.String(50), nullable=False)
     phone = db.Column(db.String(50), nullable=False)
     text_desc = db.Column(db.String(100))
@@ -939,6 +946,7 @@ class Vcvisituser(db.Model, BaseMixin):
 
     # [Detail]
     scrule = db.relationship('Scrule', backref=backref('VC_VISIT_USER_RULE_ID'))
+    vcapplymaster = db.relationship('Vcapplymaster', backref=backref('VC_VISIT_USER_APPLY_ID'))
 
     # 1:多 (Vcvisituser->ScRuleFile) [Master]
     scrulefiles = db.relationship('ScRuleFile', back_populates='vcvisituser')
