@@ -1,6 +1,6 @@
 $(document).ready(function() {
 
-    function apiCallPost(url, controller, data, option) {
+    function apiCallPost(url, handler, data, option) {
           $.ajax({
                     type: 'POST',
                     url: url,
@@ -8,7 +8,7 @@ $(document).ready(function() {
                     cache: false,
                     data: data
                }).success(function (data) {
-                    controller(data);
+                    handler(data);
 
                });
      }
@@ -33,7 +33,7 @@ $(document).ready(function() {
 
 
     //규칙생성 및 저장 컨트롤러
-    function saveController(dataSet) {
+    function savehandler(dataSet) {
         $('#modalContent').text(dataSet.msg);
         console.log(dataSet.msg);
         $('#alertModal').show();
@@ -41,7 +41,7 @@ $(document).ready(function() {
     }
 
     //규칙수정 컨트롤러
-    function editController(dataSet) {
+    function edithandler(dataSet) {
 
         $('#rule_name').val(dataSet.msg.rule_name);
         $('#rule_type').val(dataSet.msg.rule_type);
@@ -50,7 +50,7 @@ $(document).ready(function() {
     }
 
     //규칙삭제 컨트롤러
-    function deleteController(dataSet) {
+    function deletehandler(dataSet) {
         location.reload();
     }
 
@@ -84,7 +84,7 @@ $(document).ready(function() {
             var dataSet = {};
             $('#rule_name').attr('disabled', true);
             dataSet['id'] = $(this).parents("li").attr('id');
-            apiCallPost(urlMake('EDIT'), editController, dataSet);
+            apiCallPost(urlMake('EDIT'), edithandler, dataSet);
 
         });
 
@@ -92,7 +92,7 @@ $(document).ready(function() {
             var htmlIdList = [];
             var dataSet = {};
             dataSet['id'] = $(this).parents("li").attr('id');
-            apiCallPost(urlMake('DELETE'), deleteController, dataSet);
+            apiCallPost(urlMake('DELETE'), deletehandler, dataSet);
         });
 
         $('#saveBtn').click(function() {
@@ -110,7 +110,7 @@ $(document).ready(function() {
                 dataSet[key] = value;
             }
 
-            apiCallPost(urlMake('SAVE'), saveController, dataSet)
+            apiCallPost(urlMake('SAVE'), savehandler, dataSet)
         });
     }
 
