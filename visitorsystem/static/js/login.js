@@ -1,5 +1,4 @@
 $(document).ready(function() {
-
     function apiCallPost(url, controller, data, option) {
           $.ajax({
                     type: 'POST',
@@ -30,11 +29,10 @@ $(document).ready(function() {
         return reqUrl;
     }
 
-
     //회사정보 조회 컨트롤러
     function compSearchController(dataSet) {
         dataSet = dataSet.msg
-        console.log(JSON.stringify(dataSet));
+        //console.log(JSON.stringify(dataSet));
 
         //데이터가 있는 경우
         if(dataSet.biz_id != 0) {
@@ -53,7 +51,6 @@ $(document).ready(function() {
             $('#inputBizNo').focus();
             $('#inputBizId').val("0");
         }
-
     }
 
     //ID 중복 체크 컨트롤러
@@ -126,7 +123,14 @@ $(document).ready(function() {
                 //값이 없음. ID를 넣어주세요
                 $('#chkDuplicate').val("");
                 $('#lblcheckID').text("ID를 넣어주세요");
+                $('#inputID').focus();
                 return
+            }
+            if(loginID.length < 4){
+                $('#lblcheckID').text("ID는 4자리 이상 입력해주세요.");
+                $('#chkDuplicate').val("");
+                $('#inputID').focus();
+                return ;
             }
             dataSet['login_id'] = loginID;
             apiCallPost(urlMake('CHECK'), idCheckController, dataSet)
@@ -146,50 +150,77 @@ $(document).ready(function() {
             }
             //pw값이 같은지 확인
             if($('#inputPassword').val()!=$('#inputPasswordCfm').val()){
-                $('#lblcheckID').text("패스워드가 틀립니다. 확인 해 주세요.");
+                $('#lblcheckID').text("패스워드 확인과 다릅니다. 확인 해 주세요.");
                 $('#inputPassword').focus();
                 return
             }
             //값들이 다 들어가 있는지 확인
             if(!$('#inputBizNo').val()){
-                //값이 없음. ID를 넣어주세요
                 $('#lblComp').text("회사정보를 검색하거나 입력해주세요");
                 $('#inputBizNo').focus();
                 return
             }
             if(!$('#inputCompName').val()){
-                //값이 없음. ID를 넣어주세요
                 $('#lblComp').text("회사정보를 검색하거나 입력해주세요");
                 $('#inputCompName').focus();
                 return
             }
-            if(!$('#inputID').val()){
-                //값이 없음. ID를 넣어주세요
+
+            var id= $('#inputID').val();
+            if(!id){
                 $('#lblcheckID').text("ID를 넣어주세요");
                 $('#inputID').focus();
                 return
             }
+
             if(!$('#inputName').val()){
-                //값이 없음. ID를 넣어주세요
                 $('#lblcheckID').text("성명을 넣어주세요");
                 $('#inputName').focus();
                 return
             }
-            if(!$('#inputPassword').val()){
-                //값이 없음. ID를 넣어주세요
+            var password = $("#inputPassword").val();
+            if(!password){
                 $('#lblcheckID').text("패스워드를 넣어주세요");
                 $('#inputPassword').focus();
                 return
             }
+
+            //비밀번호 유효성 체크
+            var num = password.search(/[0-9]/g);
+            var eng = password.search(/[a-z]/ig);
+            var spe = password.search(/[`~!@@#$%^&*|₩₩₩'₩";:₩/?]/gi);
+            if(password.length < 8 || password.length > 20){
+              $('#lblcheckID').text("8자리~20자리 이내로 입력해주세요.");
+              $('#inputPassword').focus();
+              return ;
+            }else if(num < 0 || eng < 0){
+              $('#lblcheckID').text("영문,숫자를 혼합하여 입력해주세요.");
+              $('#inputPassword').focus();
+              return ;
+            }
+
             if(!$('#inputEmail').val()){
-                //값이 없음. ID를 넣어주세요
                 $('#lblcheckID').text("이메일을 넣어주세요");
                 $('#inputEmail').focus();
                 return
             }
             if(!$('#inputPhone').val()){
-                //값이 없음. ID를 넣어주세요
-                $('#lblcheckID').text("핸드폰을 넣어주세요");
+                $('#lblcheckID').text("핸드폰 번호를 넣어주세요");
+                $('#inputPhone').focus();
+                return
+            }
+            // 정규식 - 이메일 유효성 검사
+            var regEmail = /([\w-\.]+)@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.)|(([\w-]+\.)+))([a-zA-Z]{2,4}|[0-9]{1,3})(\]?)$/;
+            if (!regEmail.test($('#inputEmail').val())){
+                $('#lblcheckID').text("이메일 형식(abc@abc.com)이 아닙니다.");
+                $('#inputEmail').focus();
+                return
+            }
+            // 정규식 -전화번호 유효성 검사
+            //var regPhone = /^((01[1|6|7|8|9])[1-9]+[0-9]{6,7})|(010[1-9][0-9]{7})$/;
+            var regPhone = /^01(?:0|1|[6-9])-(?:\d{3}|\d{4})-\d{4}$/;
+            if (!regPhone.test($('#inputPhone').val())){
+                $('#lblcheckID').text("전화번호 형식(000-0000-0000)이 아닙니다.");
                 $('#inputPhone').focus();
                 return
             }
@@ -198,8 +229,8 @@ $(document).ready(function() {
             dataSet['biz_id'] = $('#inputBizId').val();
             
             var bizid = $('#inputBizId').val();
-            console.log(JSON.stringify(dataSet));
-            console.log(bizid);
+            //console.log(JSON.stringify(dataSet));
+            //console.log(bizid);
 
             dataSet['biz_no'] = $('#inputBizNo').val();
             dataSet['comp_nm'] = $('#inputCompName').val();
@@ -213,13 +244,11 @@ $(document).ready(function() {
             dataSet['phone']     = $('#inputPhone').val();
             dataSet['email']     = $('#inputEmail').val();
 
-            console.log(JSON.stringify(dataSet));
+            //console.log(JSON.stringify(dataSet));
 
             apiCallPost(urlMake('JOIN'), joinController, dataSet)
         });
-
     }
-
     init();
 
 });

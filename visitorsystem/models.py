@@ -610,7 +610,7 @@ class Ssctenantdb(db.Model, BaseMixin):
     password = db.Column(db.String(128))
     schema_nm = db.Column(db.String(50))
 
-    # Detail
+    #Detail
     ssctenant = db.relationship('Ssctenant', backref=backref('FK_SSC_TENANT_DB_TENANT_ID'))
 
 
@@ -640,7 +640,6 @@ class Scclass(db.Model, BaseMixin):
 
     # 1:多 (Scclass->Sccode)-Parent class 정의 - childs = db.relationship('Child ', back_populates='Child 클래스에 정의한 parent 변수명')
     scclasses = db.relationship('Sccode', back_populates='sccode')
-
 
 class Sccode(db.Model, BaseMixin):
     """공통코드관리"""
@@ -786,8 +785,8 @@ class Scuser(db.Model, UserMixin):
     login_fail_cnt = db.Column(db.Integer)
     user_type = db.Column(db.String(1), nullable=False)  # 내부0 외부1
     auth_id = db.Column(db.String(50))
-    emp_id = db.Column(db.Integer, db.ForeignKey('sc_inner_user_info.id'))
-    biz_id = db.Column(db.Integer, db.ForeignKey('sc_comp_info.id'))  # 외부1일 경우에만 데이터 있음 sc_comp_info
+    emp_id = db.Column(db.Integer,db.ForeignKey('sc_inner_user_info.id'))
+    biz_id = db.Column(db.Integer,db.ForeignKey('sc_comp_info.id'))  # 외부1일 경우에만 데이터 있음 sc_comp_info
     comp_nm = db.Column(db.String(50))
     login_yn = db.Column(db.String(2))
     # dept_id/dept_nm 추가
@@ -850,21 +849,14 @@ class Vcapplymaster(db.Model, BaseMixin):
     # 추가부분
     site_id2 = db.Column(db.String(30), nullable=False)
     site_nm2 = db.Column(db.String(50), nullable=False)
-    visit_type = db.Column(db.String(50))  # 0(로그인 한 사용자, 작업자용) #1(로그인 안 함 사용자, 일반사용자용)
+    visit_type = db.Column(db.String(50)) #0(로그인 한 사용자, 작업자용) #1(로그인 안 함 사용자, 일반사용자용)
 
     # [Detail] Child class 정의 - parent = db.relationship('Parent', backref=backref('실제 DB FK명'))
     sccompinfo = db.relationship('Sccompinfo', backref=backref('FK_VC_APPLY_MASTER_BIZ_ID'))
     # [Detail]
     scuser = db.relationship('Scuser', backref=backref('FK_VC_APPLY_MASTER_LOGIN_ID'))
-
     # 1:多 (Vcapplymaster->Vcapplyuser) [Master]
     vcapplyusers = db.relationship('Vcapplyuser', back_populates='vcapplymaster')
-
-
-    # 1:多 (Vcapplymaster->Vcvisituser) [Master] 신규
-    Vcvisitusers = db.relationship('Vcvisituser', back_populates='vcapplymaster')
-
-
 
 
 class Vcapplyuser(db.Model, BaseMixin):
@@ -884,7 +876,6 @@ class Vcapplyuser(db.Model, BaseMixin):
 
     # [Detail]
     vcapplymaster = db.relationship('Vcapplymaster', backref=backref('FK_VC_APPLY_USER_APPLY_ID'))
-
     # 1:多 (Vcapplyuser->Vcinoutinfo) [Master]
     vcinoutinfos = db.relationship('Vcinoutinfo', back_populates='vcapplyuser')
 
@@ -930,7 +921,6 @@ class Vcvisituser(db.Model, BaseMixin):
     __tablename__ = 'vc_visit_user'
     tenant_id = db.Column(db.Integer, db.ForeignKey('ssc_tenants.id'), nullable=False)
     rule_id = db.Column(db.Integer, db.ForeignKey('sc_rule.id'), nullable=False)
-    apply_id = db.Column(db.Integer, db.ForeignKey('vc_apply_master.id'), nullable=False)
     name = db.Column(db.String(50), nullable=False)
     phone = db.Column(db.String(50), nullable=False)
     text_desc = db.Column(db.String(100))
@@ -940,13 +930,8 @@ class Vcvisituser(db.Model, BaseMixin):
     # [Detail]
     scrule = db.relationship('Scrule', backref=backref('VC_VISIT_USER_RULE_ID'))
 
-    # [Detail] 추가
-    vcapplymaster = db.relationship('Vcapplymaster', backref=backref('VC_VISIT_USER_APPLY_ID'))
-
     # 1:多 (Vcvisituser->ScRuleFile) [Master]
     scrulefiles = db.relationship('ScRuleFile', back_populates='vcvisituser')
-
-
 
 
 class ScRuleFile(db.Model, BaseMixin):
