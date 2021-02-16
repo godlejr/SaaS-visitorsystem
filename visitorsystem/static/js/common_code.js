@@ -1,6 +1,6 @@
 $(document).ready(function() {
 
-    function apiCallPost(url, controller, data, option) {
+    function apiCallPost(url, Handler, data, option) {
           $.ajax({
                     type: 'POST',
                     url: url,
@@ -8,7 +8,7 @@ $(document).ready(function() {
                     cache: false,
                     data: data
                }).success(function (data) {
-                    controller(data);
+                    Handler(data);
 
                });
      }
@@ -32,25 +32,32 @@ $(document).ready(function() {
     }
 
 
-    //규칙생성 및 저장 컨트롤러
-    function saveController(dataSet) {
+    function saveHandler(dataSet) {
         $('#modalContent').text(dataSet.msg);
-        console.log(dataSet.msg);
         $('#alertModal').show();
 
     }
 
     //규칙수정 컨트롤러
-    function editController(dataSet) {
-
+    function siteEditHandler(dataSet) {
+        $('#site_id').val(dataSet.msg.site_id);
         $('#site_name').val(dataSet.msg.site_name);
+    }
+
+    function gateEditHandler(dataSet) {
+        $('#gate_id').val(dataSet.msg.gate_id);
+        $('#gate_name').val(dataSet.msg.gate_name);
         $('#site_type').val(dataSet.msg.site_type);
-        $('#site_duedate').val(dataSet.msg.site_duedate);
-        $('#site_desc').val(dataSet.msg.site_desc);
+    }
+
+    function codeEditHandler(dataSet) {
+        $('#code_id').val(dataSet.msg.code_id);
+        $('#code_name').val(dataSet.msg.code_name);
+        $('#code_type').val(dataSet.msg.code_type);
     }
 
     //규칙삭제 컨트롤러
-    function deleteController(dataSet) {
+    function deleteHandler(dataSet) {
         location.reload();
     }
 
@@ -80,9 +87,8 @@ $(document).ready(function() {
         $('.siteEditBtn').click(function() {
             var htmlIdList = [];
             var dataSet = {};
-            $('#site_name').attr('disabled', true);
             dataSet['id'] = $(this).parents("li").attr('id');
-            apiCallPost(urlMake('EDIT','site'), editController, dataSet);
+            apiCallPost(urlMake('EDIT','site'), siteEditHandler, dataSet);
 
         });
 
@@ -90,13 +96,13 @@ $(document).ready(function() {
             var htmlIdList = [];
             var dataSet = {};
             dataSet['id'] = $(this).parents("li").attr('id');
-            apiCallPost(urlMake('DELETE','site'), deleteController, dataSet);
+            apiCallPost(urlMake('DELETE','site'), deleteHandler, dataSet);
         });
 
         $('#siteSaveBtn').click(function() {
             var htmlIdList = [];
             var dataSet = {};
-            htmlIdList = ['site_name']
+            htmlIdList = ['site_name','site_id']
 
 
             for (var i = 0; i < htmlIdList.length; i++) {
@@ -105,7 +111,7 @@ $(document).ready(function() {
                 dataSet[key] = value;
             }
 
-            apiCallPost(urlMake('SAVE','site'), saveController, dataSet)
+            apiCallPost(urlMake('SAVE','site'), saveHandler, dataSet)
         });
 
 
@@ -128,9 +134,9 @@ $(document).ready(function() {
         $('.gateEditBtn').click(function() {
             var htmlIdList = [];
             var dataSet = {};
-            $('#gate_name').attr('disabled', true);
             dataSet['id'] = $(this).parents("li").attr('id');
-            apiCallPost(urlMake('EDIT','gate'), editController, dataSet);
+
+            apiCallPost(urlMake('EDIT','gate'), gateEditHandler, dataSet);
 
         });
 
@@ -138,13 +144,13 @@ $(document).ready(function() {
             var htmlIdList = [];
             var dataSet = {};
             dataSet['id'] = $(this).parents("li").attr('id');
-            apiCallPost(urlMake('DELETE','gate'), deleteController, dataSet);
+            apiCallPost(urlMake('DELETE','gate'), deleteHandler, dataSet);
         });
 
         $('#gateSaveBtn').click(function() {
             var htmlIdList = [];
             var dataSet = {};
-            htmlIdList = ['gate_name', 'site_type']
+            htmlIdList = ['gate_name', 'site_type','gate_id']
 
 
             for (var i = 0; i < htmlIdList.length; i++) {
@@ -156,7 +162,7 @@ $(document).ready(function() {
                 dataSet[key] = value;
             }
 
-            apiCallPost(urlMake('SAVE','gate'), saveController, dataSet)
+            apiCallPost(urlMake('SAVE','gate'), saveHandler, dataSet)
         });
 
         //코드
@@ -180,9 +186,8 @@ $(document).ready(function() {
         $('.codeEditBtn').click(function() {
             var htmlIdList = [];
             var dataSet = {};
-            $('#code_name').attr('disabled', true);
             dataSet['id'] = $(this).parents("li").attr('id');
-            apiCallPost(urlMake('EDIT','code'), editController, dataSet);
+            apiCallPost(urlMake('EDIT','code'), codeEditHandler, dataSet);
 
         });
 
@@ -190,13 +195,13 @@ $(document).ready(function() {
             var htmlIdList = [];
             var dataSet = {};
             dataSet['id'] = $(this).parents("li").attr('id');
-            apiCallPost(urlMake('DELETE','code'), deleteController, dataSet);
+            apiCallPost(urlMake('DELETE','code'), deleteHandler, dataSet);
         });
 
         $('#codeSaveBtn').click(function() {
             var htmlIdList = [];
             var dataSet = {};
-            htmlIdList = ['code_name', 'code_type']
+            htmlIdList = ['code_name', 'code_type', 'code_id']
 
 
             for (var i = 0; i < htmlIdList.length; i++) {
@@ -208,7 +213,7 @@ $(document).ready(function() {
                 dataSet[key] = value;
             }
 
-            apiCallPost(urlMake('SAVE','code'), saveController, dataSet)
+            apiCallPost(urlMake('SAVE','code'), saveHandler, dataSet)
         });
     }
 

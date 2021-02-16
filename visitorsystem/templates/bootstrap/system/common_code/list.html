@@ -77,6 +77,8 @@
                             <div class="row">
                                 <div class="col text-left">
                                     <button id='siteSaveBtn' type="button" class="btn btn-primary">저장</button>
+                                    <input type="text" hidden="hidden" id="site_id"/>
+
                                 </div>
                             </div>
 
@@ -171,6 +173,7 @@
                         <div class="row">
                             <div class="col text-left">
                                 <button id='gateSaveBtn' type="button" class="btn btn-primary">저장</button>
+                                <input type="text" hidden="hidden" id="gate_id"/>
                             </div>
                         </div>
 
@@ -201,7 +204,8 @@
 
                         {% for code in codes %}
                         <li id={{code.id}} class="bdB peers ai-c jc-sb fxw-nw">
-                            <a class="td-n pL-15 p-5 peers fxw-nw mR-20 peer-greed c-grey-900" href="javascript:void(0);"
+                            <a class="td-n pL-15 p-5 peers fxw-nw mR-20 peer-greed c-grey-900"
+                               href="javascript:void(0);"
                                data-toggle="modal" data-target="#calendar-edit">
                                 <div class="peer mR-15"><i class="fa fa-fw fa-clock-o c-indigo-500"></i></div>
                                 <div class="peer">
@@ -265,6 +269,8 @@
                         <div class="row">
                             <div class="col text-left">
                                 <button id='codeSaveBtn' type="button" class="btn btn-primary">저장</button>
+                                <input type="text" hidden="hidden" id="code_id" />
+
                             </div>
                         </div>
 
