@@ -1,10 +1,6 @@
-var gb;
-var gb2;
 var ruleList = [];
 $(document).ready(function() {
-
     //URL에 해당하는 컨트롤러 호출
-
     function apiCallPost(url, controller, data, opt) {
         $.ajax({
                 type: 'POST',
@@ -65,31 +61,31 @@ $(document).ready(function() {
         }
 
         newTr = `
-         <tr class="hide">
-             <td>
-                     <input type="checkbox" id="checkbox" class="peer leave resposiveTd">
+         <tr class="hide mediaTable mediaTableTbodyTr">
+             <td class='mediaTable mediaTableTbodyTd'>
+                     <input type="checkbox" id="checkbox" class="peer leave resposiveTd mediaTable">
              </td>
 
-             <td>
+             <td class='mediaTable mediaTableTbodyTd'>
                 <div class="form-group">
-                     <input type="text" class="form-control leave resposiveTd" id="tvisitor"  >
+                     <input type="text" class="form-control leave resposiveTd mediaTable" id="tvisitor"  >
                  </div>
              </td>
 
-             <td>
+             <td class='mediaTable mediaTableTbodyTd'>
                  <div class="form-group">
-                     <input type="text" id="tphone"  class="form-control leave ctphone resposiveTd">
+                     <input type="text" id="tphone"  class="form-control leave ctphone resposiveTd mediaTable">
                  </div>
              </td>
 
-             <td>
-                <div class="form-group" >
-                         <select id="" name="" class="form-control leave resposiveTd resposiveSelect">
+             <td class='mediaTable mediaTableTbodyTd'>
+                <div class="form-group mediaTable" >
+                         <select id="" name="" class="form-control leave resposiveTd resposiveSelect mediaTable">
                                 ${str}
                          </select>
                  </div>
              </td>
-             <td><input type="text" class="form-control leave resposiveTd"></td>
+             <td class='mediaTable mediaTableTbodyTd'><input type="text" class="form-control leave resposiveTd mediaTable"></td>
              `
 
         for (var i = 0; i < dataSet.length; i++) {
@@ -100,9 +96,9 @@ $(document).ready(function() {
             ruleList.push(ruleName);
 
             if (type == '텍스트') {
-                append = append + `<td><input type="text" class="form-control rule-text leave resposiveTd" rule=${ruleName}></td>`
+                append = append + `<td class='mediaTable mediaTableTbodyTd'><input type="text" class="form-control rule-text leave resposiveTd mediaTable" rule=${ruleName}></td>`
             } else if (type == '달력') {
-                append = append + `<td>
+                append = append + `<td class='mediaTable mediaTableTbodyTd'>
                                        <div class="input-group resposiveTd">
                                        <div class="input-group-addon bgc-white bd bdwR-0"><i class="ti-calendar"></i></div>
                                        <input type="text" class="form-control start-date rule-calendar leave rule" placeholder="달력" data-provide="datepicker" name ="inout_sdate" id="inout_sdate" rule=${ruleName}>
@@ -110,7 +106,7 @@ $(document).ready(function() {
                                     </td> `
             } else if (type == '파일') {
                 append = append +
-                    `<td><input name="file" id="file" accept="image/*,video/*" type="file" class="file rule-file leave file-upload rule resposiveTd" data-browse-on-zone-click="true" rule=${ruleName}>
+                    `<td class='mediaTable mediaTableTbodyTd'><input name="file" id="file" accept="image/*,video/*" type="file" class="file rule-file leave file-upload rule resposiveTd"  data-browse-on-zone-click="true" rule=${ruleName}>
                         <a id='download' href ='' target="_new" class='resposiveTd' download hidden>다운로드</a>
                 </td>`
             }
@@ -118,7 +114,7 @@ $(document).ready(function() {
 
 
         $('#thead').append(theadContext);
-        append = append + `<td style="visibility:hidden" is-valid="0" is-user="0"></td>`
+        append = append + `<td class='mediaTable mediaTableTbodyTd'style="visibility:hidden" is-valid="0" is-user="0"></td>`
         newTr = newTr + append + '</tr>';
     }
 
@@ -203,29 +199,47 @@ $(document).ready(function() {
             var rule_name = dataSet[i].rule_name;
             var rule_desc = dataSet[i].rule_desc;
             var rule_type = dataSet[i].rule_type;
+            //추가부분
+            var rule_textDesc = dataSet[i].text_desc; //텍스트 속성
+            var rule_sdate = dataSet[i].s_date; //달력 속성
+            var rule_bucketUrl = dataSet[i].bucketUrl; //버킷 속성
+
             var state = dataSet[i].state;
             var nextRule = rule.eq(offset + i);
 
             console.log(state)
 
             //state 상태체크
-            if (!state) {
+            if (!state) { //remove
                 msg = msg + rule_name + " ";
                 check = true;
                 if (rule_type == '달력') {
                     nextRule.children().children('input').addClass('is-invalid');
                 } else if (rule_type == '텍스트') {
                     nextRule.children().addClass('is-invalid');
+                } else if (rule_type == '파일') {
+                    nextRule.children().next().attr('hidden', true)
                 }
-            } else {
+
+            } else { //add
                 if (rule_type == '달력') {
                     nextRule.children().children('input').removeClass('is-invalid');
+                    //                    var date = rule_sdate.split('-')
+                    //                    var year = date[0]; //년
+                    //                    var month = date[1]; //월
+                    //                    var day = date[2]; //일
+                    //                    output = month + "/" + day + "/" + year;
+                    //                    nextRule.children().children('input').val(output);
 
                 } else if (rule_type == '텍스트') {
                     nextRule.children().removeClass('is-invalid');
+                    //                    nextRule.children().val(rule_textDesc);
+
+                } else if (rule_type == '파일') {
+                    nextRule.children().next().removeAttr('hidden');
+                    //                    nextRule.children().attr('href', rule_bucketUrl);
                 }
             }
-
         }
 
         if (check) {
@@ -243,8 +257,6 @@ $(document).ready(function() {
             console.log('----------------------------out')
             $('#errorMsg').text('');
         }
-
-
 
     }
 
@@ -315,22 +327,23 @@ $(document).ready(function() {
                 if (key == "visitors")
                     break;
 
-                if(key=='inout_sdate' || key=='inout_edate'){
-                  var str = $('#'+key).val();
-                  var date = str.split('/')
-                  var year = date[2]; //년
-                  var month = date[0]; //월
-                  var day = date[1];//일
-                  dataSet[key] = year + "-" + month + "-" + day;
+                if (key == 'inout_sdate' || key == 'inout_edate') {
+                    var str = $('#' + key).val();
+                    var date = str.split('/')
+                    var year = date[2]; //년
+                    var month = date[0]; //월
+                    var day = date[1]; //일
+                    dataSet[key] = year + "-" + month + "-" + day;
                     continue;
                 }
                 var value = $('#' + key).val()
                 dataSet[key] = value;
-
-
             }
 
+            //출입신청 아이디
+            dataSet['applyId'] = $('#main').attr('name');
             var lists = [];
+
             //visitors설정
             $('#tableBody tr').each(function() {
                 var cellItem = $(this).find(":input")
@@ -357,14 +370,11 @@ $(document).ready(function() {
             //출입지역 code
             dataSet["inout_location_code"] = $("#inout_location option:selected").attr('code')
             dataSet["inout_location_code2"] = $("#inout_location2 option:selected").attr('code')
-
             dataSet["visitors"] = JSON.stringify(lists);
-
 
             //신청자 정보 check
             var check = dataSet['applicant_name'];
             var check2 = dataSet['inout_biz_no'];
-
 
             if (check.length == 0 || check2.length == 0) {
                 alert('신청자 정보를 입력해주세요');
@@ -395,8 +405,6 @@ $(document).ready(function() {
 
             if (check == '1')
                 apiCallPost(urlMake('CREATE'), applyController, dataSet)
-
-
 
         });
 
@@ -439,10 +447,9 @@ $(document).ready(function() {
 
                 console.log(userName);
                 console.log(userPhone);
-                gb2 = $(this)
+
                 if (userName.length == 0 || userPhone.length == 0)
                     return;
-
 
                 var str = userPhone.trim();
                 var phone = str.replace(/(^02.{0}|^01.{1}|[0-9]{3})([0-9]+)([0-9]{4})/, "$1-$2-$3");
@@ -453,13 +460,11 @@ $(document).ready(function() {
                     return;
                 }
 
-
                 $(this).closest('tr').children().eq(2).children().children().val(phone);
                 userPhone = phone;
-
-
                 dataSet['userName'] = userName;
                 dataSet['userPhone'] = userPhone;
+                dataSet['applyId'] = $('#main').attr('name');
                 var option = $(this);
 
                 $.ajax({
@@ -501,6 +506,9 @@ $(document).ready(function() {
                 dataSet['ruleText'] = ruleText;
                 dataSet['type'] = '텍스트';
                 dataSet['rule'] = rule;
+                dataSet['applyId'] = $('#main').attr('name');
+
+                console.log('호출')
                 $.ajax({
                         type: 'POST',
                         url: "/inoutApply/rule/text/update",
@@ -515,7 +523,6 @@ $(document).ready(function() {
 
 
             $('.rule-calendar').focusout(function(e) {
-                gb2 = $(this);
                 var userName = $(this).closest('tr').children().eq(1).children().children().val() || '';
                 var userPhone = $(this).closest('tr').children().eq(2).children().children().val() || '';
                 var rule = $(this).attr('rule');
@@ -529,13 +536,12 @@ $(document).ready(function() {
                 dataSet['userPhone'] = userPhone;
                 dataSet['rule'] = rule;
                 dataSet['type'] = '캘린더';
+                dataSet['applyId'] = $('#main').attr('name');
                 ruleCalender = ruleCalender.split('/')
                 year = ruleCalender[2]; //년
                 month = ruleCalender[0]; //월
                 day = ruleCalender[1]; //일
                 dataSet['ruleCalender'] = year + "-" + month + "-" + day;
-
-
 
                 $.ajax({
                         type: 'POST',
@@ -560,10 +566,9 @@ $(document).ready(function() {
                     var applicantPhone = $('#applicant_phone').val() || '';
                     var userName = $(this).closest('tr').children().eq(1).children().children().val() || '';
                     var userPhone = $(this).closest('tr').children().eq(2).children().children().val() || '';
-
+                    var applyId = $('#main').attr('name');
                     var rule = $(this).attr('rule');
-                    console.log(userName)
-                    console.log(userPhone)
+
 
                     if (applicantName.length == 0 || applicant_phone.length == 0 || userName.length == 0 || userPhone.length == 0) {
                         console.log(applicant_name)
@@ -578,6 +583,7 @@ $(document).ready(function() {
                     data.append('phone', userPhone);
                     data.append('type', '파일');
                     data.append('rule', rule);
+                    data.append('applyId', applyId);
 
                     $.ajax({
                         type: "POST",
@@ -590,17 +596,20 @@ $(document).ready(function() {
                         timeout: 600000,
                         success: function(result) {
                             var href = result.msg;
-
-                            gb2 = current;
                             current.next().removeAttr('hidden');
-                            current.next().attr('href', href);
+                            current.next().attr('href', href)
                         },
 
                         error: function(e) {
                             console.log("ERROR : ", e);
                         }
                     });
-                };
+                } else {
+                    if ($(this).val().length != 0) {
+                        $(this).val('');
+                    }
+
+                }
             });
 
 
@@ -658,7 +667,6 @@ $(document).ready(function() {
                 data: ""
             })
             .success(function(data) {
-
                 data = data.msg;
                 //                var str = '<option selected="selected">선택</option>';
                 var str = '';
@@ -666,9 +674,7 @@ $(document).ready(function() {
                     var code_nm = data[i].code_nm
                     var temp = `<option value=${code_nm}>${code_nm}</option>`
                     str = str + temp;
-
                 }
-
                 $('#inout_purpose_type').append(str);
 
             });
@@ -682,16 +688,13 @@ $(document).ready(function() {
                 data: ""
             })
             .success(function(dataSet) {
-
                 data = dataSet.msg;
                 var str = '';
-
                 for (var i = 0; i < data.length; i++) {
                     var code_nm = data[i].code_nm
                     var code = data[i].code
                     var temp = `<option code = ${code} value=${code_nm}>${code_nm}</option>`
                     str = str + temp;
-
                 }
 
                 data = dataSet.msg2;
@@ -702,24 +705,18 @@ $(document).ready(function() {
                     var code = data[i].code
                     var temp = `<option code = ${code} value=${code_nm}>${code_nm}</option>`
                     str = str + temp;
-
                 }
                 $('#inout_location2').append(str);
-
             });
 
         var date = new Date();
         var year = date.getFullYear();
         var month = new String(date.getMonth() + 1);
         var day = new String(date.getDate());
-
         if (month.length == 1)
             month = '0' + month;
 
-
-
         var thisYear = month + "/" + day + "/" + year;
-
         $('#inout_sdate').val(thisYear);
         $('#inout_edate').val(thisYear);
 
