@@ -639,7 +639,7 @@ class Scclass(db.Model, BaseMixin):
     user_def_yn = db.Column(db.String(1))
 
     # 1:多 (Scclass->Sccode)-Parent class 정의 - childs = db.relationship('Child ', back_populates='Child 클래스에 정의한 parent 변수명')
-    scclasses = db.relationship('Sccode', back_populates='sccode')
+    sccodes = db.relationship('Sccode', back_populates='scclass')
 
 class Sccode(db.Model, BaseMixin):
     """공통코드관리"""
@@ -657,7 +657,17 @@ class Sccode(db.Model, BaseMixin):
 
 
     # [Detail] -Child class 정의 - parent = db.relationship('Parent', backref=backref('실제 DB FK명'))
-    sccode = db.relationship('Scclass', backref=backref('FK_SC_CODE_CLASS_ID'))
+    scclass = db.relationship('Scclass', backref=backref('FK_SC_CODE_CLASS_ID'))
+
+    @hybrid_property
+    def get_sites(self):
+        return db.session.query(Sccode).filter(Sccode.tenant_id == self.tenant_id, Sccode.use_yn == '1',
+                                               Sccode.user_def_yn == 'Y', Sccode.class_nm == '사업장').all()
+
+    @hybrid_property
+    def get_site_for_gate(self):
+        return db.session.query(Sccode).filter(Sccode.tenant_id == self.tenant_id, Sccode.use_yn == '1',
+                                               Sccode.class_nm == '사업장', Sccode.code == self.attb_a).first()
 
 
 # 권한 매핑 필요
