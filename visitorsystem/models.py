@@ -38,7 +38,7 @@ class BaseMixin(object):
     # updated_at = db.Column(db.DateTime, default=db.func.now(), onupdate=db.func.now())
 
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    use_yn = db.Column(db.String(1),default='1')
+    use_yn = db.Column(db.String(1), default='1')
     created_at = db.Column(db.DateTime, default=db.func.now())
     created_by = db.Column(db.String(50))
     updated_at = db.Column(db.DateTime, default=db.func.now(), onupdate=db.func.now())
@@ -610,7 +610,7 @@ class Ssctenantdb(db.Model, BaseMixin):
     password = db.Column(db.String(128))
     schema_nm = db.Column(db.String(50))
 
-    #Detail
+    # Detail
     ssctenant = db.relationship('Ssctenant', backref=backref('FK_SSC_TENANT_DB_TENANT_ID'))
 
 
@@ -639,7 +639,8 @@ class Scclass(db.Model, BaseMixin):
     user_def_yn = db.Column(db.String(1))
 
     # 1:多 (Scclass->Sccode)-Parent class 정의 - childs = db.relationship('Child ', back_populates='Child 클래스에 정의한 parent 변수명')
-    scclasses = db.relationship('Sccode', back_populates='sccode')
+    sccodes = db.relationship('Sccode', back_populates='scclass')
+
 
 class Sccode(db.Model, BaseMixin):
     """공통코드관리"""
@@ -654,10 +655,18 @@ class Sccode(db.Model, BaseMixin):
     depth = db.Column(db.Integer)
     group_id = db.Column(db.String(50))
     position = db.Column(db.Integer)
-    user_def_yn = db.Column(db.String(1))
 
     # [Detail] -Child class 정의 - parent = db.relationship('Parent', backref=backref('실제 DB FK명'))
-    sccode = db.relationship('Scclass', backref=backref('FK_SC_CODE_CLASS_ID'))
+    scclass = db.relationship('Scclass', backref=backref('FK_SC_CODE_CLASS_ID'))
+
+    @hybrid_property
+    def get_sites(self):
+        return db.session.query(Sccode).filter(Sccode.tenant_id == self.tenant_id, Sccode.use_yn == '1',
+                                        Sccode.user_def_yn == 'Y',  Sccode.class_nm == '사업장').all()
+
+    @hybrid_property
+    def get_site_for_gate(self):
+        return db.session.query(Sccode).filter(Sccode.tenant_id == self.tenant_id, Sccode.use_yn == '1', Sccode.class_nm == '사업장', Sccode.code == self.attb_a).first()
 
 
 # 권한 매핑 필요
@@ -754,6 +763,7 @@ class Scmenu(db.Model, BaseMixin):
     # 1:多 (Scmenu->Scmenuauth) [Master]
     scmenuauths = db.relationship('Scmenuauth', back_populates='scmenu')
 
+
 class Scmenuauth(db.Model, BaseMixin):
     """공통메뉴권한관리"""
     __tablename__ = 'sc_menu_auth'
@@ -784,11 +794,11 @@ class Scuser(db.Model, UserMixin):
     login_fail_cnt = db.Column(db.Integer)
     user_type = db.Column(db.String(1), nullable=False)  # 내부0 외부1
     auth_id = db.Column(db.String(50))
-    emp_id = db.Column(db.Integer,db.ForeignKey('sc_inner_user_info.id'))
-    biz_id = db.Column(db.Integer,db.ForeignKey('sc_comp_info.id'))  # 외부1일 경우에만 데이터 있음 sc_comp_info
+    emp_id = db.Column(db.Integer, db.ForeignKey('sc_inner_user_info.id'))
+    biz_id = db.Column(db.Integer, db.ForeignKey('sc_comp_info.id'))  # 외부1일 경우에만 데이터 있음 sc_comp_info
     comp_nm = db.Column(db.String(50))
     login_yn = db.Column(db.String(2))
-    #dept_id/dept_nm 추가
+    # dept_id/dept_nm 추가
     dept_id = db.Column(db.String(30))
     dept_nm = db.Column(db.String(50))
 
@@ -848,7 +858,7 @@ class Vcapplymaster(db.Model, BaseMixin):
     # 추가부분
     site_id2 = db.Column(db.String(30), nullable=False)
     site_nm2 = db.Column(db.String(50), nullable=False)
-    visit_type = db.Column(db.String(50)) #0(로그인 한 사용자, 작업자용) #1(로그인 안 함 사용자, 일반사용자용)
+    visit_type = db.Column(db.String(50))  # 0(로그인 한 사용자, 작업자용) #1(로그인 안 함 사용자, 일반사용자용)
 
     # [Detail] Child class 정의 - parent = db.relationship('Parent', backref=backref('실제 DB FK명'))
     sccompinfo = db.relationship('Sccompinfo', backref=backref('FK_VC_APPLY_MASTER_BIZ_ID'))

@@ -1,5 +1,299 @@
 {% extends "bootstrap/system/common_code/base.html" %}
 
 {% block mainContent %}
- <!-- 여기서 html 작성하세요-->
+<!-- 여기서 html 작성하세요-->
+
+<div class="bgc-white bd p-20 mR-30 col-md-12">
+    <div class="mT-30">
+        <div class="content-top mB-5">
+            <div class="page-header"><h5 class="c-grey-900"> 시스템 > 시스템 속성 관리 </h5></div>
+        </div>
+    </div>
+</div>
+
+<br>
+
+<div class="bgc-white bd p-20 mR-30 col-md-12">
+    <div class="row">
+        <div class="col-md-4">
+            <div class="bdrs-3 ov-h bgc-white bd">
+
+                <div class="bgc-deep-purple-500 ta-c p-15" style="background-color: #f4a16b!important;">
+                    <h2 class="fw-300 mB-5 lh-1 c-white">사업장 설정</h2>
+                </div>
+
+                <div class="pos-r">
+                    <button id="siteCreteBtn" type="button"
+                            class="mT-nv-50 pos-a r-10 t-20 btn cur-p bdrs-50p p-0 w-3r h-3r btn-warning">
+                        <i class="ti-plus"></i>
+                    </button>
+                    <ul class="m-0 p-0 mT-0">
+
+                        {% for site in sites %}
+                        <li id={{site.id}} class="bdB peers ai-c jc-sb fxw-nw">
+                            <a class="td-n p-20 peers fxw-nw mR-20 peer-greed c-grey-900" href="javascript:void(0);"
+                               data-toggle="modal" data-target="#calendar-edit">
+                                <div class="peer mR-15"><i class="fa fa-fw fa-clock-o c-indigo-500"></i></div>
+                                <div class="peer">
+                                    <span class="fw-600">{{site.code_nm}}</span>
+                                </div>
+                            </a>
+                            <div class="peers mR-15">
+                                <div class="peer">
+                                    <button class="btn btn-link td-n c-deep-purple-500 cH-blue-500 fsz-md p-5 siteEditBtn">
+                                        <i class="ti-pencil"></i></button>
+                                </div>
+                                <div class="peer">
+                                    <button class="btn btn-link td-n c-red-500 cH-blue-500 fsz-md p-5"><i
+                                            class="ti-trash siteDelBtn"></i></button>
+                                </div>
+                            </div>
+                        </li>
+                        {% endfor %}
+                    </ul>
+                </div>
+
+            </div>
+        </div>
+
+
+        <div class="col-md-8">
+            <div class="row gap-20 masonry pos-r">
+                <div class="masonry-sizer col-md-12"></div>
+                <div class="masonry-item col-md-12">
+                    <div class="bgc-white p-20 bd">
+                        <h6 class="c-grey-900" style="font-weight:600">사업장 정보</h6>
+                        <hr>
+
+                        <div class="mT-30">
+                            <div class="form-row">
+                                <div class="form-group col-md-4">
+                                    <label for="site_name">사업장 명</label>
+                                    <input type="text" class="form-control" name="site_name" id="site_name"
+                                           placeholder="사업장 명을 입력해주세요">
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col text-left">
+                                    <button id='siteSaveBtn' type="button" class="btn btn-primary">저장</button>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<br/>
+<div class="bgc-white bd p-20 mR-30 col-md-12">
+
+    <div class="row">
+        <div class="col-md-4">
+            <div class="bdrs-3 ov-h bgc-white bd">
+
+                <div class="bgc-deep-purple-500 ta-c p-15" style="background-color: #f4a16b!important;">
+                    <h2 class="fw-300 mB-5 lh-1 c-white">정문 설정</h2>
+                </div>
+
+                <div class="pos-r">
+                    <button id="gateCreteBtn" type="button"
+                            class="mT-nv-50 pos-a r-10 t-20 btn cur-p bdrs-50p p-0 w-3r h-3r btn-warning">
+                        <i class="ti-plus"></i>
+                    </button>
+                    <ul class="m-0 p-0 mT-0">
+
+                        {% for gate in gates %}
+                        <li id={{gate.id}} class="bdB peers ai-c jc-sb fxw-nw">
+                            <a class="td-n p-20 peers fxw-nw mR-20 peer-greed c-grey-900" href="javascript:void(0);"
+                               data-toggle="modal" data-target="#calendar-edit">
+                                <div class="peer mR-15"><i class="fa fa-fw fa-clock-o c-indigo-500"></i></div>
+                                <div class="peer">
+                                    <span class="fw-600">{{gate.code_nm}}</span>
+                                    <div class="c-grey-600"><span
+                                            class="c-grey-700"> 사업장 - </span><i>{{gate.get_site_for_gate.code_nm}}</i>
+                                    </div>
+                                </div>
+                            </a>
+                            <div class="peers mR-15">
+                                <div class="peer">
+                                    <button class="btn btn-link td-n c-deep-purple-500 cH-blue-500 fsz-md p-5 gateEditBtn">
+                                        <i class="ti-pencil"></i></button>
+                                </div>
+                                <div class="peer">
+                                    <button class="btn btn-link td-n c-red-500 cH-blue-500 fsz-md p-5"><i
+                                            class="ti-trash gateDelBtn"></i></button>
+                                </div>
+                            </div>
+                        </li>
+                        {% endfor %}
+                    </ul>
+                </div>
+
+            </div>
+        </div>
+
+
+        <div class="col-md-8">
+            <div class="row gap-20 masonry pos-r">
+                <div class="masonry-item col-md-12">
+                    <div class="bgc-white p-20 bd">
+                        <h6 class="c-grey-900" style="font-weight:600">정문 정보</h6>
+                        <hr>
+
+                        <div class="mT-30">
+                            <div class="form-row">
+                                <div class="form-group col-md-4">
+                                    <label for="site_type">사업장</label>
+                                    <select id="site_type" name="site_type" class="form-control">
+                                        {% for site in sites %}
+                                        <option {% if site.code_nm== sites[0].code_nm %}
+                                                selected="{{ site.code_nm }}" {% endif %}>{{site.code_nm}}
+                                        </option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="form-row">
+                                <div class="form-group col-md-4">
+                                    <label for="gate_name">정문 명</label>
+                                    <input type="text" class="form-control" name="gate_name" id="gate_name"
+                                           placeholder="정문 명을 입력해주세요">
+                                </div>
+                            </div>
+
+                        </div>
+
+
+                        <div class="row">
+                            <div class="col text-left">
+                                <button id='gateSaveBtn' type="button" class="btn btn-primary">저장</button>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<br/>
+<div class="bgc-white bd p-20 mR-30 col-md-12">
+
+    <div class="row">
+        <div class="col-md-4">
+            <div class="bdrs-3 ov-h bgc-white bd">
+
+                <div class="bgc-deep-purple-500 ta-c p-15" style="background-color: #f4a16b!important;">
+                    <h2 class="fw-300 mB-5 lh-1 c-white">시스템 속성 설정</h2>
+                </div>
+
+                <div class="pos-r">
+                    <button id="codeCreteBtn" type="button"
+                            class="mT-nv-50 pos-a r-10 t-19 btn cur-p bdrs-50p p-0 w-3r h-3r btn-warning">
+                        <i class="ti-plus"></i>
+                    </button>
+                    <ul class="m-0 p-0 mT-20">
+
+                        {% for code in codes %}
+                        <li id={{code.id}} class="bdB peers ai-c jc-sb fxw-nw">
+                            <a class="td-n pL-15 p-5 peers fxw-nw mR-20 peer-greed c-grey-900" href="javascript:void(0);"
+                               data-toggle="modal" data-target="#calendar-edit">
+                                <div class="peer mR-15"><i class="fa fa-fw fa-clock-o c-indigo-500"></i></div>
+                                <div class="peer">
+                                    <span class="fw-600">{{code.code_nm}}</span>
+                                    <div class="c-grey-600"><span
+                                            class="c-grey-700"></span><i>{{code.class_nm}}</i>
+                                    </div>
+                                </div>
+                            </a>
+                            <div class="peers mR-15">
+                                <div class="peer">
+                                    <button class="btn btn-link td-n c-deep-purple-500 cH-blue-500 fsz-md p-5 codeEditBtn">
+                                        <i class="ti-pencil"></i></button>
+                                </div>
+                                <div class="peer">
+                                    <button class="btn btn-link td-n c-red-500 cH-blue-500 fsz-md p-5"><i
+                                            class="ti-trash codeDelBtn"></i></button>
+                                </div>
+                            </div>
+                        </li>
+                        {% endfor %}
+                    </ul>
+                </div>
+
+            </div>
+        </div>
+
+
+        <div class="col-md-8">
+            <div class="row gap-20 masonry pos-r">
+                <div class="masonry-item col-md-12">
+                    <div class="bgc-white p-20 bd">
+                        <h6 class="c-grey-900" style="font-weight:600">속성 정보</h6>
+                        <hr>
+
+                        <div class="mT-30">
+                            <div class="form-row">
+                                <div class="form-group col-md-4">
+                                    <label for="code_type">속성</label>
+                                    <select id="code_type" name="code_type" class="form-control">
+                                        {% for scClass in scClasses %}
+                                        <option {% if scClass.class_nm== scClasses[0].class_nm %}
+                                                selected="{{ scClass.class_nm }}" {% endif %}>{{scClass.class_nm}}
+                                        </option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="form-row">
+                                <div class="form-group col-md-4">
+                                    <label for="code_name">속성 값</label>
+                                    <input type="text" class="form-control" name="code_name" id="code_name"
+                                           placeholder="속성 값을 입력해주세요">
+                                </div>
+                            </div>
+
+                        </div>
+
+
+                        <div class="row">
+                            <div class="col text-left">
+                                <button id='codeSaveBtn' type="button" class="btn btn-primary">저장</button>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<div id="alertModal" class="modal" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">시스템 속성 관리</h5>
+                <button id="exitModal" type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                {% with messages = get_flashed_messages() %}
+                <p id="modalContent"></p>
+                {% endwith %}
+            </div>
+            <div class="modal-footer">
+                <button id="confirmModal" type="button" class="btn btn-primary ">확인</button>
+            </div>
+        </div>
+    </div>
+</div>
 {% endblock %}
