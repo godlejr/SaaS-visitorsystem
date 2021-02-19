@@ -353,7 +353,7 @@ def join():
         user.biz_id = biz_id
         user.comp_nm = request.form['comp_nm']
         user.user_type = "1"  # 외부인력
-        user.auth_id = "1000"  # 기본권한
+        user.auth_id = current_app.config['AUTH_VISITOR']   # 기본권한
         user.sms_yn = 'Y'
         user.info_agr_yn = 'Y'
         user.use_yn = '1'

@@ -10,7 +10,7 @@ from flask import url_for, current_app, request
 from flask_login import current_user
 
 from visitorsystem import create_app
-from visitorsystem.models import Ssctenant, Scmenu
+from visitorsystem.models import Ssctenant, Scmenu, Scmenuauth
 
 application = create_app(os.getenv('FLASK_CONFIG') or 'default')
 
@@ -39,7 +39,11 @@ def utility_processor():
         return ssctenant
 
     def get_menu():
-        scMenu = Scmenu.query.order_by(Scmenu.group_id, Scmenu.depth, Scmenu.position)
+        authId = current_user.get_auth.code
+        scMenu = Scmenu.query.join(Scmenuauth).filter(Scmenuauth.auth_id == authId,
+                                                      Scmenu.id == Scmenuauth.menu_id).order_by(Scmenu.group_id,
+                                                                                                Scmenu.depth,
+                                                                                                Scmenu.position)
         return scMenu
 
     return dict(url_for_s3=url_for_s3, get_tenant=get_tenant, get_menu=get_menu)
