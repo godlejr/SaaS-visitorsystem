@@ -56,6 +56,7 @@
         opacity: 0
     }
 }
+
     </style>
     <link href="{{ url_for('static', filename='css/bootstrap_vms.css') }}" rel="stylesheet">
     <link href="{{ url_for('static', filename='css/vms_style.css') }}" rel="stylesheet">
@@ -125,19 +126,34 @@
 
             <div class="form-group">
                 <div class="peers ai-c jc-sb fxw-nw">
+                    <!--                    <div class="peer">-->
+                    <!--                        <div class="checkbox checkbox-circle checkbox-info peers ai-c">-->
+                    <!--                            <input type="checkbox" id="inputCall1" name="inputCheckboxesCall" class="peer"> -->
+                    <!--                            <label for="inputCall1" class="peers peer-greed js-sb ai-c">-->
+                    <!--                                <span class="peer peer-greed">Remember Me</span></label>-->
+                    <!--                        </div>-->
+                    <!--                    </div>-->
                     <div class="peer">
-                        <div class="checkbox checkbox-circle checkbox-info peers ai-c">
-                            <input type="checkbox" id="inputCall1" name="inputCheckboxesCall" class="peer"> 
-                            <label for="inputCall1" class="peers peer-greed js-sb ai-c">
-                                <span class="peer peer-greed">Remember Me</span></label>
-                        </div>
-                    </div>
-                    <div class="peer" >
                         <button class="btn btn-primary">로그인</button>
-                        <button type="button"  style="display:inline" class="btn btn-primary" data-toggle="modal" data-target="#joinModal">회원가입</button>
+                        <button type="button" style="display:inline" class="btn btn-primary" data-toggle="modal"
+                                data-target="#joinModal">회원가입
+                        </button>
                     </div>
                 </div>
+                <div class="peers ai-c jc-sb fxw-nw mT-20">
+                    <div class="peer">
+                        <h5 class="fsz-def tt-c c-grey-900" style="cursor: pointer;">로그인없이 방문객 신청하기</h5>
+                    </div>
+
+                </div>
+                <div class="peers ai-c jc-sb fxw-nw mT-10">
+                    <div class="peer">
+                        <span class="peer peer-greed" style="cursor: pointer;" onclick="location.href='{{url_for('main.pricing')}}'">과금정책 안내</span>
+                    </div>
+                </div>
+
             </div>
+
         </form>
     </div>
 </div>
@@ -145,7 +161,7 @@
 
 <!-- 회원 가입 Modal -->
 <div class="modal fade" id="joinModal" tabindex="-1" role="dialog" aria-labelledby="interviewModalCenterTitle"
-    aria-hidden="true">
+     aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered" role="document">
         <div class="modal-content">
             <div class="modal-header">
@@ -173,8 +189,10 @@
                                     </div>
                                 </div>
                                 <div class="form-group">
-                                    <button type="button" style="display:inline" class="btn btn-primary" id="btnCompSearch">조회</button>
-                                    <label id ="lblComp" style="padding:5px" ></label>
+                                    <button type="button" style="display:inline" class="btn btn-primary"
+                                            id="btnCompSearch">조회
+                                    </button>
+                                    <label id="lblComp" style="padding:5px"></label>
                                 </div>
                                 <div class="form-group"><label for="inputAddress">주소</label>
                                     <input type="text" class="form-control" id="inputAddress">
@@ -183,18 +201,21 @@
                                     <input type="button" class="btn btn-primary" onclick="FindAddress()" value="주소 찾기">
                                 </div>
                                 <div id="wrap"
-                                    style="display:none;border:1px solid;width:400px;height:300px;margin:5px 0;position:relative">
+                                     style="display:none;border:1px solid;width:400px;height:300px;margin:5px 0;position:relative">
                                     <img src="//t1.daumcdn.net/postcode/resource/images/close.png" id="btnFoldWrap"
-                                        style="cursor:pointer;position:absolute;right:0px;top:-1px;z-index:1"
-                                        onclick="foldDaumPostcode()" alt="접기 버튼">
+                                         style="cursor:pointer;position:absolute;right:0px;top:-1px;z-index:1"
+                                         onclick="foldDaumPostcode()" alt="접기 버튼">
                                 </div>
 
                                 <div class="form-group"><label for="inputAddress2">상세주소</label> <input type="text"
-                                        class="form-control" id="inputAddress2">
+                                                                                                       class="form-control"
+                                                                                                       id="inputAddress2">
                                 </div>
                                 <div class="form-group">
                                     <div class="form-group"><label for="inputTel">업체 연락처</label> <input type="tel"
-                                            class="form-control" id="inputTel"></div>
+                                                                                                        class="form-control"
+                                                                                                        id="inputTel">
+                                    </div>
                                 </div>
                             </form>
                         </div>
@@ -209,7 +230,7 @@
                                 <div class="form-row">
                                     <div class="form-group col-md-6">
                                         <label for="inputID">ID</label>
-                                        <input type="text" class="form-control" id="inputID" >
+                                        <input type="text" class="form-control" id="inputID">
                                         <input id="chkDuplicate" style="display:none">
                                     </div>
                                     <div class="form-group col-md-6">
@@ -218,8 +239,10 @@
                                     </div>
                                 </div>
                                 <div class="form-group">
-                                    <button type="button" style="display:inline" class="btn btn-primary" id="btnChechID">중복 확인</button>
-                                    <label id ="lblcheckID" style="padding:5px" ></label>
+                                    <button type="button" style="display:inline" class="btn btn-primary"
+                                            id="btnChechID">중복 확인
+                                    </button>
+                                    <label id="lblcheckID" style="padding:5px"></label>
                                 </div>
 
 
@@ -339,8 +362,10 @@ function FindAddress() {
     // iframe을 넣은 element를 보이게 한다.
     element_wrap.style.display = 'block';
 }
+
 </script>
-<script src="https://code.jquery.com/jquery-2.2.4.min.js" integrity="sha256-BbhdlvQf/xTY9gja0Dq3HiwQF8LaCRTXxZKRutelT44=" crossorigin="anonymous"></script>
+<script src="https://code.jquery.com/jquery-2.2.4.min.js"
+        integrity="sha256-BbhdlvQf/xTY9gja0Dq3HiwQF8LaCRTXxZKRutelT44=" crossorigin="anonymous"></script>
 <script src="{{ url_for('static', filename='js/login.js') }}" rel="stylesheet"></script>
 
 </html>

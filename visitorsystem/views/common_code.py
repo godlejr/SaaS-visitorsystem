@@ -1,8 +1,7 @@
 from flask import Blueprint, render_template, current_app, request, jsonify
 from flask_login import current_user
 
-from visitorsystem.models import db, Scclass, Sccode
-from loggers import log
+from visitorsystem.models import db, Scclass, Sccode, Scuser
 
 common_code = Blueprint('common_code', __name__)
 
@@ -14,13 +13,15 @@ def index():
                                                  Scclass.user_def_yn == 'Y', Scclass.class_nm != '정문',
                                                  Scclass.class_nm != '사업장').all()
 
-    scCodeObject = db.session.query(Sccode).filter(Sccode.tenant_id == tenant_id, Sccode.use_yn == '1')
+    scCodeObject = db.session.query(Sccode).join(Scclass).filter(Sccode.tenant_id == tenant_id, Sccode.use_yn == '1', Scclass.user_def_yn == 'Y')
 
     # 사업장
-    sites = scCodeObject.filter(Sccode.class_nm == '사업장').order_by(Sccode.class_nm).all()
+    sites = scCodeObject.filter(Sccode.class_nm == '사업장').order_by(
+        Sccode.class_nm).all()
 
     # 정문
-    gates = scCodeObject.filter(Sccode.class_nm == '정문').order_by(Sccode.class_nm).all()
+    gates = scCodeObject.filter(Sccode.class_nm == '정문').order_by(
+        Sccode.class_nm).all()
 
     # 나머지 코드
     codes = scCodeObject.filter(Sccode.class_nm != '정문', Sccode.class_nm != '사업장').order_by(Sccode.class_nm).all()
@@ -56,11 +57,10 @@ def save(type):
 
         id = request.form[type + '_id']
 
-        if not id != '' :
+        if not id != '':
             # 최근 추가 코드(코드 별 내림차순)
             recentCode = db.session.query(Sccode).filter(Sccode.tenant_id == tenant_id,
-                                                         Sccode.class_nm == class_name, Sccode.use_yn == '1').order_by(
-                Sccode.code.desc()).all()
+                                                         Sccode.class_nm == class_name).order_by(Sccode.code.desc()).all()
             newCode = str(int(recentCode[0].code) + 10)  # 코드 + 50
 
             siteCodeforGate = ''
@@ -147,9 +147,9 @@ def edit(type):
             scCode["gate_name"] = scCodeObject.code_nm
             scCode["site_type"] = scCodeObject.get_site_for_gate.code_nm
         elif type == 'code':
-            scCode["code_id"] =  scCodeObject.id
+            scCode["code_id"] = scCodeObject.id
             scCode["code_name"] = scCodeObject.code_nm
-            scCode["code_type"] =  scCodeObject.class_nm
+            scCode["code_type"] = scCodeObject.class_nm
 
     return jsonify({'msg': scCode})
 
@@ -159,7 +159,15 @@ def delete(type):
     if request.method == 'POST':
         tenant_id = current_user.ssctenant.id
         id = int(request.form['id'])
-        scrule = db.session.query(Sccode).filter(Sccode.tenant_id == tenant_id, Sccode.id == id).first()
-        scrule.use_yn = '0'
+
+        scCode = db.session.query(Sccode).filter(Sccode.tenant_id == tenant_id, Sccode.id == id).first()
+        class_name = scCode.class_nm
+        if type == 'site':
+            siteNm = scCode.code_nm
+            scUser = db.session.query(Scuser).filter(Scuser.tenant_id == tenant_id, Scuser.site_nm == siteNm).first()
+            if scUser :
+                return jsonify({'msg': siteNm + '에 소속된 유저가 있습니다.'})
+
+        scCode.use_yn = '0'
         db.session.commit()
-        return jsonify({'msg': 'success'});
+        return jsonify({'msg':  class_name +'이 삭제 되었습니다.'})

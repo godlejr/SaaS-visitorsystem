@@ -802,7 +802,7 @@ class Scuser(db.Model, UserMixin):
     # dept_id/dept_nm 추가
     dept_id = db.Column(db.String(30))
     dept_nm = db.Column(db.String(50))
-
+    site_nm = db.Column(db.String(50))
     phone = db.Column(db.String(512))
     email = db.Column(db.String(512))
     fax_no = db.Column(db.String(512))
