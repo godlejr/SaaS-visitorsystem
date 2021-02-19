@@ -9,6 +9,12 @@ class Config(object):
     TEMPLATE_THEME = 'bootstrap'
     NO_IMG = 'noimg.JPG'
 
+    #권한
+    AUTH_ADMIN = '9990'
+    AUTH_VISIT_ADMIN = '3000'
+    AUTH_VISITOR = '1000'
+    AUTH_APPROVAL = '2000'
+
     #코로나 공공데이터 키
     COVID_SECURITY_KEY = '5%2FCy2c2pZ4DIwEYhfel4ZahBvrStmGZiu%2BGUkXLq2YwUdNDt%2FZLzLoRhzGAd9DtKi2Jhq%2Bg9WriseQNNPgsTbg%3D%3D'
     COVID_SERVICE_URL = ' http://openapi.data.go.kr/openapi/service/rest/Covid19/getCovid19InfStateJson'
