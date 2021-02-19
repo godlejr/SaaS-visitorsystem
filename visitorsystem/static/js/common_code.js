@@ -38,6 +38,12 @@ $(document).ready(function() {
 
     }
 
+    //규칙삭제 컨트롤러
+    function deleteHandler(dataSet) {
+        $('#modalContent').text(dataSet.msg);
+        $('#alertModal').show();
+    }
+
     //규칙수정 컨트롤러
     function siteEditHandler(dataSet) {
         $('#site_id').val(dataSet.msg.site_id);
@@ -56,10 +62,7 @@ $(document).ready(function() {
         $('#code_type').val(dataSet.msg.code_type);
     }
 
-    //규칙삭제 컨트롤러
-    function deleteHandler(dataSet) {
-        location.reload();
-    }
+
 
     //event리스너
     function init() {
