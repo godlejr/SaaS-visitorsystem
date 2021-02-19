@@ -659,15 +659,12 @@ class Sccode(db.Model, BaseMixin):
     # [Detail] -Child class 정의 - parent = db.relationship('Parent', backref=backref('실제 DB FK명'))
     scclass = db.relationship('Scclass', backref=backref('FK_SC_CODE_CLASS_ID'))
 
-    @hybrid_property
-    def get_sites(self):
-        return db.session.query(Sccode).filter(Sccode.tenant_id == self.tenant_id, Sccode.use_yn == '1',
-                                               Sccode.user_def_yn == 'Y', Sccode.class_nm == '사업장').all()
 
     @hybrid_property
     def get_site_for_gate(self):
         return db.session.query(Sccode).filter(Sccode.tenant_id == self.tenant_id, Sccode.use_yn == '1',
                                                Sccode.class_nm == '사업장', Sccode.code == self.attb_a).first()
+
 
 
 # 권한 매핑 필요
@@ -838,6 +835,12 @@ class Scuser(db.Model, UserMixin):
     @hybrid_method
     def get_id(self):
         return self.login_id
+
+
+    @hybrid_property
+    def get_auth(self):
+        #권한은 테넌트 조건이 없음..
+        return db.session.query(Sccode).filter(Sccode.use_yn == '1', Sccode.class_nm == '권한', Sccode.code == self.auth_id).first()
 
 
 class Vcapplymaster(db.Model, BaseMixin):
