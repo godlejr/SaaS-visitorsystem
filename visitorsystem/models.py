@@ -813,6 +813,7 @@ class Scuser(db.Model, UserMixin):
     logout_at = db.Column(db.DateTime)
     user_ip = db.Column(db.String(20))
     user_host = db.Column(db.String(50))
+    site_nm = db.Column(db.String(512))
 
     # [Detail] : Child class 정의 - parent = db.relationship('Parent', backref=backref('실제 DB FK명'))
     ssctenant = db.relationship('Ssctenant', backref=backref('FK_SC_USER_TENANT_ID'))
@@ -952,12 +953,32 @@ class Vcvisituser(db.Model, BaseMixin):
     scrulefiles = db.relationship('ScRuleFile', back_populates='vcvisituser')
 
 
+class Vcstackuser(db.Model, BaseMixin):
+    """작업자 스택 정보"""
+    __tablename__ = 'vc_stack_user'
+    tenant_id = db.Column(db.Integer, nullable=False)
+    rule_id = db.Column(db.Integer,db.ForeignKey('sc_rule.id'), nullable=False)
+    apply_id = db.Column(db.Integer)
+    name = db.Column(db.String(50), nullable=False)
+    phone = db.Column(db.String(50), nullable=False)
+    text_desc = db.Column(db.String(100))
+    s_date = db.Column(db.String(50))
+    e_date = db.Column(db.String(50))
+
+    # [Detail]
+    scrule = db.relationship('Scrule', backref=backref('VC_STACK_USER_RULE_ID'))
+
+    # 1:多 (Vcstackuser->ScRuleFile) [Master]
+    scrulefiles = db.relationship('ScRuleFile', back_populates='vcstackuser')
+
+
 class ScRuleFile(db.Model, BaseMixin):
     """파일 정보"""
     __tablename__ = 'sc_rule_file'
     tenant_id = db.Column(db.Integer, db.ForeignKey('ssc_tenants.id'), nullable=False)
     rule_id = db.Column(db.Integer, db.ForeignKey('sc_rule.id'), nullable=False)
     visit_id = db.Column(db.Integer, db.ForeignKey('vc_visit_user.id'), nullable=False)
+    visit_stack_id = db.Column(db.Integer, db.ForeignKey('vc_stack_user.id'))
     file_dir = db.Column(db.String(100))
     file_name = db.Column(db.String(100))
     s3_url = db.Column(db.String(200))
@@ -965,3 +986,4 @@ class ScRuleFile(db.Model, BaseMixin):
     # [Detail]
     scrule = db.relationship('Scrule', backref=backref('sc_rule_file_sc_rule'))
     vcvisituser = db.relationship('Vcvisituser', backref=backref('sc_rule_file_vc_visit_user'))
+    vcstackuser = db.relationship('Vcstackuser', backref=backref('sc_rule_file_vc_stack_user'))
