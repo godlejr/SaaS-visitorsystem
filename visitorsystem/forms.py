@@ -125,6 +125,15 @@ class Pagination(object):
     def has_next(self):
         return self.page < self.pages
 
+    def serializable(self, page_iter, p_pages):
+        return {
+            'page': self.page,
+            'per_page': self.per_page,
+            'total_count': self.total_count,
+            'iter_pages': page_iter,
+            'p_pages': p_pages
+        }
+
     def iter_pages(self, left_edge=0, left_current=2,
                    right_current=5, right_edge=0):
         last = 0

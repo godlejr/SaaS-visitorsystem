@@ -1,22 +1,55 @@
-{% extends "bootstrap/super_approval/base.html" %}
+{% extends "bootstrap/super_approval/approval_modal.html" %}
 
 {% block mainContent %}
 <!-- mainContent의 상단 조회조건 설정 부분 -->
+<script>
+    function url_for(param){
+        var sdate = $('#visit_sdate').val();
+        var edate = $('#visit_edate').val();
+        var dataSet = {};
+
+        if (!sdate || !edate) {
+            return;
+        }
+
+        sdate = sdate.split('/'); edate = edate.split('/');
+        dataSet['visit_sdate'] = sdate[2] + "-" + sdate[0] + "-" + sdate[1];
+        dataSet['visit_edate'] = edate[2] + "-" + edate[0] + "-" + edate[1];
+        dataSet['visit_category'] = $('#type').val();
+        dataSet['visit_purpose'] = $('#visit-purpose').val();
+        dataSet['comp_nm'] = $('#comp-nm').val();
+        dataSet['approval_state'] = $('#inputState').val();
+        dataSet['page'] = 1;    //Search 버튼 누르면 초기페이지는 1번째로 Set
+        dataSet['pages'] = 10;  //한 페이지에 조회되는 개수
+
+        document.location.href =  "{{url_for( 'super_approval.index')}}page/" + param +
+                                    "?visit_sdate="+ dataSet['visit_sdate'] + "&visit_edate=" + dataSet['visit_edate'] +
+                                    "&visit_category=" + dataSet['visit_category'] + "&visit_purpose=" + dataSet['visit_purpose'] +
+                                    "&comp_nm=" + dataSet['comp_nm'] + "&approval_state=" + dataSet['approval_state'] +
+                                    "&pages=" + dataSet['pages'];
+    }
+</script>
+
 <div class="mainContent-top">
-    <div class="row gap-20 masonry pos-r" style=" height: 200px;">
+    <div class="row gap-20 masonry pos-r mR-10" style=" height: 200px;">
         <div class="masonry-sizer col-md-12"></div>
-        <div class="masonry-item col-md-12" style="position: absolute; left: 50%; top: 0px;">
+        <div class="masonry-item col-md-12">
+            <div class="bgc-white bd p-20 col-md-12">
+                <div class="content-top mB-5">
+                    <div class="page-header"><h5 class="c-grey-900"> 감독부서업무 > 감독부서 승인 </h5><br></div>
+                </div>
+                <div class="mT-30">
+                </div>
+            </div>
+            <br>
             <!-- mainContent 최상단 : 페이지 명칭, 버튼 위치-->
-            <div class="bgc-white bd p-20 mR-30">
+            <div class="bgc-white bd p-20">
                 <div class="mT-10">
                     <!-- 각 입력값 ID 테이블컬럼명에 맞게 수정 필요 name부분 -->
-                    <form id="superApprovalSearchForm" method="POST" action="{{ url_for('super_approval.index') }}">
-                        <div class="content-top mB-10">
-                            <div class="page-header"><h5 class="c-grey-900"> 감독부서업무 > 감독부서 승인 </h5></div>
-                            <button type="submit" class="btn cur-p btn-primary mB-10 mR-10 btn-right search-btn" id = "searchBtn">조회</button>
-                        </div>
-                        <br/>
-                        <hr/>
+                    <div id="superApprovalSearchForm">
+                        <button type="submit" class="btn cur-p btn-primary mB-10 mR-10 btn-right search-btn"
+                                id="searchBtn">조회
+                        </button>
                         <div class="form-row">
                             <div class="form-group col-md-4"><label class="fw-500">신청일자</label>
                                 <div class="timepicker-input input-icon form-group">
@@ -38,22 +71,24 @@
                                     <!-- type1 / type2 / type3 -->
                                     <option selected="selected" value="all">-전체-</option>
                                     {% for list in visitCategory %}
-                                        <option name="{{list.code_nm}}">{{list.code_nm}}</option>
+                                    <option name="{{list.code_nm}}">{{list.code_nm}}</option>
                                     {% endfor %}
                                 </select>
                             </div>
                         </div>
 
                         <div class="form-row">
-                            <div class="form-group col-md-3"><label for="visit-purpose">작업명</label> <input type="text"
-                                                                                                       class="form-control"
-                                                                                                       id="visit-purpose"
-                                                                                                       name="visit_purpose">
+                            <div class="form-group col-md-3"><label for="visit-purpose">방문목적</label> <input type="text"
+                                                                                                            class="form-control"
+                                                                                                            id="visit-purpose"
+                                                                                                            name="visit_purpose">
+                                <input id="visit_purpose" name="visit_purpose" type="hidden" value="hi">
                             </div>
+
                             <div class="form-group col-md-3"><label for="comp-nm">업체명</label> <input type="text"
-                                                                                                           class="form-control"
-                                                                                                           id="comp-nm"
-                                                                                                           name="comp_nm">
+                                                                                                     class="form-control"
+                                                                                                     id="comp-nm"
+                                                                                                     name="comp_nm">
                             </div>
                             <div class="form-group col-md-2"><label for="inputState">진행상태</label>
                                 <select id="inputState" class="form-control" name="approval_state">
@@ -64,7 +99,7 @@
                                     <option name="반려">반려</option>
                                 </select></div>
                         </div>
-                    </form>
+                    </div>
                 </div>
             </div>
         </div>
@@ -73,126 +108,65 @@
 
 <!-- mainContent의 하단 조회결과 테이블 -->
 <div class="mainContent-bottom container-fluid">
-    <h4 class="c-grey-900 mT-10 mB-30">Data Tables</h4>
-    <div class="row">
+    <div class="row gap-20 pos-r">
         <div class="col-md-12">
-            <div class="bgc-white bd bdrs-3 p-20 mB-20">
+            <div class="bgc-white bd bdrs-3 p-20">
                 <div class="btn_group">
-                    <button type="button" class="btn cur-p btn-primary mR-10 btn-right modal-btn test" data-toggle="modal" data-target="#signModal" id="reject">반려</button>
-                    <button type="button" class="btn cur-p btn-primary mR-10 btn-right modal-btn test" data-toggle="modal" data-target="#signModal" id="agree">승인</button>
+                    <!--                        data-toggle="modal" data-target="#signModal" -->
+                    <button type="button" class="btn cur-p btn-primary mR-10 btn-right modal-btn" id="reject">반려</button>
+                    <button type="button" class="btn cur-p btn-primary mR-10 btn-right modal-btn" id="agree">승인</button>
                 </div>
                 <h5 class="c-grey-900 mB-20">출입신청내역</h5>
                 <hr/>
-                <table id="applyListTable" class="table table-striped table-bordered" cellspacing="0" width="100%">
-                    <thead>
+                <table id="applyListTable" class="table table-striped table-bordered applyListTable mediaTable" cellspacing="0"
+                       width="100%">
+                    <thead class="mediaTable">
                     <!-- 변수명 변경 및 컬럼 사이즈 조절 필요함 -->
                     <tr>
-<!--                        <th style="width: 70px;">No</th>-->
-                        <th style="width: 30px;"><input type="checkbox" id="checkall" /></th>
-                        <th style="width: 80px;">방문유형</th>
-                        <th style="width: 130px;">업체명</th>
-                        <th style="width: 230px;">출입신청명</th>
-                        <th style="width: 140px;">신청자</th>
-                        <th style="width: 100px;">출입자정보</th>
-                        <th style="width: 100px;">시작일</th>
-                        <th style="width: 100px;">종료일</th>
-                        <th style="width: 175px;">신청출입문</th>
-                        <th style="width: 120px;">진행단계</th>
+                        <td style="width: 30px;"><input type="checkbox" id="checkall"/></td>
+                        <td style="width: 80px;">방문유형</td>
+                        <td style="width: 130px;">업체명</td>
+                        <td style="width: 230px;">출입신청명</td>
+                        <td style="width: 140px;">신청자</td>
+                        <td style="width: 100px;">출입자정보</td>
+                        <td style="width: 120px;">시작일</td>
+                        <td style="width: 120px;">종료일</td>
+                        <td style="width: 110px;">신청사업장</td>
+                        <td style="width: 110px;">신청출입문</td>
+                        <td style="width: 120px;">진행단계</td>
                     </tr>
                     </thead>
-                    <tbody>
-                        {% if applyList.length== 0 %}
-                            <td colspan="12" style="text-align:center"><text> 조회된 내역이 없습니다. </text></td>
-                        {% else %}
-                            <!-- 출입신청마스터에서 작업내역 데이터 출력 부분-->
-                            {% for list in applyList %}
-                                <tr>
-<!--                                    <th style="width: 70px;"></th>-->
-                                    <th style="width: 30px;"><input type="checkbox" name="chk" value="{{list.ID}}"/></th>
-                                    <th style="width: 80px;">{{list.visit_category}}</th>
-                                    <th style="width: 130px;">{{list.sccompinfo.comp_nm}}</th>
-                                    <th style="width: 230px;">{{list.visit_purpose}}</th>
-                                    <th style="width: 140px;">{{list.applicant}}</th>
-                                    <!--작업번호로 출입자 명단 호출 링크-->
-                                    <th style="width: 100px; text-decoration: underline;" data-toggle="modal" data-target="#visitantDocModal" id="guestInfo" value="{{list.ID}}">출입자정보</th>
-                                    <th style="width: 100px;">{{list.visit_sdate}}</th>
-                                    <th style="width: 100px;">{{list.visit_edate}}</th>
-                                    <!--방문 사업장 GATE 정보-->
-                                    <th style="width: 175px;">{{list.site_nm}}</th>
-                                    <th style="width: 120px;">{{list.approval_state}}</th>
-                                </tr>
-                            <!-- 데이터 출력 끝 -->
-                            {% endfor %}
-                        {% endif %}
+                    <tbody id="tableBody" class="mediaTable">
+                    {% if lists|length < 1 %}
+                    <td colspan="12" style="text-align:center">
+                        <text> 조회된 내역이 없습니다.</text>
+                    </td>
+                    {% else %}
+                    <!-- 출입신청마스터에서 작업내역 데이터 출력 부분-->
+                    {% for list in lists %}
+                    <tr>
+                        <td><input type="checkbox" name="chk" value1={{list.id}} value2={{list.approval_state}}>{{list.id}}</td>
+                        <td>{{list.visit_category}}</td>
+                        <td>{{list.sccompinfo.comp_nm}}</td>
+                        <td>{{list.visit_purpose}}</td>
+                        <td>{{list.applicant}}</td>
+                        <td style="text-decoration: underline;" data-toggle="modal" class="guestInfo" name="guestInfo" value={{list.id}}>출입자정보</td>
+                        <td>{{list.visit_sdate}}</td>
+                        <td>{{list.visit_edate}}</td>
+                        <td>{{list.site_nm}}</td>
+                        <td>{{list.site_nm2}}</td>
+                        <td class="state">{{list.approval_state}}</td>
+                    </tr>
+                    {% endfor %}
+                    {% endif %}
                     </tbody>
                 </table>
-                <div class="pagination-nav">
-                   {{ func.render_pagination('super_approval.index', pagination, id=None, query_string=query_string) }}
+                <div id="pagination" class="pagination-nav">
+                    {{ func.render_pagination('super_approval.index', pagination, id=None, query_string=query_string) }}
                 </div>
             </div>
         </div>
     </div>
-</div>
-
-<!--방문자의 증빙 상세 내역 확인 Modal Div-->
-<div id="visitantDocModal" class="modal fade bs-example-modal-lg" tabindex="-1" role="dialog"
-     aria-labelledby="classInfo" aria-hidden="true">
-    <div class="modal-dialog modal-lg">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h4 class="modal-title"> 출입자 상세 정보 </h4>
-                <button type="button" class="close" data-dismiss="modal" aria-hidden="true"> ×</button>
-            </div>
-            <div class="modal-body">
-                <table id="classTable" class="table table-bordered">
-                    <thead class="thead-light">
-                    <tr>
-                        <th>No</th>
-                        <th>방문자</th>
-                        <th>유형</th>
-                        <th>유효기간</th>
-                        <th>등록일</th>
-                        <th>증빙내역</th>
-                        <th>상태</th>
-                    </tr>
-                    </thead>
-                    <tbody>
-<!--                    <tr>-->
-<!--                        <td>1</td>-->
-<!--                        <td>특수검진</td>-->
-<!--                        <td>유형</td>-->
-<!--                        <td>유효기간</td>-->
-<!--                        <td>등록일</td>-->
-<!--                        <td>첨부파일</td>-->
-<!--                        <td>유효</td>-->
-<!--                    </tr>-->
-                    </tbody>
-                </table>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-primary" data-dismiss="modal"> 취소</button>
-            </div>
-        </div>
-    </div>
-</div>
-
-<!--승인 및 반려 Modal Div-->
-<div id="signModal" class="modal fade bs-example-modal-md" tabindex="-1" role="dialog" aria-labelledby="classInfo" aria-hidden="true">
-  <div class="modal-dialog modal-md">
-    <div class="modal-content">
-      <div class="modal-header">
-          <h4 class="modal-title"> 출입신청내역 결재</h4>
-          <button type="button" class="close" data-dismiss="modal" aria-hidden="true"> × </button>
-      </div>
-      <div class="modal-body">
-          총 <span class="chkCnt">0</span>건의 신청내역을 <span class="appr-name"></span> 하시겠습니까?
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-primary" id="okBtn" value="okBtn" > 확인 </button>
-        <button type="button" class="btn btn-primary" data-dismiss="modal"> 취소 </button>
-      </div>
-    </div>
-  </div>
 </div>
 
 {% endblock %}
