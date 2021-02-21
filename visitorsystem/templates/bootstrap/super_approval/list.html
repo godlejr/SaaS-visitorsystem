@@ -118,49 +118,51 @@
                 </div>
                 <h5 class="c-grey-900 mB-20">출입신청내역</h5>
                 <hr/>
-                <table id="applyListTable" class="table table-striped table-bordered applyListTable mediaTable" cellspacing="0"
-                       width="100%">
-                    <thead class="mediaTable">
-                    <!-- 변수명 변경 및 컬럼 사이즈 조절 필요함 -->
-                    <tr>
-                        <td style="width: 30px;"><input type="checkbox" id="checkall"/></td>
-                        <td style="width: 80px;">방문유형</td>
-                        <td style="width: 130px;">업체명</td>
-                        <td style="width: 230px;">출입신청명</td>
-                        <td style="width: 140px;">신청자</td>
-                        <td style="width: 100px;">출입자정보</td>
-                        <td style="width: 120px;">시작일</td>
-                        <td style="width: 120px;">종료일</td>
-                        <td style="width: 110px;">신청사업장</td>
-                        <td style="width: 110px;">신청출입문</td>
-                        <td style="width: 120px;">진행단계</td>
-                    </tr>
-                    </thead>
-                    <tbody id="tableBody" class="mediaTable">
-                    {% if lists|length < 1 %}
-                    <td colspan="12" style="text-align:center">
-                        <text> 조회된 내역이 없습니다.</text>
-                    </td>
-                    {% else %}
-                    <!-- 출입신청마스터에서 작업내역 데이터 출력 부분-->
-                    {% for list in lists %}
-                    <tr>
-                        <td><input type="checkbox" name="chk" value1={{list.id}} value2={{list.approval_state}}> </td>
-                        <td>{{list.visit_category}}</td>
-                        <td>{{list.sccompinfo.comp_nm}}</td>
-                        <td>{{list.visit_purpose}}</td>
-                        <td>{{list.applicant}}</td>
-                        <td style="text-decoration: underline;" data-toggle="modal" class="guestInfo" name="guestInfo" value={{list.id}}>출입자정보</td>
-                        <td>{{list.visit_sdate}}</td>
-                        <td>{{list.visit_edate}}</td>
-                        <td>{{list.site_nm}}</td>
-                        <td>{{list.site_nm2}}</td>
-                        <td class="state">{{list.approval_state}}</td>
-                    </tr>
-                    {% endfor %}
-                    {% endif %}
-                    </tbody>
-                </table>
+                <section id="no-more-tables">
+                    <table id="applyListTable" class="table table-striped table-bordered applyListTable" cellspacing="0"
+                           width="100%">
+                        <thead>
+                            <!-- 변수명 변경 및 컬럼 사이즈 조절 필요함 -->
+                            <tr>
+                                <th style="width: 30px;"><input type="checkbox" id="checkall"/></th>
+                                <th style="width: 80px;" class="numeric">유형</th>
+                                <th style="width: 130px;" class="numeric">업체명</th>
+                                <th style="width: 230px;" class="numeric">출입신청명</th>
+                                <th style="width: 120px;" class="numeric">신청자</th>
+                                <th style="width: 120px;" class="numeric">출입자정보</th>
+                                <th style="width: 120px;" class="numeric">시작일</th>
+                                <th style="width: 120px;" class="numeric">종료일</th>
+                                <th style="width: 110px;" class="numeric">신청사업장</th>
+                                <th style="width: 110px;" class="numeric">신청출입문</th>
+                                <th style="width: 120px;" class="numeric">진행단계</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% if lists|length < 1 %}
+                            <td colspan="12" style="text-align:center">
+                                <text> 조회된 내역이 없습니다.</text>
+                            </td>
+                            {% else %}
+                            <!-- 출입신청마스터에서 작업내역 데이터 출력 부분-->
+                            {% for list in lists %}
+                            <tr>
+                                <td data-title="선택"><input type="checkbox" name="chk" value1={{list.id}} value2={{list.approval_state}}></td>
+                                <td data-title="방문유형">{{list.visit_category}}</td>
+                                <td data-title="업체명">{{list.sccompinfo.comp_nm}}</td>
+                                <td data-title="출입신청명">{{list.visit_purpose}}</td>
+                                <td data-title="신청자">{{list.applicant}}</td>
+                                <td data-title="출입자정보" style="text-decoration: underline;" data-toggle="modal" class="guestInfo" name="guestInfo" value={{list.id}}>출입자정보</td>
+                                <td data-title="시작일">{{list.visit_sdate}}</td>
+                                <td data-title="종료일">{{list.visit_edate}}</td>
+                                <td data-title="신청사업장">{{list.site_nm}}</td>
+                                <td data-title="신청출입문">{{list.site_nm2}}</td>
+                                <td data-title="진행단계">{{list.approval_state}}</td>
+                            </tr>
+                            {% endfor %}
+                            {% endif %}
+                        </tbody>
+                    </table>
+                </section>
                 <div id="pagination" class="pagination-nav">
                     {{ func.render_pagination('super_approval.index', pagination, id=None, query_string=query_string) }}
                 </div>

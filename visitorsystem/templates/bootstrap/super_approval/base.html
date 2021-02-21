@@ -4,93 +4,53 @@
 <link href="{{ url_for('static', filename='css/super_approval.css') }}" rel="stylesheet">
 <script src="{{ url_for('static', filename='js/super_approval.js') }}" ></script>
 <style scoped>
+@media only screen and (max-width: 1000px) {
+	/* Force table to not be like tables anymore */
+	#no-more-tables table,
+	#no-more-tables thead,
+	#no-more-tables tbody,
+	#no-more-tables th,
+	#no-more-tables td,
+	#no-more-tables tr {
+		display: block;
+	}
 
-   @media only screen and (max-width: 760px),
-    (min-device-width: 768px) and (max-device-width: 1024px) {
+	/* Hide table headers (but not display: none;, for accessibility) */
+	#no-more-tables thead tr {
+		position: absolute;
+		top: -9999px;
+		left: -9999px;
+	}
 
-    /* Force table to not be like tables anymore */
-    .mediaTable{
-         display: block;
-    }
+	#no-more-tables tr { border: 1px solid #ccc; }
 
-    .mediaTableTbodyTr:nth-of-type(odd) {
-            background: #eee;
-        } /* Hide table headers (but not display: none;, for accessibility) */
+	#no-more-tables td {
+		/* Behave  like a "row" */
+		border: none;
+		border-bottom: 1px solid #eee;
+		position: relative;
+		padding-left: 50%;
+		white-space: normal;
+		text-align:left;
+	}
 
-    .mediaTheadTr {
-        position: absolute;
-        top: -9999px;
-        left: -9999px;
-    }
+	#no-more-tables td:before {
+		/* Now like a table header */
+		position: absolute;
+		/* Top/left values mimic padding */
+		top: 6px;
+		left: 6px;
+		width: 45%;
+		padding-right: 10px;
+		white-space: nowrap;
+		text-align:left;
+		font-weight: bold;
+	}
 
-    .mediaTableTbodyTr {
-        border: 1px solid #ccc;
-    }
-
-    .mediaTableTbodyTd {
-        /* Behave  like a "row" */
-        border: none;
-        border-bottom: 1px solid #eee;
-        position: relative;
-        padding-left: 50%;
-    }
-
-     .mediaTableTbodyTd:before {
-        /* Now like a table header */
-        position: absolute;
-        /* Top/left values mimic padding */
-        top: 6px;
-        left: 6px;
-        width: 45%;
-        padding-right: 10px;
-        white-space: nowrap;
-    }
-
-     .resposiveTd{
-        margin-top: 20px;
-    }
-
-    /* Label the data  */
-
-     .mediaTableTbodyTd:nth-of-type(2):before {
-       content: "방문유형";
-    }
-
-     .mediaTableTbodyTd:nth-of-type(3):before {
-         content: "업체명";
-    }
-
-     .mediaTableTbodyTd:nth-of-type(4):before {
-        content: "출입신청명";
-    }
-
-     .mediaTableTbodyTd:nth-of-type(5):before {
-         content: "신청자";
-    }
-
-    .mediaTableTbodyTd:nth-of-type(6):before {
-         content: "출입자정보";
-    }
-
-    .mediaTableTbodyTd:nth-of-type(7):before {
-         content: "시작일";
-    }
-
-    .mediaTableTbodyTd:nth-of-type(8):before {
-         content: "종료일";
-    }
-
-    .mediaTableTbodyTd:nth-of-type(9):before {
-         content: "신청사업장";
-    }
-
-    .mediaTableTbodyTd:nth-of-type(10):before {
-         content: "신청출입문";
-    }
-
-    .mediaTableTbodyTd:nth-of-type(11):before {
-         content: "진행단계";
-    }
+	/*
+	Label the data
+	*/
+	#no-more-tables td:before { content: attr(data-title); }
 }
 </style>
 

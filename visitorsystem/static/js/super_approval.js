@@ -90,17 +90,17 @@ $(document).ready(function() {
 			var htmlData = '';
 			for (var i = 0; i < dataSet.length; i++) {
 				htmlData += '<tr>';
-				htmlData += '<td><input type="checkbox" name="chk" value1=' + dataSet[i].id + ' value2=' + dataSet[i].approval_state + '></td>';
-				htmlData += '<td>' + dataSet[i].visit_category + '</td>';
-				htmlData += '<td>' + dataSet[i].comp_nm + '</td>';
-				htmlData += '<td>' + dataSet[i].visit_purpose + '</td>';
-				htmlData += '<td>' + dataSet[i].applicant + '</td>';
-				htmlData += '<td style="text-decoration: underline;" data-toggle="modal" class="guestInfo" name="guestInfo" value=' + dataSet[i].id + '>출입자정보</td>';
-				htmlData += '<td>' + dataSet[i].visit_sdate + '</td>';
-				htmlData += '<td>' + dataSet[i].visit_edate + '</td>';
-				htmlData += '<td>' + dataSet[i].site_nm + '</td>';
-				htmlData += '<td>' + dataSet[i].site_nm2 + '</td>';
-				htmlData += '<td class="state">' + dataSet[i].approval_state + '</td>';
+				htmlData += '<td data-title="선택"><input type="checkbox" name="chk" value1=' + dataSet[i].id + ' value2=' + dataSet[i].approval_state + '></td>';
+				htmlData += '<td data-title="방문유형">' + dataSet[i].visit_category + '</td>';
+				htmlData += '<td data-title="업체명">' + dataSet[i].comp_nm + '</td>';
+				htmlData += '<td data-title="출입신청명">' + dataSet[i].visit_purpose + '</td>';
+				htmlData += '<td data-title="신청자">' + dataSet[i].applicant + '</td>';
+				htmlData += '<td data-title="출입자정보" style="text-decoration: underline;" data-toggle="modal" class="guestInfo" name="guestInfo" value=' + dataSet[i].id + '>출입자정보</td>';
+				htmlData += '<td data-title="시작일">' + dataSet[i].visit_sdate + '</td>';
+				htmlData += '<td data-title="종료일">' + dataSet[i].visit_edate + '</td>';
+				htmlData += '<td data-title="신청사업장">' + dataSet[i].site_nm + '</td>';
+				htmlData += '<td data-title="신청출입문">' + dataSet[i].site_nm2 + '</td>';
+				htmlData += '<td data-title="진행단계">' + dataSet[i].approval_state + '</td>';
 				htmlData += '</tr>';
 			}
 			$('.applyListTable>tbody').html(htmlData);
