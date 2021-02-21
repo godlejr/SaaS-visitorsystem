@@ -28,6 +28,7 @@
                                     "&comp_nm=" + dataSet['comp_nm'] + "&approval_state=" + dataSet['approval_state'] +
                                     "&pages=" + dataSet['pages'];
     }
+
 </script>
 
 <div class="mainContent-top">
@@ -45,7 +46,6 @@
             <!-- mainContent 최상단 : 페이지 명칭, 버튼 위치-->
             <div class="bgc-white bd p-20">
                 <div class="mT-10">
-                    <!-- 각 입력값 ID 테이블컬럼명에 맞게 수정 필요 name부분 -->
                     <div id="superApprovalSearchForm">
                         <button type="submit" class="btn cur-p btn-primary mB-10 mR-10 btn-right search-btn"
                                 id="searchBtn">조회
@@ -54,24 +54,21 @@
                             <div class="form-group col-md-4"><label class="fw-500">신청일자</label>
                                 <div class="timepicker-input input-icon form-group">
                                     <div class="input-group">
-                                        <input type="text" class="form-control bdc-grey-200 startDate"
-                                               data-provide="datepicker" name="visit_sdate" id="visit_sdate">
+                                        <i class="ti-calendar mT-5 p-5"></i>
+                                        <input type="text" class="form-control bdc-grey-200 startDate" data-provide="datepicker" name="visit_sdate" id="visit_sdate">
 
-                                        <div class="input-group-addon bgc-white bd bdwR-0"><i class="ti-calendar"></i>
-                                        </div>
                                         <h6 class="c-grey-900"> &nbsp~&nbsp</h6>
 
-                                        <input type="text" class="form-control bdc-grey-200 ml-20 endDate"
-                                               data-provide="datepicker" name="visit_edate" id="visit_edate"/>
+                                        <i class="ti-calendar mT-5 p-5"></i>
+                                        <input type="text" class="form-control bdc-grey-200 ml-20 endDate" data-provide="datepicker" name="visit_edate" id="visit_edate"/>
                                     </div>
                                 </div>
                             </div>
                             <div class="form-group col-md-2"><label for="type">방문유형</label>
                                 <select id="type" class="form-control" name="visit_category">
-                                    <!-- type1 / type2 / type3 -->
                                     <option selected="selected" value="all">-전체-</option>
                                     {% for list in visitCategory %}
-                                    <option name="{{list.code_nm}}">{{list.code_nm}}</option>
+                                        <option name="{{list.code_nm}}">{{list.code_nm}}</option>
                                     {% endfor %}
                                 </select>
                             </div>
@@ -119,47 +116,48 @@
                 <h5 class="c-grey-900 mB-20">출입신청내역</h5>
                 <hr/>
                 <section id="no-more-tables">
-                    <table id="applyListTable" class="table table-striped table-bordered applyListTable" cellspacing="0"
-                           width="100%">
+                    <table id="applyListTable" class="table table-striped table-bordered applyListTable" cellspacing="0" width="100%">
                         <thead>
-                            <!-- 변수명 변경 및 컬럼 사이즈 조절 필요함 -->
-                            <tr>
-                                <th style="width: 30px;"><input type="checkbox" id="checkall"/></th>
-                                <th style="width: 80px;" class="numeric">유형</th>
-                                <th style="width: 130px;" class="numeric">업체명</th>
-                                <th style="width: 230px;" class="numeric">출입신청명</th>
-                                <th style="width: 120px;" class="numeric">신청자</th>
-                                <th style="width: 120px;" class="numeric">출입자정보</th>
-                                <th style="width: 120px;" class="numeric">시작일</th>
-                                <th style="width: 120px;" class="numeric">종료일</th>
-                                <th style="width: 110px;" class="numeric">신청사업장</th>
-                                <th style="width: 110px;" class="numeric">신청출입문</th>
-                                <th style="width: 120px;" class="numeric">진행단계</th>
-                            </tr>
+                        <!-- 변수명 변경 및 컬럼 사이즈 조절 필요함 -->
+                        <tr>
+                            <th style="width: 30px;"><input type="checkbox" id="checkall"/></th>
+                            <th style="width: 80px;" class="numeric">유형</th>
+                            <th style="width: 130px;" class="numeric">업체명</th>
+                            <th style="width: 230px;" class="numeric">출입신청명</th>
+                            <th style="width: 120px;" class="numeric">신청자</th>
+                            <th style="width: 120px;" class="numeric">출입자정보</th>
+                            <th style="width: 120px;" class="numeric">시작일</th>
+                            <th style="width: 120px;" class="numeric">종료일</th>
+                            <th style="width: 110px;" class="numeric">신청사업장</th>
+                            <th style="width: 110px;" class="numeric">신청출입문</th>
+                            <th style="width: 120px;" class="numeric">진행단계</th>
+                        </tr>
                         </thead>
                         <tbody>
-                            {% if lists|length < 1 %}
-                            <td colspan="12" style="text-align:center">
-                                <text> 조회된 내역이 없습니다.</text>
+                        {% if lists|length < 1 %}
+                        <td colspan="12" style="text-align:center">
+                            <text> 조회된 내역이 없습니다.</text>
+                        </td>
+                        {% else %}
+                        <!-- 출입신청마스터에서 작업내역 데이터 출력 부분-->
+                        {% for list in lists %}
+                        <tr>
+                            <td data-title="선택"><input type="checkbox" name="chk" value1={{list.id}} value2={{list.approval_state}}></td>
+                            <td data-title="방문유형">{{list.visit_category}}</td>
+                            <td data-title="업체명">{{list.sccompinfo.comp_nm}}</td>
+                            <td data-title="출입신청명">{{list.visit_purpose}}</td>
+                            <td data-title="신청자">{{list.applicant}}</td>
+                            <td data-title="출입자정보" style="text-decoration: underline;" data-toggle="modal"
+                                class="guestInfo" name="guestInfo" value={{list.id}}>출입자정보
                             </td>
-                            {% else %}
-                            <!-- 출입신청마스터에서 작업내역 데이터 출력 부분-->
-                            {% for list in lists %}
-                            <tr>
-                                <td data-title="선택"><input type="checkbox" name="chk" value1={{list.id}} value2={{list.approval_state}}></td>
-                                <td data-title="방문유형">{{list.visit_category}}</td>
-                                <td data-title="업체명">{{list.sccompinfo.comp_nm}}</td>
-                                <td data-title="출입신청명">{{list.visit_purpose}}</td>
-                                <td data-title="신청자">{{list.applicant}}</td>
-                                <td data-title="출입자정보" style="text-decoration: underline;" data-toggle="modal" class="guestInfo" name="guestInfo" value={{list.id}}>출입자정보</td>
-                                <td data-title="시작일">{{list.visit_sdate}}</td>
-                                <td data-title="종료일">{{list.visit_edate}}</td>
-                                <td data-title="신청사업장">{{list.site_nm}}</td>
-                                <td data-title="신청출입문">{{list.site_nm2}}</td>
-                                <td data-title="진행단계">{{list.approval_state}}</td>
-                            </tr>
-                            {% endfor %}
-                            {% endif %}
+                            <td data-title="시작일">{{list.visit_sdate}}</td>
+                            <td data-title="종료일">{{list.visit_edate}}</td>
+                            <td data-title="신청사업장">{{list.site_nm}}</td>
+                            <td data-title="신청출입문">{{list.site_nm2}}</td>
+                            <td data-title="진행단계">{{list.approval_state}}</td>
+                        </tr>
+                        {% endfor %}
+                        {% endif %}
                         </tbody>
                     </table>
                 </section>

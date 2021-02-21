@@ -1,13 +1,12 @@
 import datetime
-from math import ceil
-
 from flask import Blueprint, current_app, render_template, request, session, jsonify
 from flask_login import current_user
-from loggers import log
+from math import ceil
 from sqlalchemy import and_
+
+from loggers import log
 from visitorsystem.forms import Pagination
-from visitorsystem.models import db, Ssctenant, Vcapplymaster, Sccode, Sccompinfo, Vcstackuser, Scrule, Vcvisituser, \
-    ScRuleFile
+from visitorsystem.models import db, Ssctenant, Vcapplymaster, Sccode, Sccompinfo, Scrule, Vcvisituser, ScRuleFile
 
 super_approval = Blueprint('super_approval', __name__)
 
