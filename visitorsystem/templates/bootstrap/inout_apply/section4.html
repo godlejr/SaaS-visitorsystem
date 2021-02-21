@@ -16,7 +16,7 @@
                         <i class="ti-minus"></i>
                     </button>
 
-                    <div id="table" class="table-responsive">
+                    <div id="table" class="table-responsive mediaDiv">
                         <table name="user_info"  class="table table-bordered mediaTable" cellspacing="0" width="100%">
                             <thead class="mediaTable" id="'mediaThead">
                             <tr id="thead" class="mediaTable mediaTheadTr">
@@ -41,14 +41,14 @@
 
 
 
-<!-- 신청자정보 -->
+<!-- 신청자정보 Modal -->
 <div class="modal fade" id="visitModal" tabindex="-1" role="dialog"
      aria-labelledby="interviewModalCenterTitle" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title c-grey-900 mB-20" id="visitModalCenterTitle">방문자 검색</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <h5 class="modal-title c-grey-900 mB-20" id="visitModalCenterTitle">신청자 검색</h5>
+                <button type="button" class="close visitApply" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
@@ -85,8 +85,9 @@
                 </div>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">취소</button>
-                <button type="button" class="btn btn-primary" data-dismiss="modal">확인</button>
+                <button type="button" class="btn btn-primary visitApply" data-dismiss="modal">확인</button>
+                <button type="button" class="btn btn-secondary visitApply" data-dismiss="modal">취소</button>
+
             </div>
         </div>
     </div>
@@ -94,14 +95,64 @@
 <br>
 
 
-<!-- 감독자정보 -->
+<!-- 출입정보 Modal -->
+<div class="modal fade" id="compSearchModal" tabindex="-1" role="dialog"
+     aria-labelledby="interviewModalCenterTitle" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title c-grey-900 mB-20" id="compSearchCenterTitle">업체 검색</h5>
+                <button type="button" class="close initApply"  data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="bgc-white bd bdrs-3 p-20">
+
+                            <div>
+                                <input type="text" id="compSearchInput" class="form-control" placeholder="업체명을 입력해주세요" style="width:90%;float:left">
+                                <button type="button" class="btn btn-primary"  id="compSearchView" style="float:right">
+                                    <i class="search-icon ti-search pdd-right-10"></i>
+                                </button>
+                            </div>
+
+                            <table class="table table-hover">
+                                <thead>
+                                <tr>
+                                    <th scope="col">#</th>
+                                    <th scope="col">업체명</th>
+                                    <th scope="col">업체번호</th>
+                                </tr>
+                                </thead>
+                                <tbody id="compTbody">
+
+
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary initApply" data-dismiss="modal">확인</button>
+                <button type="button" class="btn btn-secondary initApply" data-dismiss="modal">취소</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+<!-- 접견자정보 Modal -->
 <div class="modal fade" id="interviewModal" tabindex="-1" role="dialog"
      aria-labelledby="interviewModalCenterTitle" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title c-grey-900 mB-20" id="interviewModalCenterTitle">감독자 검색</h5>
-                <button type="button" class="close"  data-dismiss="modal" aria-label="Close">
+                <h5 class="modal-title c-grey-900 mB-20" id="interviewModalCenterTitle">접견자 검색</h5>
+                <button type="button" class="close interviewInit"  data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
@@ -137,8 +188,9 @@
                 </div>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">취소</button>
-                <button type="button" class="btn btn-primary" data-dismiss="modal">확인</button>
+                <button type="button" class="btn btn-primary interviewInit" data-dismiss="modal">확인</button>
+                <button type="button" class="btn btn-secondary interviewInit " data-dismiss="modal">취소</button>
+
             </div>
         </div>
     </div>
@@ -147,55 +199,26 @@
 
 
 
-<!-- 출입정보 -->
-<div class="modal fade" id="compSearchModal" tabindex="-1" role="dialog"
-     aria-labelledby="interviewModalCenterTitle" aria-hidden="true">
+
+<!--방문규칙 alert-->
+<div id = "alertModal" class="modal" tabindex="-1" role="dialog">
     <div class="modal-dialog modal-dialog-centered" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title c-grey-900 mB-20" id="compSearchCenterTitle">업체 검색</h5>
-                <button type="button" class="close"  data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
+                <h5 class="modal-title">인원차량 출입신청</h5>
+                <button id="exitModal" type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true" data-dismiss="modal">&times;</span>
                 </button>
             </div>
             <div class="modal-body">
-                <div class="row">
-                    <div class="col-md-12">
-                        <div class="bgc-white bd bdrs-3 p-20">
-
-                            <div>
-                                <input type="text" id="compSearchInput" class="form-control" placeholder="업체명을 입력해주세요" style="width:90%;float:left">
-                                <button type="button" class="btn btn-primary"  id="compSearchView" style="float:right">
-                                    <i class="search-icon ti-search pdd-right-10"></i>
-                                </button>
-                            </div>
-
-                            <table class="table table-hover">
-                                <thead>
-                                <tr>
-                                    <th scope="col">#</th>
-                                    <th scope="col">업체명</th>
-                                    <th scope="col">업체번호</th>
-                                </tr>
-                                </thead>
-                                <tbody id="compTbody">
-
-
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                </div>
+                <p id="modalContent"></p>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">취소</button>
-                <button type="button" class="btn btn-primary" data-dismiss="modal">확인</button>
+                <button id="confirmModal" type="button" class="btn btn-primary" data-dismiss="modal">확인</button>
             </div>
         </div>
     </div>
 </div>
-
-
 
 
 {% endblock %}

@@ -1,0 +1,412 @@
+{% extends "bootstrap/inout_apply/base.html" %}
+
+{% block mainContent %}
+<!-- 여기서 html 작성하세요-->
+
+<div id="main">
+    <div class="bgc-white bd p-20 mR-30 col-md-12">
+        <div class="mT-30">
+            <div class="content-top mB-5">
+                <div class="page-header"><h5 class="c-grey-900"> 출입신청 > 인원차량 출입신청 </h5></div>
+            </div>
+        </div>
+    </div>
+    <br>
+
+    <!--SECTION01-->
+    <div class="row gap-20 masonry pos-r">
+        <div class="masonry-sizer col-md-12"></div>
+        <div class="masonry-item col-md-12">
+            <div class="bgc-white p-20 bd">
+                <h6 class="c-grey-900">신청자 정보</h6>
+                <hr>
+
+                <div class="mT-30">
+                    <div class="form-row">
+                        <div class="form-group col-md-4" >
+                            <label for="applicant_name">신청자</label>
+                            <input type="text" class="form-control" name="applicant_name" value="{{vcapplymaster.applicant}}" id="applicant_name" readonly style="background-color:white">
+                        </div>
+
+                        <div class="form-group col-md-3">
+                            <label for="applicant_phone">연락처</label>
+                            <input type="text"  class="form-control" name="applicant_phone"  value="{{vcapplymaster.phone}}" id="applicant_phone" readonly style="background-color:white">
+                        </div>
+
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group col-md-1"><label for="applicant_biz_no">업체명</label> <input type="text"  class="form-control" name="applicant_biz_no" id="applicant_biz_no" value="{{vcapplymaster.applicant_comp_id}}"  readonly style="background-color:white"></div>
+                        <div class="form-group col-md-3">
+                            <div >
+                                <label for="applicant_comp_nm" style="visibility:hidden">업체번호</label>
+                                <input type="text"  class="form-control" name="applicant_comp_nm"  id="applicant_comp_nm" value="{{vcapplymaster.applicant_comp_nm}}" readonly style="background-color:white">
+                            </div>
+
+                        </div>
+                        <div class="form-group col-md-2" >
+                            <label style="visibility:hidden">&nbsp</label>
+                            <button type="button" style="display:block" class="btn btn-primary"   data-toggle="modal" data-target="#visitModal">
+                                <i class="search-icon ti-search pdd-right-10"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <!--SECTION02-->
+    <div class="row gap-20 masonry pos-r">
+        <div class="masonry-sizer col-md-12"></div>
+        <div class="masonry-item col-md-12">
+            <div class="bgc-white p-20 bd">
+                <h6 class="c-grey-900">출입 정보</h6>
+                <hr>
+                <div class="mT-30">
+                    <div class="form-row">
+                        <div class="form-group col-md-1"><label for="inout_biz_no">업체명</label> <input type="text"  class="form-control" name="input_biz_no" id="inout_biz_no" readonly style="background-color:white" ></div>
+                        <div class="form-group col-md-3">
+                            <label for="inout_comp_nm" style="visibility:hidden">&nbsp</label><input type="text"  class="form-control" name="inout_comp_nm" id="inout_comp_nm" readonly style="background-color:white">
+                        </div>
+                        <div class="form-group col-md-2" >
+                            <label style="visibility:hidden">&nbsp</label>
+                            <button type="button"  style="display:block" class="btn btn-primary" data-toggle="modal" data-target="#compSearchModal">
+                                <i class="search-icon ti-search pdd-right-10"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group col-md-2"><label class="fw-500">방문기간</label>
+                            <div class="timepicker-input input-icon form-group">
+                                <div class="input-group">
+                                    <div class="input-group-addon bgc-white bd bdwR-0"><i class="ti-calendar"></i></div>
+                                    <input type="text" class="form-control bdc-grey-200 start-date" placeholder="시작일" data-provide="datepicker" name ="inout_sdate" id="inout_sdate" readonly style="background-color:white" >
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group col-md-2"><label class="fw-500" style="visibility:hidden">&nbsp</label>
+                            <div class="timepicker-input input-icon form-group">
+                                <div class="input-group">
+                                    <div class="input-group-addon bgc-white bd bdwR-0"><i class="ti-calendar"></i></div>
+                                    <input type="text" class="form-control bdc-grey-200 start-date" placeholder="종료일" data-provide="datepicker" name ="inout_edate" id="inout_edate" readonly style="background-color:white">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group col-md-2">
+                            <label for="inout_purpose_type">방문목적</label>
+                            <select id="inout_purpose_type" name="input_purpose_type" class="form-control" placeholder = '방문명을 입력해주세요'>
+                            </select>
+                        </div>
+
+                        <div class="form-group col-md-3">
+                            <label for="inout_title" style="visibility:hidden">&nbsp</label><input type="text"  class="form-control" name="inout_title" id="inout_title">
+                        </div>
+
+                    </div>
+
+
+                    <div class="form-row">
+                        <div class="form-group col-md-2"><label for="inout_location">방문지역</label>
+                            <select  class="form-control"  id="inout_location" name="inout_location">
+
+                            </select>
+                        </div>
+
+                        <div class="form-group col-md-2"><label for="inout_location2">&nbsp</label>
+                            <select  class="form-control"  id="inout_location2" name="inout_location2">
+
+                            </select>
+                        </div>
+
+
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group col-md-6">
+                            <label for="inout_purpose_desc">상세기술</label>
+                            <textarea class="form-control" id="inout_purpose_desc" name="inout_purpose_desc" style="height:100px"/></textarea>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <!--SECTION03-->
+
+    <div class="row gap-20 masonry pos-r">
+        <div class="masonry-sizer col-md-12"></div>
+        <div class="masonry-item col-md-12">
+            <div class="bgc-white p-20 bd">
+                <h6 class="c-grey-900">접견자 정보</h6>
+                <hr>
+
+                <div class="mT-30">
+                    <div class="form-row">
+                        <div class="form-group col-md-1"><label for="interviewer_name">부서</label> <input type="text"  class="form-control" name="interviewer_dept" id="interviewer_dept" readonly style="background-color:white">
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group col-md-1"><label for="interviewer_name">감독자</label> <input type="text"  class="form-control" name="interviewer_name" id="interviewer_name" readonly style="background-color:white" ></div>
+                        <div class="form-group col-md-3"><label for="interviewer_phone">연락처</label> <input type="text"  class="form-control" name="interviewer_phone" id="interviewer_phone" readonly style="background-color:white"></div>
+                        <div class="form-group col-md-2" >
+                            <label style="visibility:hidden">&nbsp</label>
+                            <button type="button" style="display:block" class="btn btn-primary"  data-toggle="modal" data-target="#interviewModal">
+                                <i class="search-icon ti-search pdd-right-10"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+
+    <!--SECTION04-->
+    <div class="row gap-20 masonry pos-r">
+        <div class="masonry-sizer col-md-12"></div>
+        <div class="masonry-item col-md-12">
+            <div class="bgc-white p-20 bd">
+                <div class="mT-30">
+
+                    <div class="form-row">
+                        <p class="h4  text-danger" id="errorMsg"></p>
+                        <button type="button" style="display:block; margin-left:auto; margin-bottom:2px; margin-right:2px;" id="addUser"class="btn btn-primary text-center text-right" >
+                            <i class="ti-plus"></i>
+                        </button>
+
+                        <button type="button" style="display:block; margin-bottom:2px;" id="delUser" class="btn btn-danger text-right" >
+                            <i class="ti-minus"></i>
+                        </button>
+
+                        <div id="table" class="table-responsive mediaDiv">
+                            <table name="user_info"  class="table table-bordered mediaTable" cellspacing="0" width="100%">
+                                <thead class="mediaTable" id="'mediaThead">
+                                <tr id="thead" class="mediaTable mediaTheadTr">
+                                    <th style="width: 15px;" class="mediaTable"></th>
+                                    <th style="" class="mediaTable">방문자</th>
+                                    <th style="" class="mediaTable">휴대폰번호</th>
+                                    <th style="" class="mediaTable">차량종류</th>
+                                    <th style="" class="mediaTable">차량번호</th>
+                                </tr>
+                                </thead>
+                                <tbody id="tableBody" class="mediaTable">
+                                </tbody>
+                            </table>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+
+    <!-- 신청자정보 Modal -->
+    <div class="modal fade" id="visitModal" tabindex="-1" role="dialog"
+         aria-labelledby="interviewModalCenterTitle" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title c-grey-900 mB-20" id="visitModalCenterTitle">신청자 검색</h5>
+                    <button type="button" class="close visitApply" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="bgc-white bd bdrs-3 p-20">
+
+                                <div>
+                                    <input type="text"  id="visitInput" class="form-control" style="width:90%;float:left">
+                                    <button type="button" id="visitSearchView" class="btn btn-primary" style="float:right">
+                                        <i class="search-icon ti-search pdd-right-10"></i>
+                                    </button>
+                                </div>
+                                <!-- <p>Add <code class="highlighter-rouge">.table-hover</code> to enable a hover state
+                                    on table rows within a <code class="highlighter-rouge">&lt;tbody&gt;</code>.</p> -->
+
+                                <table class="table table-hover">
+                                    <thead>
+                                    <tr>
+                                        <th scope="col">#</th>
+                                        <th scope="col">신청자</th>
+                                        <th scope="col">연락처</th>
+                                        <th scope="col">업체명</th>
+                                        <th scope="col">업체번호</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody id="applyTbody">
+
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary visitApply" data-dismiss="modal">확인</button>
+                    <button type="button" class="btn btn-secondary visitApply" data-dismiss="modal">취소</button>
+
+                </div>
+            </div>
+        </div>
+    </div>
+    <br>
+
+
+    <!-- 출입정보 Modal -->
+    <div class="modal fade" id="compSearchModal" tabindex="-1" role="dialog"
+         aria-labelledby="interviewModalCenterTitle" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title c-grey-900 mB-20" id="compSearchCenterTitle">업체 검색</h5>
+                    <button type="button" class="close initApply"  data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="bgc-white bd bdrs-3 p-20">
+
+                                <div>
+                                    <input type="text" id="compSearchInput" class="form-control" placeholder="업체명을 입력해주세요" style="width:90%;float:left">
+                                    <button type="button" class="btn btn-primary"  id="compSearchView" style="float:right">
+                                        <i class="search-icon ti-search pdd-right-10"></i>
+                                    </button>
+                                </div>
+
+                                <table class="table table-hover">
+                                    <thead>
+                                    <tr>
+                                        <th scope="col">#</th>
+                                        <th scope="col">업체명</th>
+                                        <th scope="col">업체번호</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody id="compTbody">
+
+
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary initApply" data-dismiss="modal">확인</button>
+                    <button type="button" class="btn btn-secondary initApply" data-dismiss="modal">취소</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+    <!-- 접견자정보 Modal -->
+    <div class="modal fade" id="interviewModal" tabindex="-1" role="dialog"
+         aria-labelledby="interviewModalCenterTitle" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title c-grey-900 mB-20" id="interviewModalCenterTitle">접견자 검색</h5>
+                    <button type="button" class="close interviewInit"  data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="bgc-white bd bdrs-3 p-20">
+
+                                <div>
+                                    <input type="text" id="interviewInput" class="form-control" placeholder="이름을 입력해주세요" style="width:90%;float:left">
+                                    <button type="button" class="btn btn-primary"  id="interviewSearch" style="float:right">
+                                        <i class="search-icon ti-search pdd-right-10"></i>
+                                    </button>
+                                </div>
+                                <!-- <p>Add <code class="highlighter-rouge">.table-hover</code> to enable a hover state
+                                    on table rows within a <code class="highlighter-rouge">&lt;tbody&gt;</code>.</p> -->
+
+                                <table class="table table-hover">
+                                    <thead>
+                                    <tr>
+                                        <th scope="col">#</th>
+                                        <th scope="col">부서</th>
+                                        <th scope="col">이름</th>
+                                        <th scope="col">휴대폰번호</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody id="interviewTbody">
+
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary interviewInit" data-dismiss="modal">확인</button>
+                    <button type="button" class="btn btn-secondary interviewInit " data-dismiss="modal">취소</button>
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+
+
+    <!--방문규칙 alert-->
+    <div id = "alertModal" class="modal" tabindex="-1" role="dialog">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">인원차량 출입신청</h5>
+                    <button id="exitModal" type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true" data-dismiss="modal">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <p id="modalContent"></p>
+                </div>
+                <div class="modal-footer">
+                    <button id="confirmModal" type="button" class="btn btn-primary" data-dismiss="modal">확인</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+
+
+
+
+
+
+    <div class="row">
+        <div class="col text-center">
+            <button id ='appylbtn' type="button" class="btn btn-primary" >방문예약 신청</button>
+
+        </div>
+    </div>
+</div>
+
+
+
+{% endblock %}

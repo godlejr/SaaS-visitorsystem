@@ -74,9 +74,6 @@ def create_app(config_name):
     application.register_blueprint(inout_tag_blueprint, url_prefix='/inoutTag')
     application.register_blueprint(statistics_blueprint, url_prefix='/statistics')
 
-    from visitorsystem.views.example.test import test as test_blueprint
-    application.register_blueprint(test_blueprint, url_prefix='/test')
-
     application.errorhandler(403)(lambda e: redirect('/'))
     application.errorhandler(404)(lambda e: render_template('error/404.html'))
     application.errorhandler(500)(lambda e: render_template('error/404.html'))

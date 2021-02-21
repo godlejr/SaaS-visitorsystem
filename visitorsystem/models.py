@@ -674,7 +674,6 @@ class Sccodeauth(db.Model, BaseMixin):
     auth_id = db.Column(db.String(100), nullable=False)
     class_id = db.Column(db.String(30), db.ForeignKey('sc_class.class_id'), nullable=False)
 
-
 class Sccompinfo(db.Model, BaseMixin):
     """업체정보"""
     __tablename__ = 'sc_comp_info'
@@ -849,6 +848,8 @@ class Vcapplymaster(db.Model, BaseMixin):
     tenant_id = db.Column(db.Integer, db.ForeignKey('ssc_tenants.id'), nullable=False)
     interviewr = db.Column(db.String(30), nullable=False)
     applicant = db.Column(db.String(30), nullable=False)
+    applicant_comp_id = db.Column(db.String(30))
+    applicant_comp_nm = db.Column(db.String(50))
     phone = db.Column(db.String(20), nullable=False)
     visit_category = db.Column(db.String(30), nullable=False)
     biz_id = db.Column(db.Integer, db.ForeignKey('sc_comp_info.id'), nullable=False)
@@ -858,7 +859,8 @@ class Vcapplymaster(db.Model, BaseMixin):
     visit_desc = db.Column(db.String(200))
     site_id = db.Column(db.String(30), nullable=False)
     site_nm = db.Column(db.String(50), nullable=False)
-    login_id = db.Column(db.Integer, db.ForeignKey('sc_user.id'), nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey('sc_user.id'), nullable=False) #신청자 아이디
+    interview_id = db.Column(db.Integer, nullable=False)  # 감독관 아이디
     approval_state = db.Column(db.String(20), nullable=False)
     # 추가부분
     site_id2 = db.Column(db.String(30), nullable=False)
@@ -985,6 +987,7 @@ class ScRuleFile(db.Model, BaseMixin):
     file_dir = db.Column(db.String(100))
     file_name = db.Column(db.String(100))
     s3_url = db.Column(db.String(200))
+
 
     # [Detail]
     scrule = db.relationship('Scrule', backref=backref('sc_rule_file_sc_rule'))

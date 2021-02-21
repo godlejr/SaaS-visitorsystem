@@ -141,7 +141,7 @@ $(document).ready(function() {
                 append = append + `<td class='mediaTable mediaTableTbodyTd'>
                                        <div class="input-group resposiveTd">
                                        <div class="input-group-addon bgc-white bd bdwR-0"><i class="ti-calendar"></i></div>
-                                       <input type="text" class="form-control start-date rule-calendar leave rule" placeholder="달력" data-provide="datepicker" name ="inout_sdate" id="inout_sdate" rule=${ruleName}>
+                                       <input type="text" class="form-control start-date rule-calendar leave rule" placeholder="달력" data-provide="datepicker" name ="inout_sdate" id="inout_sdate" rule=${ruleName} readonly style="background-color:white">
                                        </div>
                                     </td> `
             } else if (type == '파일') {
@@ -171,16 +171,14 @@ $(document).ready(function() {
 
     //신청자조회 컨트롤러(완료)
     function applySearchHandler(dataSet) {
-
         dataSet = dataSet.msg
         var str = ''
-        $('#interviewTbody').children().remove()
         for (var i = 0; i < dataSet.length; i++) {
             var name = dataSet[i].name;
             var phone = dataSet[i].phone;
             var comp_nm = dataSet[i].comp_nm;
             var biz_no = dataSet[i].biz_no;
-
+            $('#applyTbody').children().remove();
             var temp = `<tr class='applyTtr'>
                                  <th scope="row">${i+1}</th>
                                  <td>${name}</td>
@@ -190,8 +188,6 @@ $(document).ready(function() {
                             </tr>`;
             str += temp;
         }
-
-
 
         $('#applyTbody').append(str);
         $('.applyTtr').click(function() {
@@ -356,6 +352,16 @@ $(document).ready(function() {
         var msg = data.msg; //post 결과메시지
         var dataSet = option.dataSet;
 
+        if(msg[0].msg=='-1'){
+             $("#alertModal").show();
+             $("#modalContent").text('');
+             $("#modalContent").text('다른 사용자와 휴대폰번호가 중복됩니다.');
+            return;
+        }
+
+
+
+
         if (msg.length == 0) {
             //empty user
             console.log('------userSearchHandler(사용자없음)----------------------')
@@ -404,6 +410,7 @@ $(document).ready(function() {
         $('#inout_location2').append(str);
 
         $('#inout_location').on('change',function(){
+            $('#interviewTbody').children().remove(); //Modal초기화
             var val = $('#inout_location').val()||'';
             var dataSet = {};
             if(val.length == 0)
@@ -500,17 +507,35 @@ $(document).ready(function() {
                 itemObj.phone = cellItem.eq(2).val()
                 itemObj.carType = cellItem.eq(3).val()
                 itemObj.carNum = cellItem.eq(4).val()
+                itemObj.rule = [];
+                var ruleClass = ['rule-text','rule-calendar','rule-file'];
 
-                var obj = {
-                    "name": itemObj.name,
-                    "phone": itemObj.phone,
-                    "carType": itemObj.carType,
-                    "carNum": itemObj.carNum
+                for(var i=5; i<cellItem.length; i++){
+                    var current = cellItem.eq(i);
+                    var obj = {'ruleName':'','ruleDesc':'', 'ruleType':'', 'sDate': dataSet['inout_sdate'],'bucketUrl': ''};
+                    obj.ruleName = current.attr('rule');
+                    if(current.hasClass('rule-text')){
+                        obj.ruleType = '텍스트';
+                        obj.ruleDesc = current.val();
+
+                    }else if(current.hasClass('rule-calendar')){
+                        obj.ruleType = '달력';
+                        date = current.val().split('/');
+                        gb2 = date
+                        obj.sDate = date[2] + "-" + date[0] + "-" + date[1]; //시작날짜
+
+                    }else if(current.hasClass('rule-file')){
+                        obj.ruleType = '파일';
+                        obj.bucketUrl = current.parent().next().attr('href');
+                    }
+                    itemObj.rule.push(obj)
                 }
 
-                lists.push(obj)
-
+              lists.push(itemObj);
             });
+
+
+
 
             //사업자번호 설정
             dataSet["inout_biz_id"] = $('#inout_biz_no').attr('bizId');
@@ -522,32 +547,51 @@ $(document).ready(function() {
 
             //신청자 정보 check
             var check = dataSet['applicant_name'];
-            var check2 = dataSet['inout_biz_no'];
+            var check2 = dataSet['applicant_biz_no'];
 
             if (check.length == 0 || check2.length == 0) {
-                alert('신청자 정보를 입력해주세요');
-                return;
-            }
-
-            //감독자 정보 check
-            check = dataSet['interviewer_name'];
-            if (check.length == 0) {
-                alert('신청자 정보를 입력해주세요');
+                $("#alertModal").show();
+                $("#modalContent").text('');
+                $("#modalContent").text('신청자 정보를 입력해주세요');
                 return;
             }
 
             //출입 정보 check
-            check = dataSet['inout_title'];
+            check = dataSet['inout_biz_no'];
             if (check.length == 0) {
-                alert('출입정보를 입력해주세요');
+                $("#alertModal").show();
+                $("#modalContent").text('');
+                $("#modalContent").text('출입정보를 입력해주세요');
                 return;
             }
+
+           check = dataSet['inout_title'];
+           if (check.length == 0) {
+                $("#alertModal").show();
+                $("#modalContent").text('');
+                $("#modalContent").text('방문목적을 입력해주세요');
+                return;
+            }
+
+            //접견자 정보 check
+            check = dataSet['interviewer_name'];
+            if (check.length == 0) {
+                $("#alertModal").show();
+                $("#modalContent").text('');
+                $("#modalContent").text('접견자 정보를 입력해주세요');
+                return;
+            }
+
+
 
             //출입유효성 check
             $('#tableBody tr').each(function() {
                 check = $(this).children().eq(-1).attr('is-valid')
-                if (check == '0')
-                    alert('출입 유효성을 점검해주세요')
+                if (check == '0'){
+                    $("#alertModal").show();
+                    $("#modalContent").text('');
+                    $("#modalContent").text('출입유효성을 점검해주세요');
+                }
 
             });
 
@@ -565,9 +609,6 @@ $(document).ready(function() {
                 $tableID.find('tbody').last().append(newTr.replace(/applyFile/gi, 'applyFile'+uuidv4()));
             }
 
-
-
-
             $('.leave').focusout(function(e) {
                 var sdate = $('#inout_sdate').val() || ''; //시작날짜
                 var edate = $('#inout_edate').val() || ''; //종료날짜
@@ -582,6 +623,11 @@ $(document).ready(function() {
                     return;
                 if (name.length == 0 || phone.length == 0) //사용자이름, 핸드폰번호가 입력되지 않으면, event 발생하지 않음
                     return;
+
+                phone = phone.trim().replace(/[^0-9]/g,"");
+                if(phone.length!=11){
+                    return;
+                 }
 
                 phone = phone.trim().replace(/(^02.{0}|^01.{1}|[0-9]{3})([0-9]+)([0-9]{4})/, "$1-$2-$3"); //핸드폰번호 정규표현식 적용
                 check = regExp.test(phone); //휴대폰번호에 대한 정규표현식 검증
@@ -601,7 +647,10 @@ $(document).ready(function() {
                     var combination = itemObj.name + itemObj.phone;
 
                     if (key[combination]) {
-                        alert('이미 추가한 사용자 입니다.')
+                        $("#alertModal").show();
+                        $("#modalContent").text('');
+                        $("#modalContent").text('이미 추가한 사용자 입니다.');
+
                         $(this).closest('tr').children().eq(1).children().children().val('');
                         $(this).closest('tr').children().eq(2).children().children().val('');
                         check = true;
@@ -678,15 +727,12 @@ $(document).ready(function() {
                 var phone = $(this).closest('tr').children().eq(2).children().children().val() || ''; //휴대폰번호
                 var rule = $(this).attr('rule'); //규칙명
 
-                console.log('---------------------------------------------')
-                console.log(name);
-                console.log(phone);
-                gb2 = $(this);
-                console.log('---------------------------------------------')
-
-
-                if (applicantName.length == 0 || applicantPhone.length == 0 || name.length == 0 || phone.length == 0)
-                    return;
+                if (applicantName.length == 0 || applicantPhone.length == 0 || name.length == 0 || phone.length == 0){
+                   $("#alertModal").show();
+                   $("#modalContent").text('');
+                   $("#modalContent").text('신청자 정보를 입력해주세요');
+                   return;
+                }
 
                 data.append('applicantName', applicantName);
                 data.append('applicantPhone', applicantPhone);
@@ -740,11 +786,12 @@ $(document).ready(function() {
             apiCallPost(urlMake('APPLY_SEARCH'), applySearchHandler, dataSet)
         });
 
-        //감독자조회 모달
+        //접견자조회 모달
         $('#interviewSearch').click(function(e) {
             var dataSet = {};
             var interviewName = $('#interviewInput').val();
             dataSet['interviewName'] = interviewName;
+            dataSet['site_nm'] = $('#inout_location').val();
             apiCallPost(urlMake('INTERVIEW_SEARCH'), interViewSearchHandler, dataSet)
 
         });
@@ -759,6 +806,32 @@ $(document).ready(function() {
         });
 
 
+        //신청자정보 테이블 초기화
+        $('.visitApply').click(function(e){
+            $('#applyTbody').children().remove();
+            $('#visitInput').val('');
+        });
+
+           //업체조회 테이블 초기화
+        $('.initApply').click(function(e){
+            $('#compTbody').children().remove();
+            $('#compSearchInput').val('');
+        });
+
+        //접견자정보 테이블 초기화
+        $('.interviewInit').click(function(e){
+            $('#interviewTbody').children().remove();
+            $('#interviewInput').val('')
+
+        });
+
+
+        //alert 모달 close 이벤트
+        $('#alertModal').click(function(e){
+            $('#alertModal').hide();
+        });
+
+
         //방문유형
         apiCallPost(urlMake('VISIT_TYPE'), visitTypeSearchHandler)
 
@@ -769,14 +842,25 @@ $(document).ready(function() {
 
         var date = new Date();
         var year = date.getFullYear();
-        var month = new String(date.getMonth() + 1);
+        var month = new String(date.getMonth()+1);
         var day = new String(date.getDate());
+
+        var date2 = new Date();
+        var year2 = date2.getFullYear();
+        var month2 = new String(date2.getMonth()+1);
+        var day2 = new String(date2.getDate()+7);
+
         if (month.length == 1)
             month = '0' + month;
 
-        var thisYear = month + "/" + day + "/" + year;
-        $('#inout_sdate').val(thisYear);
-        $('#inout_edate').val(thisYear);
+        if (month2.length == 1)
+            month2 = '0' + month2;
+
+        var sdate = month + "/" + day + "/" + year;
+        var edate = month2 + "/" + day2 + "/" + year2;
+
+        $('#inout_sdate').val(sdate);
+        $('#inout_edate').val(edate);
 
     }
     init();
