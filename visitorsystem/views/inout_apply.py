@@ -40,10 +40,15 @@ def edit(number):
     sccompinfo = db.session.query(Sccompinfo).filter(
         db.and_(Sccompinfo.tenant_id == tenant_id, Sccompinfo.id == vcapplymaster[0].biz_id,
                 Sccompinfo.use_yn == '1')).first()
+    
+    # 접견자 조회
+    scuser = db.session.query(Scuser).filter(
+        db.and_(Scuser.tenant_id == tenant_id, Scuser.id == vcapplymaster[0].interview_id,
+                Sccompinfo.use_yn == '1')).first()
+
 
     return render_template(current_app.config['TEMPLATE_THEME'] + '/inout_apply/edit.html',
-                           scrules=scrules, vcapplymaster=vcapplymaster[0], sccompinfo = sccompinfo[0])
-
+                           scrules=scrules, vcapplymaster=vcapplymaster[0], sccompinfo=sccompinfo, scuser=scuser)
 
 
 # 출입신청
@@ -57,12 +62,21 @@ def create():
         interviewer_name = request.form['interviewer_name']  # 접견자 이름
         interviewer_phone = request.form['interviewer_phone']  # 접견자 휴대폰번호
 
-
         # 감독자 조회(내부직원)
         interViewUser = db.session.query(Scuser).filter(db.and_(Scuser.tenant_id == tenant_id, Scuser.user_type == '0',
                                                                 Scuser.name == interviewer_name,
                                                                 Scuser.phone == interviewer_phone,
                                                                 Scuser.use_yn == '1')).first()
+
+        biz_no = request.form['applicant_biz_no']
+        comp_nm = request.form['applicant_comp_nm']
+
+
+        # 업체조회
+        sccompinfo = db.session.query(Sccompinfo).filter(
+            db.and_(Sccompinfo.tenant_id == tenant_id, Sccompinfo.comp_nm == comp_nm, Sccompinfo.biz_no == biz_no,
+                    Sccompinfo.use_yn == '1')).first()
+
 
         # STEP01. Vcapplymaster 생성
         vcapplymaster = Vcapplymaster()  # 출입마스터 생성
@@ -75,7 +89,7 @@ def create():
         vcapplymaster.applicant_comp_nm = request.form['applicant_comp_nm']  # 신청자 회사명
         vcapplymaster.phone = request.form['applicant_phone']  # 신청자 휴대폰
         vcapplymaster.visit_category = request.form['inout_purpose_type']  # 방문유형
-        vcapplymaster.biz_id = request.form['inout_biz_id']  # 업체번호
+        vcapplymaster.biz_id = sccompinfo.id  # 업체번호
         vcapplymaster.visit_sdate = request.form['inout_sdate']  # 방문시작일
         vcapplymaster.visit_edate = request.form['inout_edate']  # 방문종료일
         vcapplymaster.visit_purpose = request.form['inout_title']  # 방문목적

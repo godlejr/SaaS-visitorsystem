@@ -7,18 +7,7 @@
             <h6 class="c-grey-900">출입 정보</h6>
             <hr>
             <div class="mT-30">
-                <div class="form-row">
-                    <div class="form-group col-md-1"><label for="inout_biz_no">업체명</label> <input type="text"  class="form-control" name="input_biz_no" id="inout_biz_no" readonly style="background-color:white" ></div>
-                    <div class="form-group col-md-3">
-                        <label for="inout_comp_nm" style="visibility:hidden">&nbsp</label><input type="text"  class="form-control" name="inout_comp_nm" id="inout_comp_nm" readonly style="background-color:white">
-                    </div>
-                    <div class="form-group col-md-2" >
-                        <label style="visibility:hidden">&nbsp</label>
-                        <button type="button"  style="display:block" class="btn btn-primary" data-toggle="modal" data-target="#compSearchModal">
-                            <i class="search-icon ti-search pdd-right-10"></i>
-                        </button>
-                    </div>
-                </div>
+
 
                 <div class="form-row">
                     <div class="form-group col-md-2"><label class="fw-500">방문기간</label>
@@ -41,12 +30,12 @@
 
                     <div class="form-group col-md-2">
                         <label for="inout_purpose_type">방문목적</label>
-                        <select id="inout_purpose_type" name="input_purpose_type" class="form-control" placeholder = '방문명을 입력해주세요'>
+                        <select id="inout_purpose_type" name="input_purpose_type" class="form-control" >
                         </select>
                     </div>
 
                     <div class="form-group col-md-3">
-                        <label for="inout_title" style="visibility:hidden">&nbsp</label><input type="text"  class="form-control" name="inout_title" id="inout_title">
+                        <label for="inout_title" style="visibility:hidden">&nbsp</label><input type="text"  class="form-control" name="inout_title" id="inout_title" placeholder = '방문명을 입력해주세요'>
                     </div>
 
                 </div>
@@ -64,11 +53,6 @@
 
                         </select>
                     </div>
-
-                    <!--                    <div class="form-group col-md-2">-->
-                    <!--                        <label for="inout_location_desc" style="visibility:hidden">&nbsp</label>-->
-                    <!--                        <input type="text"  class="form-control" id="inout_location_desc" name="inout_location_desc" >-->
-                    <!--                    </div>-->
 
                 </div>
 

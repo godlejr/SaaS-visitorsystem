@@ -301,33 +301,6 @@ $(document).ready(function() {
         }
     }
 
-    //업체조회 컨트롤러
-    function compSearchHandler(dataSet) {
-        dataSet = dataSet.msg
-        var str = ''
-        $('#compTbody').children().remove()
-        for (var i = 0; i < dataSet.length; i++) {
-            var comp_nm = dataSet[i].comp_nm;
-            var biz_no = dataSet[i].biz_no;
-            var bizId = dataSet[i].biz_id;
-            var temp = `<tr class='compTtr' bizId = ${bizId}>
-                                 <th scope="row">${i+1}</th>
-                                 <td>${comp_nm}</td>
-                                 <td>${biz_no}</td>
-                         </tr>`;
-            str += temp;
-        }
-
-        $('#compTbody').append(str);
-        $('.compTtr').click(function() {
-            var bizId = $(this).attr("bizId");
-
-            $('#inout_comp_nm').val($(this).children('td:eq(0)').text());
-            $('#inout_biz_no').val($(this).children('td:eq(1)').text());
-            $('#inout_biz_no').attr('bizId', bizId);
-
-        });
-    }
 
     //감독자조회 컨트롤러
     function interviewSearchHandler(dataSet) {
@@ -471,7 +444,7 @@ $(document).ready(function() {
             var dataSet = {};
             htmlIdList = ['applicant_name', 'applicant_phone', 'applicant_biz_no', 'applicant_comp_nm',
                 'interviewer_dept', 'interviewer_name', 'interviewer_phone',
-                'inout_biz_no', 'inout_comp_nm', 'inout_sdate', 'inout_edate',
+                'inout_sdate', 'inout_edate',
                 'inout_purpose_type', 'inout_title', 'inout_location', 'inout_location2',
                 'inout_purpose_desc', 'visitors'
             ]
@@ -536,10 +509,6 @@ $(document).ready(function() {
 
 
 
-
-            //사업자번호 설정
-            dataSet["inout_biz_id"] = $('#inout_biz_no').attr('bizId');
-
             //출입지역 code
             dataSet["inout_location_code"] = $("#inout_location option:selected").attr('code')
             dataSet["inout_location_code2"] = $("#inout_location2 option:selected").attr('code')
@@ -556,16 +525,9 @@ $(document).ready(function() {
                 return;
             }
 
-            //출입 정보 check
-            check = dataSet['inout_biz_no'];
-            if (check.length == 0) {
-                $("#alertModal").show();
-                $("#modalContent").text('');
-                $("#modalContent").text('출입정보를 입력해주세요');
-                return;
-            }
+           //출입 정보 check
+           var check = dataSet['inout_title'];
 
-           check = dataSet['inout_title'];
            if (check.length == 0) {
                 $("#alertModal").show();
                 $("#modalContent").text('');
@@ -796,14 +758,7 @@ $(document).ready(function() {
 
         });
 
-        //업체조회 모달
-        $('#compSearchView').click(function(e) {
-            var dataSet = {};
-            var compSearchInput = $('#compSearchInput').val();
-            dataSet['compSearchInput'] = compSearchInput;
-            apiCallPost(urlMake('COMP_SEARCH'), compSearchHandler, dataSet)
 
-        });
 
 
         //신청자정보 테이블 초기화
@@ -812,11 +767,7 @@ $(document).ready(function() {
             $('#visitInput').val('');
         });
 
-           //업체조회 테이블 초기화
-        $('.initApply').click(function(e){
-            $('#compTbody').children().remove();
-            $('#compSearchInput').val('');
-        });
+
 
         //접견자정보 테이블 초기화
         $('.interviewInit').click(function(e){
