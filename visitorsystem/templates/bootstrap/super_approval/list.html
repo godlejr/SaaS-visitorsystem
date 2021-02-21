@@ -145,7 +145,7 @@
                     <!-- 출입신청마스터에서 작업내역 데이터 출력 부분-->
                     {% for list in lists %}
                     <tr>
-                        <td><input type="checkbox" name="chk" value1={{list.id}} value2={{list.approval_state}}>{{list.id}}</td>
+                        <td><input type="checkbox" name="chk" value1={{list.id}} value2={{list.approval_state}}> </td>
                         <td>{{list.visit_category}}</td>
                         <td>{{list.sccompinfo.comp_nm}}</td>
                         <td>{{list.visit_purpose}}</td>

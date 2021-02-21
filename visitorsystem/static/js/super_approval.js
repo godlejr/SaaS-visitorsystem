@@ -90,7 +90,7 @@ $(document).ready(function() {
 			var htmlData = '';
 			for (var i = 0; i < dataSet.length; i++) {
 				htmlData += '<tr>';
-				htmlData += '<td><input type="checkbox" name="chk" value1=' + dataSet[i].id + ' value2=' + dataSet[i].approval_state + '>' + dataSet[i].id + '</td>';
+				htmlData += '<td><input type="checkbox" name="chk" value1=' + dataSet[i].id + ' value2=' + dataSet[i].approval_state + '></td>';
 				htmlData += '<td>' + dataSet[i].visit_category + '</td>';
 				htmlData += '<td>' + dataSet[i].comp_nm + '</td>';
 				htmlData += '<td>' + dataSet[i].visit_purpose + '</td>';
@@ -154,7 +154,7 @@ $(document).ready(function() {
                 userRuleInfoHtml += '<td>' + userRuleInfoList[i].s_date + '</td>';
             }
             else if (type=='파일'){
-                userRuleInfoHtml += '<td><a href=' + userRuleInfoList[i].ruleDesc + '>다운로드</a></td>';
+                userRuleInfoHtml += '<td><a href=' + userRuleInfoList[i].ruleDesc + ' target="_new">다운로드</a></td>';
             }
             userRuleInfoHtml += '<td>' + userRuleInfoList[i].ruleRes + '</td>';
             userRuleInfoHtml += '</tr>';
@@ -206,7 +206,7 @@ $(document).ready(function() {
 
 		$(".userInfomodalBody tr").click(function() {
             var idx = $(this).children().eq(0).text();
-            idx = (parseInt(clickRowNo)-1);
+            idx = (parseInt(idx)-1);
             userRuleInfoHtml = userRuleInfoDetail(idx, users, userRuleInfoList);
 		    $('#userRuleTable > tbody').html(userRuleInfoHtml);
 		});
