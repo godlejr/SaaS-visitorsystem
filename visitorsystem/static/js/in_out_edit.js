@@ -123,6 +123,8 @@ $(document).ready(function() {
              <td class='mediaTable mediaTableTbodyTd'><input type="text" class="form-control leave resposiveTd mediaTable"></td>
              `
 
+
+
         for (var i = 0; i < dataSet.length; i++) {
             var obj = dataSet[i];
             var type = obj.rule_type;
@@ -354,49 +356,7 @@ $(document).ready(function() {
     //캘린더업데이트 핸들러
     function calendarUpdateHandler(data, option) {}
 
-    //사업장조회 핸들러
-    function workspaceSearchHandler(data){
-       var save = data;
-       data = save.msg;
-       data2 = save.msg2;
 
-        var str = '';
-        for (var i = 0; i < data.length; i++) {
-            var code_nm = data[i].code_nm
-            var code = data[i].code
-            var temp = `<option code = ${code} value=${code_nm}>${code_nm}</option>`
-            str = str + temp;
-        }
-
-        $('#inout_location').append(str);
-
-        str = '';
-        for (var i = 0; i < data2.length; i++) {
-            var code_nm = data2[i].code_nm
-            var code = data2[i].code
-            var temp = `<option code = ${code} value=${code_nm}>${code_nm}</option>`
-            str = str + temp;
-        }
-
-        $('#inout_location2').append(str);
-
-        $('#inout_location').on('change',function(){
-            $('#interviewTbody').children().remove(); //Modal초기화
-            var val = $('#inout_location').val()||'';
-            var dataSet = {};
-            if(val.length == 0)
-                return;
-
-            dataSet['code'] =$("#inout_location option:selected").attr('code');
-            dataSet['code_nm'] =$("#inout_location option:selected").val();
-
-            //출입문조회
-            apiCallPost(urlMake('DOOR_SEARCH'), doorSearchHandler, dataSet);
-
-        });
-
-
-    }
 
     //출입문조회 핸들러
     function doorSearchHandler(data){
@@ -411,26 +371,7 @@ $(document).ready(function() {
             str = str + temp;
         }
         $('#inout_location2').append(str);
-
-
-
     }
-
-    //방문유형조회 핸들러
-    function visitTypeSearchHandler(data){
-      var data = data.msg;
-      var str = '';
-
-      for (var i = 0; i < data.length; i++) {
-        var code_nm = data[i].code_nm
-        var temp = `<option value=${code_nm}>${code_nm}</option>`
-        str = str + temp;
-      }
-      $('#inout_purpose_type').append(str);
-
-    }
-
-
 
     //event리스너
     function init() {
@@ -781,35 +722,25 @@ $(document).ready(function() {
         });
 
 
-        //방문유형
-        apiCallPost(urlMake('VISIT_TYPE'), visitTypeSearchHandler)
-
         //사업장조회
-        apiCallPost(urlMake('WORKSPACE_SEARCH'), workspaceSearchHandler)
+//        apiCallPost(urlMake('WORKSPACE_SEARCH'), workspaceSearchHandler)
+
+          $('#inout_location').on('change',function(){
+            $('#interviewTbody').children().remove(); //Modal초기화
+            var val = $('#inout_location').val()||'';
+            var dataSet = {};
+            if(val.length == 0)
+                return;
+
+            dataSet['code'] =$("#inout_location option:selected").attr('code');
+            dataSet['code_nm'] =$("#inout_location option:selected").val();
+
+            //출입문조회
+            apiCallPost(urlMake('DOOR_SEARCH'), doorSearchHandler, dataSet);
+
+        });
 
 
-
-        var date = new Date();
-        var year = date.getFullYear();
-        var month = new String(date.getMonth()+1);
-        var day = new String(date.getDate());
-
-        var date2 = new Date();
-        var year2 = date2.getFullYear();
-        var month2 = new String(date2.getMonth()+1);
-        var day2 = new String(date2.getDate()+7);
-
-        if (month.length == 1)
-            month = '0' + month;
-
-        if (month2.length == 1)
-            month2 = '0' + month2;
-
-        var sdate = month + "/" + day + "/" + year;
-        var edate = month2 + "/" + day2 + "/" + year2;
-
-        $('#inout_sdate').val(sdate);
-        $('#inout_edate').val(edate);
 
     }
     init();

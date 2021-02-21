@@ -2,12 +2,12 @@
 
 {% block mainContent %}
 <!-- 여기서 html 작성하세요-->
-
+<script src="{{ url_for('static', filename='js/in_out_edit.js') }}" rel="stylesheet"></script>
 <div id="main">
     <div class="bgc-white bd p-20 mR-30 col-md-12">
         <div class="mT-30">
             <div class="content-top mB-5">
-                <div class="page-header"><h5 class="c-grey-900"> 출입신청 > 인원차량 출입신청 </h5></div>
+                <div class="page-header"><h5 class="c-grey-900"> 출입신청 > 인원차량 출입신청</h5></div>
             </div>
         </div>
     </div>
@@ -46,7 +46,7 @@
                         </div>
                         <div class="form-group col-md-2" >
                             <label style="visibility:hidden">&nbsp</label>
-                            <button type="button" style="display:block" class="btn btn-primary"   data-toggle="modal" data-target="#visitModal">
+                            <button type="button" style="display:block" class="btn btn-primary"   data-toggle="modal" data-target="#visitModal" {{block}}>
                                 <i class="search-icon ti-search pdd-right-10"></i>
                             </button>
                         </div>
@@ -70,8 +70,8 @@
                         <div class="form-group col-md-2"><label class="fw-500">방문기간</label>
                             <div class="timepicker-input input-icon form-group">
                                 <div class="input-group">
-                                    <div class="input-group-addon bgc-white bd bdwR-0"><i class="ti-calendar"></i></div>
-                                    <input type="text" class="form-control bdc-grey-200 start-date" placeholder="시작일" data-provide="datepicker" name ="inout_sdate" id="inout_sdate" readonly style="background-color:white" >
+                                    <i class="ti-calendar mT-5 p-5"></i>
+                                    <input type="text" class="form-control bdc-grey-200 start-date" placeholder="시작일" data-provide="datepicker" name ="inout_sdate" id="inout_sdate" value="{{applyDate.sdate}}" readonly style="background-color:white" {{block}}>
                                 </div>
                             </div>
                         </div>
@@ -79,20 +79,28 @@
                         <div class="form-group col-md-2"><label class="fw-500" style="visibility:hidden">&nbsp</label>
                             <div class="timepicker-input input-icon form-group">
                                 <div class="input-group">
-                                    <div class="input-group-addon bgc-white bd bdwR-0"><i class="ti-calendar"></i></div>
-                                    <input type="text" class="form-control bdc-grey-200 start-date" placeholder="종료일" data-provide="datepicker" name ="inout_edate" id="inout_edate" readonly style="background-color:white">
+                                    <i class="ti-calendar mT-5 p-5"></i>
+                                    <input type="text" class="form-control bdc-grey-200 start-date" placeholder="종료일" data-provide="datepicker" name ="inout_edate" id="inout_edate"  value="{{applyDate.sdate}}" readonly style="background-color:white" {{block}}>
                                 </div>
                             </div>
                         </div>
 
                         <div class="form-group col-md-2">
                             <label for="inout_purpose_type">방문목적</label>
-                            <select id="inout_purpose_type" name="input_purpose_type" class="form-control" >
+                            <select id="inout_purpose_type" name="input_purpose_type" class="form-control" {{block}} style="background-color:white">
+                                    {% for visitCategory in visitCategorys%}
+                                        {% if catagory == visitCategory.code_nm %}
+                                            <option value='{{visitCategory.code_nm}}' selected>{{visitCategory.code_nm}}</option>
+                                        {% else %}
+                                            <option value='{{visitCategory.code_nm}}'>{{visitCategory.code_nm}}</option>
+                                        {% endif %}
+                                    {% endfor %}
+
                             </select>
                         </div>
 
                         <div class="form-group col-md-3">
-                            <label for="inout_title" style="visibility:hidden">&nbsp</label><input type="text"  class="form-control" name="inout_title" id="inout_title" value="{{vcapplymaster.visit_purpose}}" placeholder = '방문명을 입력해주세요'>
+                            <label for="inout_title" style="visibility:hidden">&nbsp</label><input type="text"  class="form-control" name="inout_title" id="inout_title" value="{{vcapplymaster.visit_purpose}}" placeholder = '방문명을 입력해주세요' style="background-color:white" {{block}}>
                         </div>
 
                     </div>
@@ -100,13 +108,26 @@
 
                     <div class="form-row">
                         <div class="form-group col-md-2"><label for="inout_location">방문지역</label>
-                            <select  class="form-control"  id="inout_location" name="inout_location">
-
+                            <select  class="form-control"  id="inout_location" name="inout_location" {{block}} style="background-color:white">
+                                      {% for location in locations%}
+                                        {% if site_nm == location.code_nm %}
+                                            <option code = '{{location.code}}' value='{{location.code_nm}}' selected>{{location.code_nm}}</option>
+                                        {% else %}
+                                            <option  code = '{{location.code}}' value='{{location.code_nm}}'>{{location.code_nm}}</option>
+                                        {% endif %}
+                                    {% endfor %}
                             </select>
                         </div>
 
                         <div class="form-group col-md-2"><label for="inout_location2">&nbsp</label>
-                            <select  class="form-control"  id="inout_location2" name="inout_location2">
+                            <select  class="form-control"  id="inout_location2" name="inout_location2" {{block}} style="background-color:white">
+                                {% for door in doors%}
+                                        {% if site_nm2 == door.code_nm %}
+                                            <option code = '{{door.code}}' value='{{door.code_nm}}' selected>{{door.code_nm}}</option>
+                                        {% else %}
+                                            <option  code = '{{door.code}}' value='{{door.code_nm}}'>{{door.code_nm}}</option>
+                                        {% endif %}
+                                    {% endfor %}
 
                             </select>
                         </div>
@@ -117,9 +138,9 @@
                     <div class="form-row">
                         <div class="form-group col-md-6">
                             <label for="inout_purpose_desc">상세기술</label>
-                            <textarea class="form-control" id="inout_purpose_desc"  name="inout_purpose_desc" style="height:100px"/>
-                                {{vcapplymaster.visit_desc}}
-                            </textarea>
+                            <textarea class="form-control" id="inout_purpose_desc"  name="inout_purpose_desc" style="height:100px; background-color:white"  {{block}}/>{{vcapplymaster.visit_desc}}</textarea>
+
+
                         </div>
                     </div>
                 </div>
@@ -148,7 +169,7 @@
                         <div class="form-group col-md-3"><label for="interviewer_phone">연락처</label> <input type="text"  class="form-control" name="interviewer_phone" id="interviewer_phone" value="{{scuser.phone}}"readonly style="background-color:white"></div>
                         <div class="form-group col-md-2" >
                             <label style="visibility:hidden">&nbsp</label>
-                            <button type="button" style="display:block" class="btn btn-primary"  data-toggle="modal" data-target="#interviewModal">
+                            <button type="button" style="display:block;" class="btn btn-primary"  data-toggle="modal" data-target="#interviewModal" {{block}}>
                                 <i class="search-icon ti-search pdd-right-10"></i>
                             </button>
                         </div>
@@ -169,11 +190,11 @@
 
                     <div class="form-row">
                         <p class="h4  text-danger" id="errorMsg"></p>
-                        <button type="button" style="display:block; margin-left:auto; margin-bottom:2px; margin-right:2px;" id="addUser"class="btn btn-primary text-center text-right" >
+                        <button type="button" style="display:block; margin-left:auto; margin-bottom:2px; margin-right:2px;" id="addUser"class="btn btn-primary text-center text-right" {{block}} >
                             <i class="ti-plus"></i>
                         </button>
 
-                        <button type="button" style="display:block; margin-bottom:2px;" id="delUser" class="btn btn-danger text-right" >
+                        <button type="button" style="display:block; margin-bottom:2px;" id="delUser" class="btn btn-danger text-right" {{block}}>
                             <i class="ti-minus"></i>
                         </button>
 
@@ -342,6 +363,26 @@
                                     </thead>
                                     <tbody id="interviewTbody">
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
                                     </tbody>
                                 </table>
                             </div>
@@ -367,7 +408,7 @@
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title">인원차량 출입신청</h5>
-                    <button id="exitModal" type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <button id="blockModal" type="button" class="close" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true" data-dismiss="modal">&times;</span>
                     </button>
                 </div>

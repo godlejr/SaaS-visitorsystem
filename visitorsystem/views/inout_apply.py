@@ -24,31 +24,65 @@ def index():
 
 
 # 출입신청 수정
-@inout_apply.route('/edit/<number>', methods=['GET'])
-@login_required
+@inout_apply.route('/edit/<int:number>', methods=['GET'])
 def edit(number):
-    tenant_id = current_user.ssctenant.id  # 로그인 사용자의 테넌트 아이디
-    biz_id = current_user.biz_id  # 로그인 사용자의 사업자번호
-    scrules = db.session.query(Scrule).all()  # 페이지 로드전 동적규칙 조회
+    if request.method == 'GET':
+        num = number
+        tenant_id = current_user.ssctenant.id  # 로그인 사용자의 테넌트 아이디
+        scrules = db.session.query(Scrule).all()  # 페이지 로드전 동적규칙 조회
 
-    # STEP01. 출입신청마스터 조회
-    vcapplymaster = db.session.query(Vcapplymaster).filter(
-        db.and_(Vcapplymaster.tenant_id == tenant_id, Vcapplymaster.id == number,
-                Vcapplymaster.use_yn == '1')).all()
+        # 출입신청마스터 조회
+        vcapplymaster = db.session.query(Vcapplymaster).filter(
+            db.and_(Vcapplymaster.tenant_id == tenant_id, Vcapplymaster.id == num,
+                    Vcapplymaster.use_yn == '1')).first()
 
-    # 작업자 업체조회
-    sccompinfo = db.session.query(Sccompinfo).filter(
-        db.and_(Sccompinfo.tenant_id == tenant_id, Sccompinfo.id == vcapplymaster[0].biz_id,
-                Sccompinfo.use_yn == '1')).first()
-    
-    # 접견자 조회
-    scuser = db.session.query(Scuser).filter(
-        db.and_(Scuser.tenant_id == tenant_id, Scuser.id == vcapplymaster[0].interview_id,
-                Sccompinfo.use_yn == '1')).first()
+        # 작업자 업체조회
+        sccompinfo = db.session.query(Sccompinfo).filter(
+            db.and_(Sccompinfo.tenant_id == tenant_id, Sccompinfo.id == vcapplymaster.biz_id,
+                    Sccompinfo.use_yn == '1')).first()
+
+        # 접견자 조회
+        scuser = db.session.query(Scuser).filter(
+            db.and_(Scuser.tenant_id == tenant_id, Scuser.id == vcapplymaster.interview_id,
+                    Sccompinfo.use_yn == '1')).first()
+
+        # 방문유형 조회
+        visitCategorys = db.session.query(Sccode).filter(
+            db.and_(Sccode.tenant_id == tenant_id, Sccode.class_id == 6, Sccode.use_yn == '1')).all()
+        catagory = vcapplymaster.visit_category
 
 
-    return render_template(current_app.config['TEMPLATE_THEME'] + '/inout_apply/edit.html',
-                           scrules=scrules, vcapplymaster=vcapplymaster[0], sccompinfo=sccompinfo, scuser=scuser)
+        # 사업장 조회
+        locations = db.session.query(Sccode).filter(db.and_(Sccode.tenant_id == tenant_id, Sccode.class_id == 1, Sccode.use_yn == '1')).all()
+        site_id = vcapplymaster.site_id
+        site_nm = vcapplymaster.site_nm
+
+        # 출입문 조회
+        doors = db.session.query(Sccode).filter(db.and_(Sccode.tenant_id == tenant_id, Sccode.class_id == 2, Sccode.attb_a ==site_id, Sccode.use_yn == '1')).all()
+        site_id2 = vcapplymaster.site_id2
+        site_nm2 = vcapplymaster.site_nm2
+
+        sdate = vcapplymaster.visit_sdate
+        edate = vcapplymaster.visit_edate
+
+        applyDate = {'sdate': sdate.split('-'), 'edate': edate.split('-')}
+
+        applyDate['sdate'] = applyDate['sdate'][1] + '/' + applyDate['sdate'][2] + '/' + applyDate['sdate'][0]
+        applyDate['edate'] = applyDate['edate'][1] + '/' + applyDate['edate'][2] + '/' + applyDate['edate'][0]
+
+        state = vcapplymaster.approval_state
+        block = ''
+
+        print(state)
+        if state == '반려' or state == '승인':
+            block = 'disabled'
+
+        # 규칙조회
+        vcvisitusers = db.session.query(Vcvisituser).filter(db.and_(Vcvisituser.tenant_id == tenant_id, Vcvisituser.apply_id == num, Vcvisituser.use_yn == '1')).all()
+
+        return render_template(current_app.config['TEMPLATE_THEME'] + '/inout_apply/edit.html',
+                               scrules=scrules, vcapplymaster=vcapplymaster, sccompinfo=sccompinfo, scuser=scuser,
+                               applyDate=applyDate, visitCategorys=visitCategorys, catagory=catagory,locations=locations, site_nm=site_nm, doors=doors, site_nm2=site_nm2, block=block, state=state)
 
 
 # 출입신청
@@ -71,12 +105,10 @@ def create():
         biz_no = request.form['applicant_biz_no']
         comp_nm = request.form['applicant_comp_nm']
 
-
         # 업체조회
         sccompinfo = db.session.query(Sccompinfo).filter(
             db.and_(Sccompinfo.tenant_id == tenant_id, Sccompinfo.comp_nm == comp_nm, Sccompinfo.biz_no == biz_no,
                     Sccompinfo.use_yn == '1')).first()
-
 
         # STEP01. Vcapplymaster 생성
         vcapplymaster = Vcapplymaster()  # 출입마스터 생성
