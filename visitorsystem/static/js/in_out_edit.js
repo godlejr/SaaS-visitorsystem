@@ -19,8 +19,8 @@ $(document).ready(function() {
     function urlMake(url, args) {
         var reqUrl = "/inoutApply/";
         switch (url) {
-            case 'CREATE':
-                reqUrl = reqUrl + `create`;
+            case 'SAVE':
+                reqUrl = reqUrl + `save`;
                 break;
 
             case 'INTERVIEW_SEARCH':
@@ -166,6 +166,9 @@ $(document).ready(function() {
 
     //출입신청 컨트롤러(완료)
     function applyHandler(dataSet) {
+             $("#alertModal").show();
+             $("#modalContent").text('');
+             $("#modalContent").text('출입수정이 성공적으로 이뤄졌습니다.');
 
     }
 
@@ -332,9 +335,6 @@ $(document).ready(function() {
             return;
         }
 
-
-
-
         if (msg.length == 0) {
             //empty user
             console.log('------userSearchHandler(사용자없음)----------------------')
@@ -379,6 +379,18 @@ $(document).ready(function() {
         apiCallPost(urlMake('RULE_SEARCH'), ruleSearchHandler);
 
         $('#appylbtn').click(function() {
+        state = $('#main').attr('state');
+
+        if(state =='반려' || state =='승인'){
+              console.log('ddd')
+              $("#alertModal").show();
+              $("#modalContent").text('');
+              $("#modalContent").text(`${state} 상태에는 출입수정을 할 수 없습니다.`);
+             return;
+
+        }
+
+
             var htmlIdList = [];
             var dataSet = {};
             htmlIdList = ['applicant_name', 'applicant_phone', 'applicant_biz_no', 'applicant_comp_nm',
@@ -408,7 +420,7 @@ $(document).ready(function() {
             }
 
             //출입신청 아이디
-            dataSet['applyId'] = $('#main').attr('name');
+            dataSet['applyId'] = $('#main').attr('applyId');
             var lists = [];
 
             //visitors설정
@@ -497,7 +509,7 @@ $(document).ready(function() {
             });
 
             if (check == '1')
-                apiCallPost(urlMake('CREATE'), applyHandler, dataSet);
+                apiCallPost(urlMake('SAVE'), applyHandler, dataSet);
 
         });
 
@@ -577,6 +589,7 @@ $(document).ready(function() {
 
             //텍스트규칙 업데이트
             $('.rule-text').focusout(function(e) {
+
                 var name = $(this).closest('tr').children().eq(1).children().children().val() || ''; //이름
                 var phone = $(this).closest('tr').children().eq(2).children().children().val() || ''; //휴대폰번호
                 var rule = $(this).attr('rule'); //규칙속성 가져오기
@@ -664,6 +677,105 @@ $(document).ready(function() {
             });
 
         });
+
+
+
+            //텍스트규칙 업데이트
+            $('.rule-text').focusout(function(e) {
+
+                var name = $(this).closest('tr').children().eq(1).children().children().val() || ''; //이름
+                var phone = $(this).closest('tr').children().eq(2).children().children().val() || ''; //휴대폰번호
+                var rule = $(this).attr('rule'); //규칙속성 가져오기
+                var ruleText = $(this).val() || ''; //현재 규칙(텍스트)값 가져오기
+
+                if (name.length == 0 || phone.length == 0 || ruleText.length == 0)
+                    return;
+
+                var dataSet = {};
+                dataSet['name'] = name;
+                dataSet['phone'] = phone;
+                dataSet['rule'] = rule;
+                dataSet['ruleText'] = ruleText;
+                dataSet['type'] = '텍스트';
+
+                apiCallPost(urlMake('TEXT_UPDATE'), textUpdateHandler, dataSet);
+
+            });
+
+            //캘린더규칙 업데이트
+            $('.rule-calendar').focusout(function(e) {
+                var name = $(this).closest('tr').children().eq(1).children().children().val() || ''; //이름
+                var phone = $(this).closest('tr').children().eq(2).children().children().val() || ''; //휴대폰번호
+                var rule = $(this).attr('rule'); //규칙이름
+                var calendar = $(this).val() || ''; //달력
+
+                if (name.length == 0 || phone.length == 0 || calendar.length == 0)
+                    return;
+
+                var dataSet = {};
+                dataSet['name'] = name;
+                dataSet['phone'] = phone;
+                dataSet['rule'] = rule;
+                dataSet['type'] = '캘린더';
+                calendar = calendar.split('/')
+                dataSet['calendar'] = calendar[2] + "-" + calendar[0] + "-" + calendar[1];
+                apiCallPost(urlMake('CALENDAR_UPDATE'), calendarUpdateHandler, dataSet);
+
+            });
+
+            //파일업로드 업데이트
+            $('.file-upload').change(function(e) {
+                var current = $(this);
+                var data = new FormData(); //파일객체 생성
+                data.append("file", $(this).prop('files')[0]);
+                var applicantName = $('#applicant_name').val() || ''; //신청자 이름
+                var applicantPhone = $('#applicant_phone').val() || ''; //신청자 휴대폰번호
+                var name = $(this).closest('tr').children().eq(1).children().children().val() || ''; //이름
+                var phone = $(this).closest('tr').children().eq(2).children().children().val() || ''; //휴대폰번호
+                var rule = $(this).attr('rule'); //규칙명
+
+                if (applicantName.length == 0 || applicantPhone.length == 0 || name.length == 0 || phone.length == 0){
+                   $("#alertModal").show();
+                   $("#modalContent").text('');
+                   $("#modalContent").text('신청자 정보를 입력해주세요');
+                   return;
+                }
+
+                data.append('applicantName', applicantName);
+                data.append('applicantPhone', applicantPhone);
+                data.append('name', name);
+                data.append('phone', phone);
+                data.append('type', '파일');
+                data.append('rule', rule);
+
+                $.ajax({
+                    type: "POST",
+                    enctype: 'multipart/form-data',
+                    url: "/inoutApply/rule/file/upload",
+                    data: data,
+                    processData: false,
+                    contentType: false,
+                    cache: false,
+                    timeout: 600000,
+                    success: function(result) {
+                        var href = result.msg;
+                        current.parent().next().attr('hidden', false);
+                        current.parent().next().attr('href', href);
+                    },
+
+                    error: function(e) {
+                        console.log("ERROR : ", e);
+                    }
+                });
+            });
+
+
+
+
+
+
+
+
 
         $('#delUser').click(function(e) {
             var checkbox = $('input[id=checkbox]:checked'); //선택된 사용자

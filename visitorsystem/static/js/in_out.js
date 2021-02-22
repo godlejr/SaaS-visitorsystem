@@ -164,6 +164,9 @@ $(document).ready(function() {
 
     //출입신청 컨트롤러(완료)
     function applyHandler(dataSet) {
+             $("#alertModal").show();
+             $("#modalContent").text('');
+             $("#modalContent").text('출입신청이 성공적으로 이뤄졌습니다.');
 
     }
 
@@ -466,8 +469,6 @@ $(document).ready(function() {
                 dataSet[key] = value;
             }
 
-            //출입신청 아이디
-            dataSet['applyId'] = $('#main').attr('name');
             var lists = [];
 
             //visitors설정

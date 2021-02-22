@@ -3,7 +3,7 @@
 {% block mainContent %}
 <!-- 여기서 html 작성하세요-->
 <script src="{{ url_for('static', filename='js/in_out_edit.js') }}" rel="stylesheet"></script>
-<div id="main">
+<div id="main" applyId="{{vcapplymaster.id}}" state="{{vcapplymaster.approval_state}}">
     <div class="bgc-white bd p-20 mR-30 col-md-12">
         <div class="mT-30">
             <div class="content-top mB-5">
@@ -80,7 +80,7 @@
                             <div class="timepicker-input input-icon form-group">
                                 <div class="input-group">
                                     <i class="ti-calendar mT-5 p-5"></i>
-                                    <input type="text" class="form-control bdc-grey-200 start-date" placeholder="종료일" data-provide="datepicker" name ="inout_edate" id="inout_edate"  value="{{applyDate.sdate}}" readonly style="background-color:white" {{block}}>
+                                    <input type="text" class="form-control bdc-grey-200 start-date" placeholder="종료일" data-provide="datepicker" name ="inout_edate" id="inout_edate"  value="{{applyDate.edate}}" readonly style="background-color:white" {{block}}>
                                 </div>
                             </div>
                         </div>
@@ -198,8 +198,8 @@
                             <i class="ti-minus"></i>
                         </button>
 
-                        <div id="table" class="table-responsive mediaDiv">
-                            <table name="user_info"  class="table table-bordered mediaTable" cellspacing="0" width="100%">
+                        <div id="table" class="table-responsive mediaDiv" {{block}}>
+                            <table name="user_info"  class="table table-bordered mediaTable" cellspacing="0" width="100%" >
                                 <thead class="mediaTable" id="'mediaThead">
                                 <tr id="thead" class="mediaTable mediaTheadTr">
                                     <th style="width: 15px;" class="mediaTable"></th>
@@ -213,26 +213,26 @@
 
 
                                     {% for tr in tableList%}
-                                    <tr class="hide mediaTable mediaTableTbodyTr">
+                                    <tr class="hide mediaTable mediaTableTbodyTr" >
                                          <td class='mediaTable mediaTableTbodyTd' valueChange = '0'>
-                                             <input type="checkbox" id="checkbox" class="peer leave resposiveTd mediaTable">
+                                             <input type="checkbox" id="checkbox" class="peer leave resposiveTd mediaTable" {{block}} style="background-color:white">
                                          </td>
 
                                          <td class='mediaTable mediaTableTbodyTd'>
                                             <div class="form-group">
-                                                 <input type="text" class="form-control leave resposiveTd mediaTable" id="tvisitor" value="{{tr.name}}"  >
+                                                 <input type="text" class="form-control leave resposiveTd mediaTable" id="tvisitor" value="{{tr.name}}" {{block}} style="background-color:white">
                                              </div>
                                          </td>
 
                                          <td class='mediaTable mediaTableTbodyTd'>
                                              <div class="form-group">
-                                                 <input type="text" id="tphone" value="{{tr.phone}}" class="form-control leave ctphone resposiveTd mediaTable">
+                                                 <input type="text" id="tphone" value="{{tr.phone}}" class="form-control leave ctphone resposiveTd mediaTable" {{block}} style="background-color:white">
                                              </div>
                                          </td>
 
                                          <td class='mediaTable mediaTableTbodyTd'>
                                             <div class="form-group mediaTable" >
-                                                     <select  class="form-control leave resposiveTd resposiveSelect mediaTable">
+                                                     <select  class="form-control leave resposiveTd resposiveSelect mediaTable" {{block}} style="background-color:white">
                                                                 {% for car in cars%}
                                                                     {% if tr.vehicle_type == car.code_nm %}
                                                                         <option value='{{car.code_nm}}' selected>{{car.code_nm}}</option>
@@ -244,23 +244,33 @@
                                              </div>
                                          </td>
                                         <td class='mediaTable mediaTableTbodyTd'>
-                                            <input type="text" value="{{tr.vehicle_num}}" class="form-control leave resposiveTd mediaTable">
+                                            <input type="text" value="{{tr.vehicle_num}}" class="form-control leave resposiveTd mediaTable" {{block}} style="background-color:white">
                                         </td>
 
                                         {% for rule in tr.rule%}
                                             {% if rule.rule_type == '텍스트' %}
-                                                <td class='mediaTable mediaTableTbodyTd'><input type="text" value = '{{rule.textDesc}}'class="form-control rule-text leave resposiveTd mediaTable" rule='{{rule.rule_name}}'></td>
+                                                <td class='mediaTable mediaTableTbodyTd'><input type="text" value = '{{rule.textDesc}}'class="form-control rule-text leave resposiveTd mediaTable" rule='{{rule.rule_name}}' {{block}} style="background-color:white"></td>
                                             {% elif rule.rule_type == '달력' %}
                                                 <td class='mediaTable mediaTableTbodyTd'>
-                                                    <div class="input-group resposiveTd">
-                                                    <i class="ti-calendar mT-5 p-5"></i>
-                                                    <input type="text" class="form-control start-date rule-calendar leave rule" placeholder="달력" data-provide="datepicker" value='{{rule.sdate}}' rule='{{rule.rule_name}}' readonly style="background-color:white">
+                                                    <div class="input-group resposiveTd" >
+                                                    <i class="ti-calendar mT-5 p-5" ></i>
+                                                    <input type="text" class="form-control start-date rule-calendar leave rule" placeholder="달력" data-provide="datepicker" value='{{rule.sdate}}' rule='{{rule.rule_name}}' {{block}} style="background-color:white">
                                                     </div>
+                                                </td>
+
+                                            {% elif rule.rule_type == '파일' %}
+                                               <td class='mediaTable mediaTableTbodyTd'>
+                                                    <div class="input-group custom-file resposiveTd" >
+                                                        <input id='{{rule.fileClassId}}' accept="image/*,video/*" type="file" class="form-control file rule-file leave file-upload rule custom-file-input"  data-browse-on-zone-click="true" rule='{{rule.rule_name}}'>
+                                                        <label  class="custom-file-label" for='{{rule.fileClassId}}'  >파일선택</label>
+                                                    </div>
+                                                     <a href ={{rule.bucketUrl}} target="_new" class='' >다운로드</a>
                                                 </td>
                                             {% endif %}
 
                                         {% endfor %}
-
+                                            <td class='mediaTable mediaTableTbodyTd'style="visibility:hidden" is-valid="1" is-user="1"></td>
+                                            </tr>
                                     {% endfor %}
 
 
