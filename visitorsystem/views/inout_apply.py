@@ -51,14 +51,16 @@ def edit(number):
             db.and_(Sccode.tenant_id == tenant_id, Sccode.class_id == 6, Sccode.use_yn == '1')).all()
         catagory = vcapplymaster.visit_category
 
-
         # 사업장 조회
-        locations = db.session.query(Sccode).filter(db.and_(Sccode.tenant_id == tenant_id, Sccode.class_id == 1, Sccode.use_yn == '1')).all()
+        locations = db.session.query(Sccode).filter(
+            db.and_(Sccode.tenant_id == tenant_id, Sccode.class_id == 1, Sccode.use_yn == '1')).all()
         site_id = vcapplymaster.site_id
         site_nm = vcapplymaster.site_nm
 
         # 출입문 조회
-        doors = db.session.query(Sccode).filter(db.and_(Sccode.tenant_id == tenant_id, Sccode.class_id == 2, Sccode.attb_a ==site_id, Sccode.use_yn == '1')).all()
+        doors = db.session.query(Sccode).filter(
+            db.and_(Sccode.tenant_id == tenant_id, Sccode.class_id == 2, Sccode.attb_a == site_id,
+                    Sccode.use_yn == '1')).all()
         site_id2 = vcapplymaster.site_id2
         site_nm2 = vcapplymaster.site_nm2
 
@@ -77,12 +79,57 @@ def edit(number):
         if state == '반려' or state == '승인':
             block = 'disabled'
 
+        # 차량종류 조회
+        cars = db.session.query(Sccode).filter(
+            db.and_(Sccode.tenant_id == tenant_id, Sccode.class_id == 3, Sccode.use_yn == '1')).all()
+
+
+
         # 규칙조회
-        vcvisitusers = db.session.query(Vcvisituser).filter(db.and_(Vcvisituser.tenant_id == tenant_id, Vcvisituser.apply_id == num, Vcvisituser.use_yn == '1')).all()
+        vcvisitusers = db.session.query(Vcvisituser).filter(
+            db.and_(Vcvisituser.tenant_id == tenant_id, Vcvisituser.apply_id == num, Vcvisituser.use_yn == '1')).all()
+
+        # 방문자조회(Table)
+
+        vcapplyusers = db.session.query(Vcapplyuser).filter(
+            db.and_(Vcapplyuser.tenant_id == tenant_id, Vcapplyuser.apply_id == num, Vcapplymaster.use_yn == '1')).all()
+        tableList = []
+
+        # 출입신청 하나에 연결된, 사용자리스트 조회
+        for vcapplyuser in vcapplyusers:
+            obj = {'name': vcapplyuser.visitant, 'phone': vcapplyuser.phone, 'vehicle_type': vcapplyuser.vehicle_type,
+                   'vehicle_num': vcapplyuser.vehicle_num, 'rule': []}
+
+            for vcvisituser in db.session.query(Vcvisituser).filter(
+                    db.and_(Vcvisituser.tenant_id == tenant_id, Vcvisituser.apply_id == num,
+                            Vcvisituser.name == obj['name'], Vcvisituser.phone == obj['phone'],
+                            Vcvisituser.use_yn == '1')).all():
+                dict = {'rule_id': '', 'rule_type': '', 'rule_name': '', 'sdate': '', 'edate': '', 'textDesc': '',
+                        'bucketUrl': ''}
+
+                dict['rule_id'] = vcvisituser.scrule.id
+                dict['rule_type'] = vcvisituser.scrule.rule_type
+                dict['rule_name'] = vcvisituser.scrule.rule_name
+                datechange = vcvisituser.s_date.split['-']
+                dict['sdate'] = datechange[1] + '/' + datechange[2] + '/' + datechange[0]
+                datechange= vcvisituser.e_date.split['-']
+                dict['edate'] = datechange[1] + '/' + datechange[2] + '/' + datechange[0]
+                dict['textDesc'] = vcvisituser.text_desc
+
+                if vcvisituser.scrule.rule_type == '파일':
+                    scruleFile = db.session.query(ScRuleFile).filter(
+                        db.and_(ScRuleFile.tenant_id == tenant_id, ScRuleFile.visit_id == vcvisituser.id,
+                                ScRuleFile.use_yn == '1')).first()
+                    dict['bucketUrl'] = scruleFile.s3_url
+
+                obj['rule'].append(dict)
+            tableList.append(obj)
 
         return render_template(current_app.config['TEMPLATE_THEME'] + '/inout_apply/edit.html',
                                scrules=scrules, vcapplymaster=vcapplymaster, sccompinfo=sccompinfo, scuser=scuser,
-                               applyDate=applyDate, visitCategorys=visitCategorys, catagory=catagory,locations=locations, site_nm=site_nm, doors=doors, site_nm2=site_nm2, block=block, state=state)
+                               applyDate=applyDate, visitCategorys=visitCategorys, catagory=catagory,
+                               locations=locations, site_nm=site_nm, doors=doors, site_nm2=site_nm2, block=block,
+                               state=state, cars=cars, tableList=tableList)
 
 
 # 출입신청
@@ -147,8 +194,8 @@ def create():
             vcapplyuser.apply_id = vcapplymaster.id  # 출입신청 아이디
             vcapplyuser.visitant = row['name']  # 방문자 이름
             vcapplyuser.phone = row['phone']  # 방문자 핸드폰 번호
-            vcapplyuser.vehicle_num = row['carType']  # 방문자 차량유형
-            vcapplyuser.vehicle_type = row['carNum']  # 방문자 차량번호
+            vcapplyuser.vehicle_type = row['carType']  # 방문자 차량유형
+            vcapplyuser.vehicle_num = row['carNum']  # 방문자 차량번호
             db.session.add(vcapplyuser)
             db.session.commit()
 

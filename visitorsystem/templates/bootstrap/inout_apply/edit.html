@@ -210,6 +210,60 @@
                                 </tr>
                                 </thead>
                                 <tbody id="tableBody" class="mediaTable">
+
+
+                                    {% for tr in tableList%}
+                                    <tr class="hide mediaTable mediaTableTbodyTr">
+                                         <td class='mediaTable mediaTableTbodyTd' valueChange = '0'>
+                                             <input type="checkbox" id="checkbox" class="peer leave resposiveTd mediaTable">
+                                         </td>
+
+                                         <td class='mediaTable mediaTableTbodyTd'>
+                                            <div class="form-group">
+                                                 <input type="text" class="form-control leave resposiveTd mediaTable" id="tvisitor" value="{{tr.name}}"  >
+                                             </div>
+                                         </td>
+
+                                         <td class='mediaTable mediaTableTbodyTd'>
+                                             <div class="form-group">
+                                                 <input type="text" id="tphone" value="{{tr.phone}}" class="form-control leave ctphone resposiveTd mediaTable">
+                                             </div>
+                                         </td>
+
+                                         <td class='mediaTable mediaTableTbodyTd'>
+                                            <div class="form-group mediaTable" >
+                                                     <select  class="form-control leave resposiveTd resposiveSelect mediaTable">
+                                                                {% for car in cars%}
+                                                                    {% if tr.vehicle_type == car.code_nm %}
+                                                                        <option value='{{car.code_nm}}' selected>{{car.code_nm}}</option>
+                                                                    {% else %}
+                                                                        <option value='{{car.code_nm}}'>{{car.code_nm}}</option>
+                                                                    {% endif %}
+                                                                {% endfor %}
+                                                     </select>
+                                             </div>
+                                         </td>
+                                        <td class='mediaTable mediaTableTbodyTd'>
+                                            <input type="text" value="{{tr.vehicle_num}}" class="form-control leave resposiveTd mediaTable">
+                                        </td>
+
+                                        {% for rule in tr.rule%}
+                                            {% if rule.rule_type == '텍스트' %}
+                                                <td class='mediaTable mediaTableTbodyTd'><input type="text" value = '{{rule.textDesc}}'class="form-control rule-text leave resposiveTd mediaTable" rule='{{rule.rule_name}}'></td>
+                                            {% elif rule.rule_type == '달력' %}
+                                                <td class='mediaTable mediaTableTbodyTd'>
+                                                    <div class="input-group resposiveTd">
+                                                    <i class="ti-calendar mT-5 p-5"></i>
+                                                    <input type="text" class="form-control start-date rule-calendar leave rule" placeholder="달력" data-provide="datepicker" value='{{rule.sdate}}' rule='{{rule.rule_name}}' readonly style="background-color:white">
+                                                    </div>
+                                                </td>
+                                            {% endif %}
+
+                                        {% endfor %}
+
+                                    {% endfor %}
+
+
                                 </tbody>
                             </table>
 
@@ -362,27 +416,6 @@
                                     </tr>
                                     </thead>
                                     <tbody id="interviewTbody">
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
                                     </tbody>
                                 </table>
                             </div>
