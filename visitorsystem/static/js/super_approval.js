@@ -7,6 +7,7 @@ $(document).ready(function() {
 			cache: false,
 			data: data,
 			dataType: 'json',
+//			async : false,
 			success: function(data) {
 				handler(data);
 			},
@@ -165,8 +166,8 @@ $(document).ready(function() {
     //출입신청 건에 포함된 방문자 및 규칙 정보리스트 Modal
 	function searchApplyMasterDetailHandler(dataSet) {
 		//작업에 대한 작업자 상세 정보 Modal에 띄어야 함.
-		console.log(dataSet.users);
-		console.log(dataSet.userRuleInfoList);
+//		console.log(dataSet.users);
+//		console.log(dataSet.userRuleInfoList);
 		users = dataSet.users;
 		userRuleInfoList = dataSet.userRuleInfoList;
 

@@ -43,7 +43,7 @@ def index(page):
                            query_string=request.query_string.decode('utf-8'))
 
 
-@super_approval.route('/search', methods=['GET', 'POST'])
+@super_approval.route('/search', methods=['POST'])
 def search():
     if request.method == 'POST':
         ssctenant = db.session.query(Ssctenant).filter_by(event_url=request.host).first()
@@ -117,7 +117,6 @@ def detail():
         }
         users.append(results)
 
-
     # 3. 사용자들의 Rule이 유효한지 판단 및 정보 저장
     bucketUrl = 'https://vms-tenants-rulefile-bucket-dev.s3.ap-northeast-2.amazonaws.com/'
 
@@ -176,8 +175,18 @@ def selectApplyListWithSearchCondition(searchCondition):
     pages = int(searchCondition['pages'])
     offset = (pages * (page - 1)) if page != 1 else 0
 
-    selectApplyLists = db.session.query(Vcapplymaster).filter(Vcapplymaster.use_yn == 1).order_by(Vcapplymaster.id.desc())
+    # 로그인한 사용자 권한에 따른 조회 데이터 변경 (계정당 권한 1개)
+    userAuth = current_user.get_auth.code
 
+    #일반 사용자는 조회는 Data 없도록 하기 위함. (없는 Data Select함으로써 type 형태만 갖춤)
+    selectApplyLists = db.session.query(Vcapplymaster).filter(Vcapplymaster.use_yn == -1)
+
+    if (userAuth == current_app.config['AUTH_ADMIN']) or (userAuth == current_app.config['AUTH_VISIT_ADMIN']):
+        selectApplyLists = db.session.query(Vcapplymaster).filter(Vcapplymaster.use_yn == 1).order_by(Vcapplymaster.id.desc())
+    elif userAuth == current_app.config['AUTH_APPROVAL']:
+        selectApplyLists = db.session.query(Vcapplymaster).filter(and_(Vcapplymaster.use_yn == 1, Vcapplymaster.interview_id == current_user.id)).order_by(Vcapplymaster.id.desc())
+
+    # 조회조건에 따른 쿼리
     if searchCondition['visit_category'] != "all":
         selectApplyLists = selectApplyLists.filter(Vcapplymaster.visit_category == searchCondition['visit_category'])
     if searchCondition['approval_state'] != "all":
@@ -196,6 +205,6 @@ def selectApplyListWithSearchCondition(searchCondition):
     applyList = selectApplyLists.limit(pages).offset(offset).all()
 
     return {'pagination' : pagination,
-            'p_pages':p_pages,
+            'p_pages': p_pages,
             'applyList': applyList,
-            'listSize':selectApplyLists.count()}
+            'listSize': selectApplyLists.count()}
