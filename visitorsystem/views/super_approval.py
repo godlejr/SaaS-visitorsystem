@@ -182,12 +182,11 @@ def selectApplyListWithSearchCondition(searchCondition):
     # AUTH_VISITOR = '1000'  - 조회X
     # AUTH_APPROVAL = '2000' - 로그인한 계정으로 요청온 것만
     userAuth = current_user.get_auth.code
-    # print("useruserAuth : " + userAuth + ", current_user.id : " + current_user.id)
 
     #일반 사용자는 조회는 Data 없도록 하기 위함. (없는 Data Select함으로써 type 형태만 갖춤)
     selectApplyLists = db.session.query(Vcapplymaster).filter(Vcapplymaster.use_yn == -1)
 
-    if (userAuth == current_app.config['AUTH_ADMIN']) or (userAuth == current_app.config['AUTH_ADMIN']):
+    if (userAuth == current_app.config['AUTH_ADMIN']) or (userAuth == current_app.config['AUTH_VISIT_ADMIN']):
         selectApplyLists = db.session.query(Vcapplymaster).filter(Vcapplymaster.use_yn == 1).order_by(Vcapplymaster.id.desc())
     elif userAuth == current_app.config['AUTH_APPROVAL']:
         selectApplyLists = db.session.query(Vcapplymaster).filter(and_(Vcapplymaster.use_yn == 1, Vcapplymaster.interview_id == current_user.id)).order_by(Vcapplymaster.id.desc())
