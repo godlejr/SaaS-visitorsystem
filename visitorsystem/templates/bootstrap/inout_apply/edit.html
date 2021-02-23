@@ -207,6 +207,9 @@
                                     <th style="" class="mediaTable">휴대폰번호</th>
                                     <th style="" class="mediaTable">차량종류</th>
                                     <th style="" class="mediaTable">차량번호</th>
+                                       {% for rule in currentRule%}
+                                                <th style="" class="mediaTable">{{rule}}</th>
+                                      {% endfor %}
                                 </tr>
                                 </thead>
                                 <tbody id="tableBody" class="mediaTable">
@@ -220,7 +223,7 @@
 
                                          <td class='mediaTable mediaTableTbodyTd'>
                                             <div class="form-group">
-                                                 <input type="text" class="form-control leave resposiveTd mediaTable" id="tvisitor" value="{{tr.name}}" {{block}} style="background-color:white">
+                                                 <input type="text" class="form-control leave resposiveTd mediaTable" id="tvisitor" value="{{tr.name}}" {{block}} style="background-color:white;">
                                              </div>
                                          </td>
 
@@ -232,7 +235,7 @@
 
                                          <td class='mediaTable mediaTableTbodyTd'>
                                             <div class="form-group mediaTable" >
-                                                     <select  class="form-control leave resposiveTd resposiveSelect mediaTable" {{block}} style="background-color:white">
+                                                     <select  class="form-control leave resposiveTd resposiveSelect mediaTable" {{block}} style="background-color:white; width:130px;">
                                                                 {% for car in cars%}
                                                                     {% if tr.vehicle_type == car.code_nm %}
                                                                         <option value='{{car.code_nm}}' selected>{{car.code_nm}}</option>
@@ -475,7 +478,7 @@
 
     <div class="row">
         <div class="col text-center">
-            <button id ='appylbtn' type="button" class="btn btn-primary" >방문예약 신청</button>
+            <button id ='appylbtn' type="button" class="btn btn-primary" >방문예약 수정</button>
 
         </div>
     </div>

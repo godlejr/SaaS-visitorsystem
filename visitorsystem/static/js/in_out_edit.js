@@ -28,11 +28,11 @@ $(document).ready(function() {
                 break;
 
             case 'RULE_SEARCH':
-                reqUrl = reqUrl + `rule/search`;
+                reqUrl = reqUrl + `rule/search/before`;
                 break;
 
             case 'RULE_VALID':
-                reqUrl = reqUrl + `rule/valid`;
+                reqUrl = reqUrl + `rule/valid/before`;
                 break;
 
             case 'APPLY_SEARCH':
@@ -44,7 +44,7 @@ $(document).ready(function() {
                 break;
 
             case 'USER_SEARCH':
-                reqUrl = reqUrl + `user/search`;
+                reqUrl = reqUrl + `user/search/before`;
                 break;
             case 'TEXT_UPDATE':
                 reqUrl = reqUrl + `rule/text/update`;
@@ -131,7 +131,7 @@ $(document).ready(function() {
             var ruleName = obj.rule_name;
             var cnt = i + 1;
 
-            theadContext = theadContext + `<th style="">${ruleName}</th>`;
+//            theadContext = theadContext + `<th style="">${ruleName}</th>`;
             ruleList.push(ruleName);
 
 
@@ -159,7 +159,7 @@ $(document).ready(function() {
         }
 
 
-        $('#thead').append(theadContext);
+//        $('#thead').append(theadContext);
         append = append + `<td class='mediaTable mediaTableTbodyTd'style="visibility:hidden" is-valid="0" is-user="0"></td>`
         newTr = newTr + append + '</tr>';
     }
@@ -168,7 +168,9 @@ $(document).ready(function() {
     function applyHandler(dataSet) {
              $("#alertModal").show();
              $("#modalContent").text('');
-             $("#modalContent").text('출입수정이 성공적으로 이뤄졌습니다.');
+             $("#modalContent").text('출입수정 되었습니다.');
+             $(location).attr('href', '/')
+
 
     }
 
@@ -240,6 +242,7 @@ $(document).ready(function() {
         var rule = opt.closest('tr').children();
         var offset = 5;
 
+        console.log(dataSet)
         for (var i = 0; i < dataSet.length; i++) {
             var rule_name = dataSet[i].rule_name; //규칙이름
             var rule_desc = dataSet[i].rule_desc; //규칙명세
@@ -251,7 +254,7 @@ $(document).ready(function() {
             var nextRule = rule.eq(offset + i); //다음 규칙 검색
             var writeCheck = rule.eq(0).attr('valueChange'); //값을 불러왔는지 여부check
 
-            console.log(state);
+
 
             //state 상태체크
             if (!state) { //remove, Rule False(Rule 무효인 상태)
@@ -327,7 +330,6 @@ $(document).ready(function() {
     function userSearchHandler(data, option) {
         var msg = data.msg; //post 결과메시지
         var dataSet = option.dataSet;
-
         if(msg[0].msg=='-1'){
              $("#alertModal").show();
              $("#modalContent").text('');
@@ -335,16 +337,19 @@ $(document).ready(function() {
             return;
         }
 
-        if (msg.length == 0) {
+        if (msg[0].msg=='0') {
             //empty user
-            console.log('------userSearchHandler(사용자없음)----------------------')
+//            console.log('------userSearchHandler(사용자없음)----------------------')
+            console.log('신규사용자')
             option.closest('tr').children().eq(-1).attr('is-user', '0'); //신규 user
-            console.log('------userSearchHandler----------------------')
+//            console.log('------userSearchHandler----------------------')
         } else {
-            console.log('------userSearchHandler(사용자 있음)----------------------')
+//            console.log('------userSearchHandler(사용자 있음)----------------------')
+            console.log('기존사용자')
             option.closest('tr').children().eq(-1).attr('is-user', '1'); //등록 user
+            dataSet['applyId'] = $('#main').attr('applyId');
             apiCallPost(urlMake('RULE_VALID'), rulevalidHandler, dataSet, option);
-            console.log('------userSearchHandler----------------------')
+//            console.log('------userSearchHandler----------------------')
         }
     }
 
@@ -376,13 +381,14 @@ $(document).ready(function() {
     //event리스너
     function init() {
         const $tableID = $('#table');
-        apiCallPost(urlMake('RULE_SEARCH'), ruleSearchHandler);
+        data = {};
+        data['applyId'] = $('#main').attr('applyId');
+        apiCallPost(urlMake('RULE_SEARCH'), ruleSearchHandler, data);
 
         $('#appylbtn').click(function() {
         state = $('#main').attr('state');
 
         if(state =='반려' || state =='승인'){
-              console.log('ddd')
               $("#alertModal").show();
               $("#modalContent").text('');
               $("#modalContent").text(`${state} 상태에는 출입수정을 할 수 없습니다.`);
@@ -496,6 +502,16 @@ $(document).ready(function() {
             }
 
 
+            //출입자 정보 check
+            check = $('#tableBody tr').length;
+               if (check.length == 0) {
+                $("#alertModal").show();
+                $("#modalContent").text('');
+                $("#modalContent").text('한 명 이상의 접견자를 추가해주세요');
+                return;
+            }
+
+
 
             //출입유효성 check
             $('#tableBody tr').each(function() {
@@ -517,8 +533,8 @@ $(document).ready(function() {
             const $clone = $tableID.find('tbody tr').last().clone(true).removeClass('hide table-line');
             if ($tableID.find('tbody tr').length === 0) {
                 $('#tableBody').append(newTr);
-
             } else {
+
                 $tableID.find('tbody').last().append(newTr.replace(/applyFile/gi, 'applyFile'+uuidv4()));
             }
 
@@ -557,9 +573,14 @@ $(document).ready(function() {
                     itemObj.name = cellItem.eq(1).val()
                     itemObj.phone = cellItem.eq(2).val()
 
+                    if(itemObj.name.length==0 || itemObj.phone.length ==0)
+                            return;
+
                     var combination = itemObj.name + itemObj.phone;
 
                     if (key[combination]) {
+
+
                         $("#alertModal").show();
                         $("#modalContent").text('');
                         $("#modalContent").text('이미 추가한 사용자 입니다.');
@@ -578,9 +599,10 @@ $(document).ready(function() {
                 sdate = sdate.split('/');
                 edate = edate.split('/');
                 dataSet['sdate'] = sdate[2] + "-" + sdate[0] + "-" + sdate[1]; //시작날짜
-                dataSet['edate'] = sdate[2] + "-" + sdate[0] + "-" + sdate[1]; //종료날짜
+                dataSet['edate'] = edate[2] + "-" + edate[0] + "-" + edate[1]; //종료날짜
                 dataSet['name'] = name; //사용자
                 dataSet['phone'] = phone; //휴대폰번호
+                dataSet['applyId'] = $('#main').attr('applyId');
                 option = $(this);
                 option.dataSet = dataSet;
                 apiCallPost(urlMake('USER_SEARCH'), userSearchHandler, dataSet, option);

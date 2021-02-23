@@ -37,9 +37,8 @@ def edit(number):
             db.and_(Vcapplymaster.tenant_id == tenant_id, Vcapplymaster.id == num,
                     Vcapplymaster.use_yn == '1')).first()
 
-        if not vcapplymaster :
+        if not vcapplymaster:
             return render_template('error' + '/404.html')
-
 
         # 작업자 업체조회
         sccompinfo = db.session.query(Sccompinfo).filter(
@@ -61,6 +60,15 @@ def edit(number):
             db.and_(Sccode.tenant_id == tenant_id, Sccode.class_id == 1, Sccode.use_yn == '1')).all()
         site_id = vcapplymaster.site_id
         site_nm = vcapplymaster.site_nm
+
+        # 출입신청시 적용된 rule
+        currentRule = []
+        for row in db.session.query(Vcvisituser).filter(
+                db.and_(Vcvisituser.tenant_id == tenant_id, Vcvisituser.apply_id == num,
+                        Vcvisituser.use_yn == '1')).group_by(Vcvisituser.rule_id).all():
+            rule_name = db.session.query(Scrule).filter(
+                db.and_(Scrule.tenant_id == tenant_id, Scrule.id == row.rule_id)).first().rule_name
+            currentRule.append(rule_name)
 
         # 출입문 조회
         doors = db.session.query(Sccode).filter(
@@ -128,11 +136,15 @@ def edit(number):
                         'bucketUrl'] = 'https://vms-tenants-rulefile-bucket-dev.s3.ap-northeast-2.amazonaws.com/' + scruleFile.s3_url
 
                 obj['rule'].append(dict)
+
             tableList.append(obj)
+
+            # 출입신청 시점에서 적용된 규칙이름 조회
 
         return render_template(current_app.config['TEMPLATE_THEME'] + '/inout_apply/edit.html',
                                scrules=scrules, vcapplymaster=vcapplymaster, sccompinfo=sccompinfo, scuser=scuser,
                                applyDate=applyDate, visitCategorys=visitCategorys, catagory=catagory,
+                               currentRule=currentRule,
                                locations=locations, site_nm=site_nm, doors=doors, site_nm2=site_nm2, block=block,
                                state=state, cars=cars, tableList=tableList)
 
@@ -231,8 +243,7 @@ def save():
                     ruleDesc = rule['ruleDesc']  # 텍스트 유형 규칙기술
                     sdate = rule['sDate']  # 시작날짜
                     scrule = db.session.query(Scrule).filter(
-                        db.and_(Scrule.tenant_id == tenant_id, Scrule.rule_name == ruleName,
-                                Scrule.use_yn == '1')).first()
+                        db.and_(Scrule.tenant_id == tenant_id, Scrule.rule_name == ruleName)).first()
                     vcvisituser.rule_id = scrule.id  # 규칙 아이디
                     vcvisituser.text_desc = ruleDesc  # 텍스트 유형 규칙기술
                     vcvisituser.s_date = sdate  # 규칙 시작날짜
@@ -253,7 +264,7 @@ def save():
                         db.session.add(scruleFile)
                         db.session.commit()
 
-    return redirect(url_for('main.login'))
+    return jsonify({'msg': "HTTP STATE CODE 200"})
 
 
 # 출입신청
@@ -397,6 +408,43 @@ def ruleSearch():
                     'msg2': lists2})
 
 
+# 규칙 조회(출입신청 시점의 규칙조회)
+@inout_apply.route('/rule/search/before', methods=['POST'])
+def ruleSearchBefore():
+    tenant_id = current_user.ssctenant.id
+
+    # 특정시점의 출입신청 아이디(정책은 출입신청 시점에서 적용된다.)
+    applyId = request.form['applyId']
+    vcvisitusers = db.session.query(Vcvisituser).filter(
+        db.and_(Vcvisituser.tenant_id == tenant_id, Vcvisituser.apply_id == applyId)).group_by(
+        Vcvisituser.rule_id).all()
+
+    lists = []
+    for vcvisituser in vcvisitusers:
+
+        for row in db.session.query(Scrule).filter(
+                db.and_(Scrule.tenant_id == tenant_id, Scrule.id == vcvisituser.rule_id)).all():
+            scrule = {
+                "rule_name": row.rule_name,
+                "rule_type": row.rule_type,
+                "rule_duedate": row.rule_duedate,
+                "rule_desc": row.rule_desc
+            }
+            lists.append(scrule)
+
+    lists2 = []
+    for row in db.session.query(Sccode).filter(
+            db.and_(Sccode.tenant_id == tenant_id, Sccode.class_id == 3)):
+        sccode = {
+            "code_nm": row.code_nm,
+        }
+
+        lists2.append(sccode)
+
+    return jsonify({'msg': lists,
+                    'msg2': lists2})
+
+
 # 텍스트규칙 업데이트
 @inout_apply.route('/rule/text/update', methods=['POST'])
 def ruleTextUpdate():
@@ -409,7 +457,7 @@ def ruleTextUpdate():
     time = datetime.now()  # 현재시각
 
     # 규칙이름에 매핑되는 규칙조회
-    scrule = db.session.query(Scrule).filter(Scrule.tenant_id == tenant_id, Scrule.use_yn == '1',
+    scrule = db.session.query(Scrule).filter(Scrule.tenant_id == tenant_id,
                                              Scrule.rule_name == rule).first()
 
     # 규칙에 해당하는 사용자조회
@@ -438,7 +486,7 @@ def ruleFileUpdate():
     time = datetime.strptime(calendar, '%Y-%m-%d')
 
     # 규칙이름에 매핑되는 규칙조회
-    scrule = db.session.query(Scrule).filter(Scrule.tenant_id == tenant_id, Scrule.use_yn == '1',
+    scrule = db.session.query(Scrule).filter(Scrule.tenant_id == tenant_id,
                                              Scrule.rule_name == rule).first()
 
     # 규칙에 해당하는 사용자조회
@@ -495,7 +543,7 @@ def fileUpload():
             ContentType=file.content_type)  # 메타데이터설정
 
         # STEP03. 규칙이름에 매핑되는 규칙조회 및 user 삽입
-        scrule = db.session.query(Scrule).filter(Scrule.tenant_id == tenant_id, Scrule.use_yn == '1',
+        scrule = db.session.query(Scrule).filter(Scrule.tenant_id == tenant_id,
                                                  Scrule.rule_name == rule).first()
         time = datetime.now()
         vcstackuser = db.session.query(Vcstackuser).filter(
@@ -511,7 +559,7 @@ def fileUpload():
             db.session.commit()
             scrulefile = db.session.query(ScRuleFile).filter(
                 db.and_(ScRuleFile.tenant_id == tenant_id, ScRuleFile.rule_id == scrule.id,
-                        ScRuleFile.visit_stack_id == vcstackuser.id, ScRuleFile.use_yn == '1')).first()
+                        ScRuleFile.visit_stack_id == vcstackuser.id)).first()
 
             if scrulefile:
                 scrulefile.s3_url = bucketUrl
@@ -554,6 +602,73 @@ def ruleValidate():
         db.desc(Vcstackuser.created_at)).all():
         for dict in lists:
             rule_id = dict['rule_id']
+            if rule_id == row.rule_id:
+
+                if row.scrule.rule_type == '파일':
+                    scrulefile = db.session.query(ScRuleFile).filter(db.and_(ScRuleFile.tenant_id == tenant_id,
+                                                                             ScRuleFile.use_yn == '1',
+                                                                             ScRuleFile.visit_stack_id == row.id
+                                                                             )).first()
+
+                    bucketUrl = 'https://vms-tenants-rulefile-bucket-dev.s3.ap-northeast-2.amazonaws.com/' + scrulefile.s3_url
+                    dict['bucketUrl'] = bucketUrl
+
+                dict['state'] = True
+                dict['text_desc'] = row.text_desc
+                dict['s_date'] = row.s_date
+
+    return jsonify({'msg': lists})
+
+
+# 규칙판별
+@inout_apply.route('/rule/valid/before', methods=['POST'])
+def ruleValidateBefore():
+    tenant_id = current_user.ssctenant.id  # 테넌트아이디
+    name = request.form['name']  # 사용자 이름
+    phone = request.form['phone']  # 휴대폰 번호
+    vsdate = request.form['sdate']  # 방문시작 날짜
+    vedate = request.form['edate']  # 방문종료 날짜
+
+    # 특정시점의 출입신청 아이디(정책은 출입신청 시점에서 적용된다.)
+    applyId = request.form['applyId']
+    vcvisitusers = db.session.query(Vcvisituser).filter(
+        db.and_(Vcvisituser.tenant_id == tenant_id, Vcvisituser.apply_id == applyId)).group_by(
+        Vcvisituser.rule_id).all()
+
+    lists = []
+    # Step01.Rule(출입신청 시점에 적용된 규칙적용)
+    for vcvisituser in vcvisitusers:
+
+        for row in db.session.query(Scrule).filter(
+                db.and_(Scrule.tenant_id == tenant_id, Scrule.id == vcvisituser.rule_id)).all():
+            dict = {
+                "rule_id": row.id,
+                "rule_type": row.rule_type,
+                "rule_name": row.rule_name,
+                "state": False,
+                "bucketUrl": ''
+            }
+
+            lists.append(dict)
+
+
+    # Step02.tenant에 등록된 RULE을 기준으로, name/phone/유효일자를 검색하는 로직, 규칙시작일(s_date) <=방문시작일(vsdate) / 규칙종료일(e_date) >=방문종료일(vedate) 검증
+    print(vsdate)
+    print(vedate)
+    print(name)
+    print(phone)
+    print(tenant_id)
+    for row in db.session.query(Vcstackuser).filter(db.and_(Vcstackuser.tenant_id == tenant_id,
+                                                            Vcstackuser.name == name,
+                                                            Vcstackuser.phone == phone,
+                                                            Vcstackuser.use_yn == '1',
+                                                            # Vcstackuser.s_date <= vsdate,
+                                                            Vcstackuser.e_date >= vedate)).order_by(
+        db.desc(Vcstackuser.created_at)).all():
+        print('찍힘2')
+        for dict in lists:
+            rule_id = dict['rule_id']
+
             if rule_id == row.rule_id:
 
                 if row.scrule.rule_type == '파일':
@@ -767,6 +882,7 @@ def userSearch():
                 vcstackNuser.rule_id = row.id  # 규칙아이디
                 db.session.add(vcstackNuser)
                 db.session.commit()
+                lists.append({"msg": "0"})
 
                 if row.rule_type == '파일':
                     scruleFile = ScRuleFile()
@@ -803,8 +919,60 @@ def userSearch():
                             scruleFile.visit_stack_id = vcstacAdduser.id
                             db.session.add(scruleFile)
                             db.session.commit()
-                lists.append({"name": vcstackuser[0]})
+                lists.append({"msg": name})
 
+            else:
+                lists.append({"msg": "-1"})
+
+        return jsonify({'msg': lists})
+
+
+# 사용자 조회(규칙시점 조회용)
+@inout_apply.route('/user/search/before', methods=['POST'])
+def userSearchBefore():
+    if request.method == 'POST':
+        tenant_id = current_user.ssctenant.id  # 테넌트 아이디
+        name = request.form['name']  # 사용자 이름
+        phone = request.form['phone']  # 사용자 휴대폰번호
+        lists = []
+
+        # 특정시점의 출입신청 아이디(정책은 출입신청 시점에서 적용된다.)
+        applyId = request.form['applyId']
+
+        vcvisitusers = db.session.query(Vcvisituser).filter(
+            db.and_(Vcvisituser.tenant_id == tenant_id, Vcvisituser.apply_id == applyId)).group_by(
+            Vcvisituser.rule_id).all()
+
+        # 셀로 추가된 유저에 대한, 신규/기존 사용자인지 확인 및 검증
+        vcstackuser = db.session.query(Vcstackuser.name).filter(db.and_(Vcstackuser.tenant_id == tenant_id,
+                                                                        # Vcstackuser.name == name,
+                                                                        Vcstackuser.phone == phone,
+                                                                        Vcstackuser.use_yn == '1')).group_by(
+            Vcstackuser.name).first()
+
+        if not vcstackuser:  # 사용자가 없는 경우 vcstackuser에 신규사용자를 추가해준다.
+
+            for row in vcvisitusers:
+
+                vcstackNuser = Vcstackuser()  # 신규사용자
+                vcstackNuser.tenant_id = tenant_id  # 테넌트아이디
+                vcstackNuser.name = name  # 이름
+                vcstackNuser.phone = phone  # 휴대폰번호
+                vcstackNuser.rule_id = row.rule_id  # 규칙아이디
+                db.session.add(vcstackNuser)
+                db.session.commit()
+                lists.append({"msg": "0"})
+                if row.scrule.rule_type == '파일':
+                    scruleFile = ScRuleFile()
+                    scruleFile.tenant_id = tenant_id
+                    scruleFile.rule_id = row.rule_id
+                    scruleFile.visit_stack_id = vcstackNuser.id
+                    db.session.add(scruleFile)
+                    db.session.commit()
+
+        else:  # 사용자 있는 경우(추가된 규칙의 경우 Rule을 추가)
+            if vcstackuser.name == name:
+                lists.append({"msg": name})
             else:
                 lists.append({"msg": "-1"})
 

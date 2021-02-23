@@ -115,7 +115,7 @@ $(document).ready(function() {
 
              <td class='mediaTable mediaTableTbodyTd'>
                 <div class="form-group mediaTable" >
-                         <select id="" name="" class="form-control leave resposiveTd resposiveSelect mediaTable">
+                         <select id="" name="" class="form-control leave resposiveTd resposiveSelect mediaTable" style='width:130px'>
                                 ${str}
                          </select>
                  </div>
@@ -167,6 +167,8 @@ $(document).ready(function() {
              $("#alertModal").show();
              $("#modalContent").text('');
              $("#modalContent").text('출입신청이 성공적으로 이뤄졌습니다.');
+             $(location).attr('href', '/')
+
 
     }
 
@@ -249,8 +251,6 @@ $(document).ready(function() {
             var nextRule = rule.eq(offset + i); //다음 규칙 검색
             var writeCheck = rule.eq(0).attr('valueChange'); //값을 불러왔는지 여부check
 
-            console.log(state);
-
             //state 상태체크
             if (!state) { //remove, Rule False(Rule 무효인 상태)
                 msg = msg + rule_name + " ";
@@ -325,27 +325,23 @@ $(document).ready(function() {
     function userSearchHandler(data, option) {
         var msg = data.msg; //post 결과메시지
         var dataSet = option.dataSet;
+         if(msg[0].msg=='-1'){
+                 $("#alertModal").show();
+                 $("#modalContent").text('');
+                 $("#modalContent").text('다른 사용자와 휴대폰번호가 중복됩니다.');
+                return;
+            }
 
-        if(msg[0].msg=='-1'){
-             $("#alertModal").show();
-             $("#modalContent").text('');
-             $("#modalContent").text('다른 사용자와 휴대폰번호가 중복됩니다.');
-            return;
-        }
-
-
-
-
-        if (msg.length == 0) {
+        if (msg[0].msg=='0') {
             //empty user
-            console.log('------userSearchHandler(사용자없음)----------------------')
+//            console.log('------userSearchHandler(사용자없음)----------------------')
             option.closest('tr').children().eq(-1).attr('is-user', '0'); //신규 user
-            console.log('------userSearchHandler----------------------')
+//            console.log('------userSearchHandler----------------------')
         } else {
-            console.log('------userSearchHandler(사용자 있음)----------------------')
+//            console.log('------userSearchHandler(사용자 있음)----------------------')
             option.closest('tr').children().eq(-1).attr('is-user', '1'); //등록 user
             apiCallPost(urlMake('RULE_VALID'), rulevalidHandler, dataSet, option);
-            console.log('------userSearchHandler----------------------')
+//            console.log('------userSearchHandler----------------------')
         }
     }
 
@@ -544,6 +540,15 @@ $(document).ready(function() {
             }
 
 
+            //출입자 정보 check
+            check = $('#tableBody tr').length;
+               if (check.length == 0) {
+                $("#alertModal").show();
+                $("#modalContent").text('');
+                $("#modalContent").text('한 명 이상의 접견자를 추가해주세요');
+                return;
+            }
+
 
             //출입유효성 check
             $('#tableBody tr').each(function() {
@@ -551,7 +556,7 @@ $(document).ready(function() {
                 if (check == '0'){
                     $("#alertModal").show();
                     $("#modalContent").text('');
-                    $("#modalContent").text('출입유효성을 점검해주세요');
+                    $("#modalContent").text('방문자의 출입유효성을 점검해주세요');
                 }
 
             });
@@ -602,31 +607,35 @@ $(document).ready(function() {
                 $('#tableBody tr').each(function() {
                     var cellItem = $(this).find(":input")
                     var itemObj = new Object()
-                    itemObj.name = cellItem.eq(1).val()
-                    itemObj.phone = cellItem.eq(2).val()
+                    itemObj.name = cellItem.eq(1).val();
+                    itemObj.phone = cellItem.eq(2).val();
+                    if(itemObj.name.length==0 || itemObj.phone.length ==0)
+                        return;
 
                     var combination = itemObj.name + itemObj.phone;
+                    key[combination] = 0;
 
                     if (key[combination]) {
-                        $("#alertModal").show();
-                        $("#modalContent").text('');
-                        $("#modalContent").text('이미 추가한 사용자 입니다.');
-
-                        $(this).closest('tr').children().eq(1).children().children().val('');
-                        $(this).closest('tr').children().eq(2).children().children().val('');
+                          $("#alertModal").show();
+                          $("#modalContent").text('');
+                          $("#modalContent").text('이미 추가한 사용자 입니다.');
+                          $(this).closest('tr').children().eq(1).children().children().val('');
+                          $(this).closest('tr').children().eq(2).children().children().val('');
                         check = true;
                         return;
                     } else {
-                        key[combination] = true;
+                        key[combination] +=1;
                     }
                 });
 
-                if (check)
+                if (check){
+
                     return;
+                  }
                 sdate = sdate.split('/');
                 edate = edate.split('/');
                 dataSet['sdate'] = sdate[2] + "-" + sdate[0] + "-" + sdate[1]; //시작날짜
-                dataSet['edate'] = sdate[2] + "-" + sdate[0] + "-" + sdate[1]; //종료날짜
+                dataSet['edate'] = edate[2] + "-" + edate[0] + "-" + edate[1]; //종료날짜
                 dataSet['name'] = name; //사용자
                 dataSet['phone'] = phone; //휴대폰번호
                 option = $(this);
@@ -718,7 +727,7 @@ $(document).ready(function() {
                     },
 
                     error: function(e) {
-                        console.log("ERROR : ", e);
+//                        console.log("ERROR : ", e);
                     }
                 });
             });
