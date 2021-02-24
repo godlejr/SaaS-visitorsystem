@@ -133,7 +133,7 @@ def edit(number):
                         db.and_(ScRuleFile.tenant_id == tenant_id, ScRuleFile.visit_id == vcvisituser.id,
                                 ScRuleFile.use_yn == '1')).first()
                     dict[
-                        'bucketUrl'] = 'https://vms-tenants-bucket-dev.s3.ap-northeast-2.amazonaws.com/' + scruleFile.s3_url
+                        'bucketUrl'] = current_app.config['S3_BUCKET_NAME_VMS'] + scruleFile.s3_url
 
                 obj['rule'].append(dict)
 
@@ -260,7 +260,7 @@ def save():
                         scruleFile.visit_id = vcvisituser.id  # 출입신청 방문 아이디
                         scruleFile.file_name = rule['bucketUrl'].split('/')[-1]  # 파일명
                         scruleFile.s3_url = rule['bucketUrl'].split(
-                            'https://vms-tenants-bucket-dev.s3.ap-northeast-2.amazonaws.com/')[-1]  # 버킷주소
+                            current_app.config['S3_BUCKET_NAME_VMS'],'/')[-1]  # 버킷주소
                         db.session.add(scruleFile)
                         db.session.commit()
 
@@ -374,7 +374,9 @@ def create():
                     scruleFile.visit_id = vcvisituser.id  # 출입신청 방문 아이디
                     scruleFile.file_name = rule['bucketUrl'].split('/')[-1]  # 파일명
                     scruleFile.s3_url = rule['bucketUrl'].split(
-                        'https://vms-tenants-bucket-dev.s3.ap-northeast-2.amazonaws.com//')[-1]  # 버킷주소
+                        current_app.config['S3_BUCKET_NAME_VMS'],'/')[-1]  # 버킷주소
+                    print(rule['bucketUrl'])
+                    print(scruleFile.s3_url)
                     db.session.add(scruleFile)
                     db.session.commit()
 
@@ -568,7 +570,7 @@ def fileUpload():
                 db.session.add(scrulefile)
                 db.session.commit()
 
-        bucketUrl = 'https://vms-tenants-bucket-dev.s3.ap-northeast-2.amazonaws.com/' + bucketUrl
+        bucketUrl = current_app.config['S3_BUCKET_NAME_VMS'] + bucketUrl
         return jsonify({'msg': bucketUrl})
 
 
@@ -611,7 +613,7 @@ def ruleValidate():
                                                                              ScRuleFile.visit_stack_id == row.id
                                                                              )).first()
 
-                    bucketUrl = 'https://vms-tenants-bucket-dev.s3.ap-northeast-2.amazonaws.com/' + scrulefile.s3_url
+                    bucketUrl = current_app.config['S3_BUCKET_NAME_VMS'] + scrulefile.s3_url
                     dict['bucketUrl'] = bucketUrl
 
                 dict['state'] = True
@@ -677,7 +679,7 @@ def ruleValidateBefore():
                                                                              ScRuleFile.visit_stack_id == row.id
                                                                              )).first()
 
-                    bucketUrl = 'https://vms-tenants-bucket-dev.s3.ap-northeast-2.amazonaws.com/' + scrulefile.s3_url
+                    bucketUrl = current_app.config['S3_BUCKET_NAME_VMS'] + scrulefile.s3_url
                     dict['bucketUrl'] = bucketUrl
 
                 dict['state'] = True
