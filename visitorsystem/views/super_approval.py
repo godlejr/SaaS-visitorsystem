@@ -30,7 +30,7 @@ def index(page):
         'pages': request.args.get('pages', 10)
     }
 
-    searchResult = selectApplyListWithSearchCondition(searchCondition)
+    searchResult = getApplyListBySearchCondition(searchCondition)
     log("Transaction").info("[tenant_id:%s][login_id:%s]", current_user.ssctenant.id, current_user.id)
 
     return render_template(current_app.config['TEMPLATE_THEME'] + '/super_approval/list.html',
@@ -45,7 +45,7 @@ def index(page):
 def search():
     if request.method == 'POST':
         #조회조건에 맞게 조회
-        searchResult = selectApplyListWithSearchCondition(request.form)
+        searchResult = getApplyListBySearchCondition(request.form)
         pagination = searchResult['pagination']
         log("Transaction").info("[tenant_id:%s][login_id:%s]", current_user.ssctenant.id, current_user.id)
 
@@ -168,7 +168,7 @@ def detail():
 
 
 # 조회조건에 맞게 출입신청리스트 SELECT Function
-def selectApplyListWithSearchCondition(searchCondition):
+def getApplyListBySearchCondition(searchCondition):
     page = int(searchCondition['page'])
     pages = int(searchCondition['pages'])
     offset = (pages * (page - 1)) if page != 1 else 0
@@ -180,9 +180,10 @@ def selectApplyListWithSearchCondition(searchCondition):
     selectApplyLists = db.session.query(Vcapplymaster)
 
     if (userAuth == current_app.config['AUTH_ADMIN']) or (userAuth == current_app.config['AUTH_VISIT_ADMIN']):
-        selectApplyLists = db.session.query(Vcapplymaster).filter(Vcapplymaster.use_yn == 1).order_by(Vcapplymaster.id.desc())
+        selectApplyLists = db.session.query(Vcapplymaster).filter(and_(Vcapplymaster.use_yn == 1, Vcapplymaster.tenant_id == current_user.ssctenant.id)).order_by(Vcapplymaster.id.desc())
     elif userAuth == current_app.config['AUTH_APPROVAL']:
-        selectApplyLists = db.session.query(Vcapplymaster).filter(and_(Vcapplymaster.use_yn == 1, Vcapplymaster.interview_id == current_user.id)).order_by(Vcapplymaster.id.desc())
+        selectApplyLists = db.session.query(Vcapplymaster).filter(and_(Vcapplymaster.use_yn == 1, Vcapplymaster.interview_id == current_user.id,
+                                                                       Vcapplymaster.tenant_id == current_user.ssctenant.id)).order_by(Vcapplymaster.id.desc())
 
     # 조회조건에 따른 쿼리
     if searchCondition['visit_category'] != "all":
