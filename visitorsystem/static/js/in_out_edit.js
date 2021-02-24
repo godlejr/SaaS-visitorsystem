@@ -258,7 +258,11 @@ $(document).ready(function() {
 
             //state 상태체크
             if (!state) { //remove, Rule False(Rule 무효인 상태)
-                msg = msg + rule_name + " ";
+                if(dataSet.length-1==i){
+                    msg = msg + rule_name;
+                }else{
+                    msg = msg + rule_name + " ";
+                }
                 check = true;
                 if (rule_type == '달력') {
                     nextRule.children().children('input').addClass('is-invalid');

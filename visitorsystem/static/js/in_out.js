@@ -253,7 +253,11 @@ $(document).ready(function() {
 
             //state 상태체크
             if (!state) { //remove, Rule False(Rule 무효인 상태)
-                msg = msg + rule_name + " ";
+                if(dataSet.length-1==i){
+                    msg = msg + rule_name;
+                }else{
+                    msg = msg + rule_name + " ";
+                }
                 check = true;
                 if (rule_type == '달력') {
                     nextRule.children().children('input').addClass('is-invalid');
@@ -711,7 +715,7 @@ $(document).ready(function() {
                 data.append('phone', phone);
                 data.append('type', '파일');
                 data.append('rule', rule);
-
+                console.log('upload')
                 $.ajax({
                     type: "POST",
                     enctype: 'multipart/form-data',

@@ -58,8 +58,8 @@
                         <div class="bgc-white bd bdrs-3 p-20">
 
                             <div>
-                                <input type="text"  id="visitInput" class="form-control" style="width:90%;float:left">
-                                <button type="button" id="visitSearchView" class="btn btn-primary" style="float:right">
+                                <input type="text"  id="visitInput" class="form-control" style="width:90%;float:left" placeholder="이름을 입력해주세요">
+                                <button type="button" id="visitSearchView" class="btn btn-primary" style="float:right" >
                                     <i class="search-icon ti-search pdd-right-10"></i>
                                 </button>
                             </div>
@@ -70,7 +70,7 @@
                                 <thead>
                                 <tr>
                                     <th scope="col">#</th>
-                                    <th scope="col">신청자</th>
+                                    <th scope="col" style="width:67px;">신청자</th>
                                     <th scope="col">연락처</th>
                                     <th scope="col">업체명</th>
                                     <th scope="col">업체번호</th>
@@ -93,6 +93,73 @@
     </div>
 </div>
 <br>
+
+
+
+<!--신청자조회(업체별)-->
+<!-- 신청자정보 Modal -->
+<div class="modal fade" id="visitModal2" tabindex="-1" role="dialog"
+     aria-labelledby="interviewModalCenterTitle" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title c-grey-900 mB-20" id="visitModalCenterTitle2">업체 검색</h5>
+                <button type="button" class="close visitApply" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="bgc-white bd bdrs-3 p-20">
+
+                            <div>
+                                <input type="text"  id="visitInput2" class="form-control" style="width:90%;float:left" placeholder="업체명을 입력해주세요">
+                                <button type="button" id="visitSearchView2" class="btn btn-primary" style="float:right" >
+                                    <i class="search-icon ti-search pdd-right-10"></i>
+                                </button>
+                            </div>
+                            <!-- <p>Add <code class="highlighter-rouge">.table-hover</code> to enable a hover state
+                                on table rows within a <code class="highlighter-rouge">&lt;tbody&gt;</code>.</p> -->
+
+                            <table class="table table-hover">
+                                <thead>
+                                <tr>
+                                    <th scope="col">#</th>
+                                    <th scope="col" style="width:67px;">신청자</th>
+                                    <th scope="col">연락처</th>
+                                    <th scope="col">업체명</th>
+                                    <th scope="col">업체번호</th>
+                                </tr>
+                                </thead>
+                                <tbody id="applyTbody2">
+
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary visitApply" data-dismiss="modal">확인</button>
+                <button type="button" class="btn btn-secondary visitApply" data-dismiss="modal">취소</button>
+
+            </div>
+        </div>
+    </div>
+</div>
+<br>
+
+
+
+
+
+
+
+
+
+
+
 
 
 <!-- 출입정보 Modal -->
