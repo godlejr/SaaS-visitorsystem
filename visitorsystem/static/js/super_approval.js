@@ -166,8 +166,8 @@ $(document).ready(function() {
     //출입신청 건에 포함된 방문자 및 규칙 정보리스트 Modal
 	function searchApplyMasterDetailHandler(dataSet) {
 		//작업에 대한 작업자 상세 정보 Modal에 띄어야 함.
-//		console.log(dataSet.users);
-//		console.log(dataSet.userRuleInfoList);
+		console.log(dataSet.users);
+		console.log(dataSet.userRuleInfoList);
 		users = dataSet.users;
 		userRuleInfoList = dataSet.userRuleInfoList;
 
@@ -272,7 +272,8 @@ $(document).ready(function() {
 			var edate = $('#visit_edate').val();
 			var dataSet = {};
 
-			if (!sdate || !edate) {
+			if (sdate=="" || edate=="" ) {
+                $("#nullChkModal").modal('show');
 				return;
 			}
 
@@ -324,6 +325,10 @@ $(document).ready(function() {
 			}
 
 			var dataSet = {};
+			approval_date = getFormatDate(new Date(), "");
+			approval_date = approval_date.split('/');
+			dataSet['approval_date'] = approval_date[2] + "-" + approval_date[0] + "-" + approval_date[1];
+			console.log(dataSet['approval_date']);
 			dataSet['approval_state'] = $('#status').val();
 			dataSet['lists'] = chkArray;
 

@@ -13,9 +13,8 @@ super_approval = Blueprint('super_approval', __name__)
 @super_approval.route('/', methods=['GET', 'POST'], defaults={'page': 1})
 @super_approval.route('/page/<int:page>')
 def index(page):
-    ssctenant = db.session.query(Ssctenant).filter_by(event_url=request.host).first()
     visitCategory = db.session.query(Sccode).filter(
-        and_(Sccode.tenant_id == session['tenant_id'], Sccode.class_id == '6', Sccode.use_yn == '1')).all()
+        and_(Sccode.tenant_id == current_user.ssctenant.id, Sccode.class_id == '6', Sccode.use_yn == '1')).all()
 
     today = datetime.datetime.now()
     end_date = today + datetime.timedelta(days=7)
@@ -32,11 +31,10 @@ def index(page):
     }
 
     searchResult = selectApplyListWithSearchCondition(searchCondition)
-    log("Transaction").info("[tenant_id:%s][login_id:%s]", ssctenant.tenant_id, current_user.id)
+    log("Transaction").info("[tenant_id:%s][login_id:%s]", current_user.ssctenant.id, current_user.id)
 
     return render_template(current_app.config['TEMPLATE_THEME'] + '/super_approval/list.html',
                            current_app=current_app,
-                           ssctenant=ssctenant,
                            visitCategory=visitCategory,
                            lists=searchResult['applyList'],
                            pagination=searchResult['pagination'],
@@ -46,12 +44,10 @@ def index(page):
 @super_approval.route('/search', methods=['POST'])
 def search():
     if request.method == 'POST':
-        ssctenant = db.session.query(Ssctenant).filter_by(event_url=request.host).first()
-
         #조회조건에 맞게 조회
         searchResult = selectApplyListWithSearchCondition(request.form)
         pagination = searchResult['pagination']
-        log("Transaction").info("[tenant_id:%s][login_id:%s]", ssctenant.tenant_id, current_user.id)
+        log("Transaction").info("[tenant_id:%s][login_id:%s]", current_user.ssctenant.id, current_user.id)
 
         lists = []
         for row in searchResult['applyList']:
@@ -81,12 +77,13 @@ def search():
 
 @super_approval.route('/save', methods=['POST'])
 def save():
+    approval_date = request.form['approval_date'];
     approval_state = request.form['approval_state']
     lists = request.form.getlist("lists[]")
 
     #checkList에 포한된 row 승인값 업데이트
     db.session.query(Vcapplymaster).session.query(Vcapplymaster).filter(Vcapplymaster.id.in_(lists)) \
-        .update({"approval_state": approval_state}, synchronize_session=False)
+        .update({"approval_state": approval_state, "approval_date": approval_date}, synchronize_session=False)
     db.session.commit()
 
     return jsonify({'msg': '성공적으로 처리되었습니다.',
@@ -103,7 +100,7 @@ def detail():
 
     # 1. 선택한 작업 ID에 속한 사용자 명단 및 Rule 정보 전체 추출 (Vcstackuser)
     selectApplyInfo = db.session.query(Vcvisituser).join(Scrule, Vcvisituser.rule_id == Scrule.id).\
-                                        filter(and_(Vcvisituser.tenant_id == session['tenant_id'], Vcvisituser.apply_id == id, \
+                                        filter(and_(Vcvisituser.tenant_id == current_user.ssctenant.id, Vcvisituser.apply_id == id, \
                                         Vcvisituser.use_yn == '1', Scrule.use_yn == '1'))
 
     # 2. 선택한 작업 ID에 포함된 방문자 User 리스트
@@ -118,15 +115,16 @@ def detail():
         users.append(results)
 
     # 3. 사용자들의 Rule이 유효한지 판단 및 정보 저장
-    bucketUrl = 'https://vms-tenants-rulefile-bucket-dev.s3.ap-northeast-2.amazonaws.com/'
+    bucketUrl = current_app.config['S3_BUCKET_NAME_VMS']
 
     RuleInfolist = []
     for row in selectApplyInfo.all():
         #규칙 타입이 파일 경우 s3 경로 Setting
         if row.scrule.rule_type == "파일":
-            scrulefile = db.session.query(ScRuleFile).filter(db.and_(ScRuleFile.tenant_id == session['tenant_id'],
+            scrulefile = db.session.query(ScRuleFile).filter(db.and_(ScRuleFile.tenant_id == current_user.ssctenant.id,
                                                                      ScRuleFile.use_yn == '1',
                                                                      ScRuleFile.visit_id == row.id)).first()
+            scrulefile.s3_url
             if scrulefile.s3_url != '':
                 ruleRes = '가능'
                 ruleDesc = bucketUrl + scrulefile.s3_url
@@ -179,7 +177,7 @@ def selectApplyListWithSearchCondition(searchCondition):
     userAuth = current_user.get_auth.code
 
     #일반 사용자는 조회는 Data 없도록 하기 위함. (없는 Data Select함으로써 type 형태만 갖춤)
-    selectApplyLists = db.session.query(Vcapplymaster).filter(Vcapplymaster.use_yn == -1)
+    selectApplyLists = db.session.query(Vcapplymaster)
 
     if (userAuth == current_app.config['AUTH_ADMIN']) or (userAuth == current_app.config['AUTH_VISIT_ADMIN']):
         selectApplyLists = db.session.query(Vcapplymaster).filter(Vcapplymaster.use_yn == 1).order_by(Vcapplymaster.id.desc())
@@ -196,7 +194,7 @@ def selectApplyListWithSearchCondition(searchCondition):
     if searchCondition['comp_nm'] != '':
         selectApplyLists = selectApplyLists.join(Sccompinfo).filter(Sccompinfo.comp_nm.like("%" + searchCondition['comp_nm'] + "%"))
     if searchCondition['visit_sdate'] != "" and searchCondition['visit_edate'] != "":
-        selectApplyLists = selectApplyLists.filter(and_(Vcapplymaster.visit_sdate >= searchCondition['visit_sdate'], Vcapplymaster.visit_edate <= searchCondition['visit_edate']))
+        selectApplyLists = selectApplyLists.filter(and_(Vcapplymaster.created_at >= searchCondition['visit_sdate'], Vcapplymaster.created_at <= searchCondition['visit_edate']))
 
     pagination = Pagination(page, pages, selectApplyLists.count())
     #페이지 개수

@@ -93,6 +93,24 @@
     </div>
 </div>
 
+
+<!-- 조회기간 Null일 때, 경고 알람 -->
+<div id="nullChkModal" class="modal fade bs-example-modal-md" tabindex="-1" role="dialog" aria-labelledby="classInfo" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title"> 알림 </h4>
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true"> ×</button>
+            </div>
+            <div class="modal-body">
+                <p>조회 기간을 설정하세요.</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" data-dismiss="modal"> 닫기 </button>
+            </div>
+        </div>
+    </div>
+</div>
 {% block mainContent %} {% endblock%}
 
 {% endblock %}
