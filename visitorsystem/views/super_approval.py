@@ -17,10 +17,11 @@ def index(page):
         and_(Sccode.tenant_id == current_user.ssctenant.id, Sccode.class_id == '6', Sccode.use_yn == '1')).all()
 
     today = datetime.datetime.now()
-    end_date = today + datetime.timedelta(days=7)
+    end_date = today
+    start_date = today - datetime.timedelta(days=7)
 
     searchCondition = {
-        'visit_sdate': request.args.get('visit_sdate', str(today.strftime('%Y-%m-%d'))),
+        'visit_sdate': request.args.get('visit_sdate', str(start_date.strftime('%Y-%m-%d'))),
         'visit_edate': request.args.get('visit_edate', str(end_date.strftime('%Y-%m-%d'))),
         'visit_category': request.args.get('visit_category', 'all'),
         'approval_state': request.args.get('approval_state', 'all'),

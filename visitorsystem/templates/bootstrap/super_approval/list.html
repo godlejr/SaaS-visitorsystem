@@ -37,7 +37,7 @@
         <div class="masonry-item col-md-12">
             <div class="bgc-white bd p-20 col-md-12">
                 <div class="content-top mB-5">
-                    <div class="page-header"><h5 class="c-grey-900"> 감독부서업무 > 감독부서 승인 </h5><br></div>
+                    <div class="page-header"><h5 class="c-grey-900"> 방문승인 > 접견자 승인 </h5><br></div>
                 </div>
                 <div class="mT-30">
                 </div>
@@ -123,9 +123,9 @@
                             <th style="width: 30px;"><input type="checkbox" id="checkall"/></th>
                             <th style="width: 80px;" class="numeric">유형</th>
                             <th style="width: 130px;" class="numeric">업체명</th>
-                            <th style="width: 230px;" class="numeric">출입신청명</th>
+                            <th style="width: 230px;" class="numeric">방문목적</th>
                             <th style="width: 120px;" class="numeric">신청자</th>
-                            <th style="width: 120px;" class="numeric">출입자정보</th>
+                            <th style="width: 120px;" class="numeric">방문자 정보</th>
                             <th style="width: 120px;" class="numeric">시작일</th>
                             <th style="width: 120px;" class="numeric">종료일</th>
                             <th style="width: 110px;" class="numeric">신청사업장</th>
@@ -145,10 +145,10 @@
                             <td data-title="선택"><input type="checkbox" name="chk" value1={{list.id}} value2={{list.approval_state}}></td>
                             <td data-title="방문유형">{{list.visit_category}}</td>
                             <td data-title="업체명">{{list.sccompinfo.comp_nm}}</td>
-                            <td data-title="출입신청명">{{list.visit_purpose}}</td>
+                            <td data-title="방문목적">{{list.visit_purpose}}</td>
                             <td data-title="신청자">{{list.applicant}}</td>
-                            <td data-title="출입자정보" style="text-decoration: underline;" data-toggle="modal"
-                                class="guestInfo" name="guestInfo" value={{list.id}}>출입자정보
+                            <td data-title="방문자 정보" style="text-decoration: underline;" data-toggle="modal"
+                                class="guestInfo" name="guestInfo" value={{list.id}}>방문자 정보
                             </td>
                             <td data-title="시작일">{{list.visit_sdate}}</td>
                             <td data-title="종료일">{{list.visit_edate}}</td>

@@ -94,9 +94,9 @@ $(document).ready(function() {
 				htmlData += '<td data-title="선택"><input type="checkbox" name="chk" value1=' + dataSet[i].id + ' value2=' + dataSet[i].approval_state + '></td>';
 				htmlData += '<td data-title="방문유형">' + dataSet[i].visit_category + '</td>';
 				htmlData += '<td data-title="업체명">' + dataSet[i].comp_nm + '</td>';
-				htmlData += '<td data-title="출입신청명">' + dataSet[i].visit_purpose + '</td>';
+				htmlData += '<td data-title="방문목적">' + dataSet[i].visit_purpose + '</td>';
 				htmlData += '<td data-title="신청자">' + dataSet[i].applicant + '</td>';
-				htmlData += '<td data-title="출입자정보" style="text-decoration: underline;" data-toggle="modal" class="guestInfo" name="guestInfo" value=' + dataSet[i].id + '>출입자정보</td>';
+				htmlData += '<td data-title="방문자 정보" style="text-decoration: underline;" data-toggle="modal" class="guestInfo" name="guestInfo" value=' + dataSet[i].id + '>방문자 정보</td>';
 				htmlData += '<td data-title="시작일">' + dataSet[i].visit_sdate + '</td>';
 				htmlData += '<td data-title="종료일">' + dataSet[i].visit_edate + '</td>';
 				htmlData += '<td data-title="신청사업장">' + dataSet[i].site_nm + '</td>';
@@ -137,7 +137,7 @@ $(document).ready(function() {
         var userRuleInfoHtml = '';
         var no = 0;
 		for (var i = 0; i < userRuleInfoList.length; i++) {
-            if((users[idx].name != userRuleInfoList[i].name) || (users[idx].phone != userRuleInfoList[i].phone)) {
+            if( users[idx].name != userRuleInfoList[i].name || (users[idx].phone != userRuleInfoList[i].phone) ) {
                 continue;
             }
             no += 1;
@@ -205,7 +205,7 @@ $(document).ready(function() {
 		userRuleInfoHtml = userRuleInfoDetail(0, users, userRuleInfoList);
 		$('#userRuleTable > tbody').html(userRuleInfoHtml);
 
-		$(".userInfomodalBody tr").click(function() {
+		$(".userInfomodalBody tr").unbind('click').click(function() {
             var idx = $(this).children().eq(0).text();
             idx = (parseInt(idx)-1);
             userRuleInfoHtml = userRuleInfoDetail(idx, users, userRuleInfoList);
@@ -216,8 +216,8 @@ $(document).ready(function() {
     //날짜 초기값 세팅
 	function getFormatDate(date, op) {
         //조회기간 오늘 ~ 오늘+7
-        if (op == "edate")
-            date.setDate(date.getDate() + 7);
+        if (op == "sdate")
+            date.setDate(date.getDate() - 7);
 
         var y = date.getFullYear();
         var m = (1 + date.getMonth());
@@ -227,7 +227,7 @@ $(document).ready(function() {
         date = m + '/' + d + '/' + y;
         return date;
     }
-    $('#visit_sdate').val(getFormatDate(new Date(), ""));
+    $('#visit_sdate').val(getFormatDate(new Date(), "sdate"));
     $('#visit_edate').val(getFormatDate(new Date(), "edate"));
 
     //체크 개수, 승인, 반려 Modal 창에 값 전달하는 부분
@@ -252,13 +252,13 @@ $(document).ready(function() {
 	//event리스너
 	function init() {
 	    //Modal 닫기
-	    $('.exitModal').click(function() {
+	    $('.exitModal').unbind('click').click(function() {
 	        var modalName = '#'+$(this).val();
             $(modalName).hide();
         });
 
 		//체크박스 전체 선택,해제
-		$("#checkall").click(function() {
+		$("#checkall").unbind('click').click(function() {
 			if ($("#checkall").prop("checked")) {
 				$("input[name=chk]").prop("checked", true);
 			} else {
@@ -267,7 +267,7 @@ $(document).ready(function() {
 		});
 
         //조회시, 달력 포맷 수정
-		$("#searchBtn").click(function() {
+		$("#searchBtn").unbind('click').click(function() {
 			var sdate = $('#visit_sdate').val();
 			var edate = $('#visit_edate').val();
 			var dataSet = {};
@@ -291,18 +291,18 @@ $(document).ready(function() {
 			apiCallPost(urlMake('SEARCH'), setSearchFormHandler, dataSet);
 		});
 
-		$("#agree").click(function() {
+		$("#agree").unbind('click').click(function() {
 			$('#status').val("승인");
 			modalOpen($("#agree").html());
 		});
 
-		$("#reject").click(function() {
+		$("#reject").unbind('click').click(function() {
 			$('#status').val("반려");
 			modalOpen($("#reject").html());
 		});
 
 		//승인 및 반려 버튼 눌렀을 때, 체크된 작업ID에 대해 승인 및 반려
-		$("#okBtn").click(function() {
+		$("#okBtn").unbind('click').click(function() {
 			$('#signModal').modal('hide');
 
 			var obj = $("[name=chk]");
@@ -336,12 +336,13 @@ $(document).ready(function() {
 		});
 
         //출입신청내역 중 출입상세정보 출력
-		$("[name=guestInfo]").click(function() {
+		$("[name=guestInfo]").unbind('click').click(function() {
 			var id = $(this).attr('value');
 			var dataSet = {};
 			dataSet['id'] = id;
-			dataSet['sdate'] = $(this).closest("tr").children().eq(6).text();
-			dataSet['edate'] = $(this).closest("tr").children().eq(7).text();
+
+			dataSet['sdate'] = $(this).closest("tr").children("[data-title=시작일]").text();
+			dataSet['edate'] = $(this).closest("tr").children("[data-title=종료일]").text();
 
 			apiCallPost(urlMake('DETAIL'), searchApplyMasterDetailHandler, dataSet);
 		});
