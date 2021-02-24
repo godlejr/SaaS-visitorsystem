@@ -133,7 +133,7 @@ def edit(number):
                         db.and_(ScRuleFile.tenant_id == tenant_id, ScRuleFile.visit_id == vcvisituser.id,
                                 ScRuleFile.use_yn == '1')).first()
                     dict[
-                        'bucketUrl'] = 'https://vms-tenants-rulefile-bucket-dev.s3.ap-northeast-2.amazonaws.com/' + scruleFile.s3_url
+                        'bucketUrl'] = 'https://vms-tenants-bucket-dev.s3.ap-northeast-2.amazonaws.com/' + scruleFile.s3_url
 
                 obj['rule'].append(dict)
 
@@ -260,7 +260,7 @@ def save():
                         scruleFile.visit_id = vcvisituser.id  # 출입신청 방문 아이디
                         scruleFile.file_name = rule['bucketUrl'].split('/')[-1]  # 파일명
                         scruleFile.s3_url = rule['bucketUrl'].split(
-                            'https://vms-tenants-rulefile-bucket-dev.s3.ap-northeast-2.amazonaws.com/')[-1]  # 버킷주소
+                            'https://vms-tenants-bucket-dev.s3.ap-northeast-2.amazonaws.com/')[-1]  # 버킷주소
                         db.session.add(scruleFile)
                         db.session.commit()
 
@@ -374,7 +374,7 @@ def create():
                     scruleFile.visit_id = vcvisituser.id  # 출입신청 방문 아이디
                     scruleFile.file_name = rule['bucketUrl'].split('/')[-1]  # 파일명
                     scruleFile.s3_url = rule['bucketUrl'].split(
-                        'https://vms-tenants-rulefile-bucket-dev.s3.ap-northeast-2.amazonaws.com/')[-1]  # 버킷주소
+                        'https://vms-tenants-bucket-dev.s3.ap-northeast-2.amazonaws.com//')[-1]  # 버킷주소
                     db.session.add(scruleFile)
                     db.session.commit()
 
@@ -521,7 +521,7 @@ def fileUpload():
                                                          Scuser.name == current_user.name,
                                                          Scuser.phone == current_user.phone,
                                                          Scuser.use_yn == '1')).first()
-        tenantId = tenant_id  # 테넌트아이디
+        tenantId = 'VMS_' + str(tenant_id)  # 테넌트아이디
         loginId = scuser.login_id  # 신청자 로그인아이디
         name = request.form['name']  # 사용자이름
         phone = request.form['phone']  # 휴대폰번호
@@ -534,6 +534,7 @@ def fileUpload():
         bucketUrl = str(
             tenantId) + '/data/user/' + loginId + '/files/rule/' + name + phone + '/' + uuid + filename + '/' + filename
 
+        print(bucketUrl)
         # STEP02. S3 Upload
         s3 = boto3.client('s3', aws_access_key_id=AWS_ACCESS_KEY, aws_secret_access_key=AWS_SECRET_KEY)
         s3.put_object(
@@ -567,7 +568,7 @@ def fileUpload():
                 db.session.add(scrulefile)
                 db.session.commit()
 
-        bucketUrl = 'https://vms-tenants-rulefile-bucket-dev.s3.ap-northeast-2.amazonaws.com/' + bucketUrl
+        bucketUrl = 'https://vms-tenants-bucket-dev.s3.ap-northeast-2.amazonaws.com/' + bucketUrl
         return jsonify({'msg': bucketUrl})
 
 
@@ -610,7 +611,7 @@ def ruleValidate():
                                                                              ScRuleFile.visit_stack_id == row.id
                                                                              )).first()
 
-                    bucketUrl = 'https://vms-tenants-rulefile-bucket-dev.s3.ap-northeast-2.amazonaws.com/' + scrulefile.s3_url
+                    bucketUrl = 'https://vms-tenants-bucket-dev.s3.ap-northeast-2.amazonaws.com/' + scrulefile.s3_url
                     dict['bucketUrl'] = bucketUrl
 
                 dict['state'] = True
@@ -651,7 +652,6 @@ def ruleValidateBefore():
 
             lists.append(dict)
 
-
     # Step02.tenant에 등록된 RULE을 기준으로, name/phone/유효일자를 검색하는 로직, 규칙시작일(s_date) <=방문시작일(vsdate) / 규칙종료일(e_date) >=방문종료일(vedate) 검증
     print(vsdate)
     print(vedate)
@@ -677,7 +677,7 @@ def ruleValidateBefore():
                                                                              ScRuleFile.visit_stack_id == row.id
                                                                              )).first()
 
-                    bucketUrl = 'https://vms-tenants-rulefile-bucket-dev.s3.ap-northeast-2.amazonaws.com/' + scrulefile.s3_url
+                    bucketUrl = 'https://vms-tenants-bucket-dev.s3.ap-northeast-2.amazonaws.com/' + scrulefile.s3_url
                     dict['bucketUrl'] = bucketUrl
 
                 dict['state'] = True

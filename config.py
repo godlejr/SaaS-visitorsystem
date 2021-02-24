@@ -72,7 +72,7 @@ class Config(object):
     #S3 Upload Key
     AWS_ACCESS_KEY = "AKIAUOEDDROYNOE74JYR"
     AWS_SECRET_KEY = "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"
-    BUCKET_NAME = "vms-tenants-rulefile-bucket-dev"
+    BUCKET_NAME = "vms-tenants-bucket-dev"
 
 
 

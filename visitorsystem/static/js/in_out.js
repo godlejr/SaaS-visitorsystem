@@ -139,7 +139,7 @@ $(document).ready(function() {
                 append = append + `<td class='mediaTable mediaTableTbodyTd'>
                                        <div class="input-group resposiveTd">
                                        <i class="ti-calendar mT-5 p-5"></i>
-                                       <input type="text" class="form-control start-date rule-calendar leave rule" placeholder="달력" data-provide="datepicker" name ="inout_sdate" id="inout_sdate" rule=${ruleName} readonly style="background-color:white">
+                                       <input type="text" class="form-control start-date rule-calendar leave rule" placeholder="달력" data-provide="datepicker" name ="inout_sdate"  rule=${ruleName} readonly style="background-color:white">
                                        </div>
                                     </td> `
             } else if (type == '파일') {
@@ -325,6 +325,7 @@ $(document).ready(function() {
     function userSearchHandler(data, option) {
         var msg = data.msg; //post 결과메시지
         var dataSet = option.dataSet;
+
          if(msg[0].msg=='-1'){
                  $("#alertModal").show();
                  $("#modalContent").text('');
@@ -607,13 +608,13 @@ $(document).ready(function() {
                 $('#tableBody tr').each(function() {
                     var cellItem = $(this).find(":input")
                     var itemObj = new Object()
-                    itemObj.name = cellItem.eq(1).val();
-                    itemObj.phone = cellItem.eq(2).val();
+                    itemObj.name = cellItem.eq(1).val()
+                    itemObj.phone = cellItem.eq(2).val()
+
                     if(itemObj.name.length==0 || itemObj.phone.length ==0)
-                        return;
+                            return;
 
                     var combination = itemObj.name + itemObj.phone;
-                    key[combination] = 0;
 
                     if (key[combination]) {
                           $("#alertModal").show();
@@ -624,7 +625,7 @@ $(document).ready(function() {
                         check = true;
                         return;
                     } else {
-                        key[combination] +=1;
+                             key[combination] = true;
                     }
                 });
 
@@ -798,28 +799,44 @@ $(document).ready(function() {
         apiCallPost(urlMake('WORKSPACE_SEARCH'), workspaceSearchHandler)
 
 
-
         var date = new Date();
         var year = date.getFullYear();
         var month = new String(date.getMonth()+1);
         var day = new String(date.getDate());
 
+
         var date2 = new Date();
+        date2.setDate(date2.getDate() + 7);
         var year2 = date2.getFullYear();
         var month2 = new String(date2.getMonth()+1);
-        var day2 = new String(date2.getDate()+7);
+        var day2 = new String(date2.getDate());
 
         if (month.length == 1)
             month = '0' + month;
 
+        if (day.length == 1)
+            day = '0' + day;
+
         if (month2.length == 1)
             month2 = '0' + month2;
+
+        if (day2.length == 1)
+            day2 = '0' + day2;
 
         var sdate = month + "/" + day + "/" + year;
         var edate = month2 + "/" + day2 + "/" + year2;
 
         $('#inout_sdate').val(sdate);
         $('#inout_edate').val(edate);
+
+
+        function onDateChanged(){
+            alert('date')
+        }
+        $('input[name=inout_sdate]').on('dp.change',onDateChanged);
+
+
+
 
     }
     init();
