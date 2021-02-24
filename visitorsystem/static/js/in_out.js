@@ -370,14 +370,14 @@ $(document).ready(function() {
 
         if (msg[0].msg=='0') {
             //empty user
-//            console.log('------userSearchHandler(사용자없음)----------------------')
+            console.log('------userSearchHandler(사용자없음)----------------------')
             option.closest('tr').children().eq(-1).attr('is-user', '0'); //신규 user
-//            console.log('------userSearchHandler----------------------')
+            console.log('------userSearchHandler----------------------')
         } else {
-//            console.log('------userSearchHandler(사용자 있음)----------------------')
+            console.log('------userSearchHandler(사용자 있음)----------------------')
             option.closest('tr').children().eq(-1).attr('is-user', '1'); //등록 user
             apiCallPost(urlMake('RULE_VALID'), rulevalidHandler, dataSet, option);
-//            console.log('------userSearchHandler----------------------')
+            console.log('------userSearchHandler----------------------')
         }
     }
 

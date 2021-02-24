@@ -260,7 +260,7 @@ def save():
                         scruleFile.rule_id = scrule.id  # 규칙 아이디
                         scruleFile.visit_id = vcvisituser.id  # 출입신청 방문 아이디
                         scruleFile.file_name = rule['bucketUrl'].split('/')[-1]  # 파일명
-                        scruleFile.s3_url = rule['bucketUrl'].split('/')[-1]  # 버킷주소
+                        scruleFile.s3_url = rule['bucketUrl'].split(current_app.config['S3_BUCKET_NAME_VMS'])[-1]  # 버킷주소
 
                         db.session.add(scruleFile)
                         db.session.commit()
@@ -374,7 +374,7 @@ def create():
                     scruleFile.rule_id = scrule.id  # 규칙 아이디
                     scruleFile.visit_id = vcvisituser.id  # 출입신청 방문 아이디
                     scruleFile.file_name = rule['bucketUrl'].split('/')[-1]  # 파일명
-                    scruleFile.s3_url = rule['bucketUrl'].split('/')[-1]  # 버킷주소
+                    scruleFile.s3_url = rule['bucketUrl'].split(current_app.config['S3_BUCKET_NAME_VMS'])[-1]  # 버킷주소
 
                     db.session.add(scruleFile)
                     db.session.commit()
