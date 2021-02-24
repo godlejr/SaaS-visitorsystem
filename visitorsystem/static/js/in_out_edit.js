@@ -205,6 +205,37 @@ $(document).ready(function() {
 
     }
 
+     //업체조회(HHJ)
+    function sccompSearchHandler(dataSet){
+        dataSet = dataSet.msg
+        var str = ''
+        for (var i = 0; i < dataSet.length; i++) {
+            var name = dataSet[i].name;
+            var phone = dataSet[i].phone;
+            var comp_nm = dataSet[i].comp_nm;
+            var biz_no = dataSet[i].biz_no;
+            $('#applyTbody2').children().remove();
+            var temp = `<tr class='applyTtr2'>
+                                 <th scope="row">${i+1}</th>
+                                 <td>${name}</td>
+                                 <td>${phone}</td>
+                                 <td>${comp_nm}</td>
+                                 <td>${biz_no}</td>
+                            </tr>`;
+            str += temp;
+        }
+
+        $('#applyTbody2').append(str);
+        $('.applyTtr2').click(function() {
+            $('#applicant_name').val($(this).children('td:eq(0)').text());
+            $('#applicant_phone').val($(this).children('td:eq(1)').text());
+            $('#applicant_comp_nm').val($(this).children('td:eq(2)').text());
+            $('#applicant_biz_no').val($(this).children('td:eq(3)').text());
+
+        });
+
+    }
+
     //감독자조회 컨트롤러
     function interViewSearchHandler(dataSet) {
         dataSet = dataSet.msg
@@ -508,7 +539,7 @@ $(document).ready(function() {
 
             //출입자 정보 check
             check = $('#tableBody tr').length;
-               if (check.length == 0) {
+               if (check== 0) {
                 $("#alertModal").show();
                 $("#modalContent").text('');
                 $("#modalContent").text('한 명 이상의 접견자를 추가해주세요');
@@ -825,6 +856,16 @@ $(document).ready(function() {
             apiCallPost(urlMake('APPLY_SEARCH'), applySearchHandler, dataSet)
         });
 
+        //업체조회 모달(HHJ)
+        $('#visitSearchView2').click(function(e) {
+            var dataSet = {};
+            var compsearchinput = $('#visitInput2').val();
+            dataSet['compSearchInput'] = compsearchinput;
+
+            apiCallPost(urlMake('COMP_SEARCH'), sccompSearchHandler, dataSet)
+        });
+
+
         //접견자조회 모달
         $('#interviewSearch').click(function(e) {
             var dataSet = {};
@@ -842,6 +883,14 @@ $(document).ready(function() {
         $('.visitApply').click(function(e){
             $('#applyTbody').children().remove();
             $('#visitInput').val('');
+        });
+
+
+
+        //업체정보 테이블 초기화(HHJ)
+        $('.visitApply2').click(function(e){
+            $('#applyTbody2').children().remove();
+            $('#visitInput2').val('');
         });
 
 

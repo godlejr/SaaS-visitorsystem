@@ -132,8 +132,9 @@ def edit(number):
                     scruleFile = db.session.query(ScRuleFile).filter(
                         db.and_(ScRuleFile.tenant_id == tenant_id, ScRuleFile.visit_id == vcvisituser.id,
                                 ScRuleFile.use_yn == '1')).first()
-                    dict[
-                        'bucketUrl'] = current_app.config['S3_BUCKET_NAME_VMS'] + scruleFile.s3_url
+
+                    dict['bucketUrl'] = current_app.config['S3_BUCKET_NAME_VMS'] + scruleFile.s3_url
+
 
                 obj['rule'].append(dict)
 
@@ -259,8 +260,8 @@ def save():
                         scruleFile.rule_id = scrule.id  # 규칙 아이디
                         scruleFile.visit_id = vcvisituser.id  # 출입신청 방문 아이디
                         scruleFile.file_name = rule['bucketUrl'].split('/')[-1]  # 파일명
-                        scruleFile.s3_url = rule['bucketUrl'].split(
-                            current_app.config['S3_BUCKET_NAME_VMS'],'/')[-1]  # 버킷주소
+                        scruleFile.s3_url = rule['bucketUrl'].split('/')[-1]  # 버킷주소
+
                         db.session.add(scruleFile)
                         db.session.commit()
 
@@ -373,10 +374,8 @@ def create():
                     scruleFile.rule_id = scrule.id  # 규칙 아이디
                     scruleFile.visit_id = vcvisituser.id  # 출입신청 방문 아이디
                     scruleFile.file_name = rule['bucketUrl'].split('/')[-1]  # 파일명
-                    scruleFile.s3_url = rule['bucketUrl'].split(
-                        current_app.config['S3_BUCKET_NAME_VMS'],'/')[-1]  # 버킷주소
-                    print(rule['bucketUrl'])
-                    print(scruleFile.s3_url)
+                    scruleFile.s3_url = rule['bucketUrl'].split('/')[-1]  # 버킷주소
+
                     db.session.add(scruleFile)
                     db.session.commit()
 
@@ -764,7 +763,22 @@ def compSearch():
 
             lists.append(sccompinfo)
 
-        return jsonify({'msg': lists});
+        lists2 = []
+
+        for list in lists:
+
+            for row in db.session.query(Scuser).filter(
+                    db.and_(Scuser.tenant_id == tenant_id, Scuser.biz_id == list['biz_id'], Scuser.user_type == '1',
+                            Scuser.use_yn == '1')).all():
+                scuser = {
+                    "name": row.name,
+                    "phone": row.phone,
+                    "comp_nm": row.sccompinfo.comp_nm,
+                    "biz_no": row.sccompinfo.biz_no
+                }
+                lists2.append(scuser)
+
+        return jsonify({'msg': lists2});
 
 
 # 차량조회

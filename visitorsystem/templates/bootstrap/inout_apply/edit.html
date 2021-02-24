@@ -33,6 +33,14 @@
                             <input type="text"  class="form-control" name="applicant_phone"  value="{{vcapplymaster.phone}}" id="applicant_phone" readonly style="background-color:white">
                         </div>
 
+                        <div class="form-group col-md-2" >
+                            <label style="visibility:hidden">&nbsp</label>
+                            <button type="button" style="display:block" class="btn btn-primary"  data-toggle="modal" data-target="#visitModal"
+                                    {{block}}>
+                                <i class="search-icon ti-search pdd-right-10"></i>
+                            </button>
+                        </div>
+
                     </div>
 
                     <div class="form-row">
@@ -46,7 +54,8 @@
                         </div>
                         <div class="form-group col-md-2" >
                             <label style="visibility:hidden">&nbsp</label>
-                            <button type="button" style="display:block" class="btn btn-primary"   data-toggle="modal" data-target="#visitModal" {{block}}>
+                            <button type="button" style="display:block" class="btn btn-primary"  data-toggle="modal" data-target="#visitModal2"
+                                    {{block}}>
                                 <i class="search-icon ti-search pdd-right-10"></i>
                             </button>
                         </div>
@@ -66,422 +75,483 @@
                 <hr>
 
 
-                    <div class="form-row">
-                        <div class="form-group col-md-2"><label class="fw-500">방문기간</label>
-                            <div class="timepicker-input input-icon form-group">
-                                <div class="input-group">
-                                    <i class="ti-calendar mT-5 p-5"></i>
-                                    <input type="text" class="form-control bdc-grey-200 start-date" placeholder="시작일" data-provide="datepicker" name ="inout_sdate" id="inout_sdate" value="{{applyDate.sdate}}" readonly style="background-color:white" {{block}}>
-                                </div>
+                <div class="form-row">
+                    <div class="form-group col-md-2"><label class="fw-500">방문기간</label>
+                        <div class="timepicker-input input-icon form-group">
+                            <div class="input-group">
+                                <i class="ti-calendar mT-5 p-5"></i>
+                                <input type="text" class="form-control bdc-grey-200 start-date" placeholder="시작일" data-provide="datepicker" name ="inout_sdate" id="inout_sdate" value="{{applyDate.sdate}}" readonly style="background-color:white" {{block}}>
                             </div>
                         </div>
+                    </div>
 
-                        <div class="form-group col-md-2"><label class="fw-500" style="visibility:hidden">&nbsp</label>
-                            <div class="timepicker-input input-icon form-group">
-                                <div class="input-group">
-                                    <i class="ti-calendar mT-5 p-5"></i>
-                                    <input type="text" class="form-control bdc-grey-200 start-date" placeholder="종료일" data-provide="datepicker" name ="inout_edate" id="inout_edate"  value="{{applyDate.edate}}" readonly style="background-color:white" {{block}}>
-                                </div>
+                    <div class="form-group col-md-2"><label class="fw-500" style="visibility:hidden">&nbsp</label>
+                        <div class="timepicker-input input-icon form-group">
+                            <div class="input-group">
+                                <i class="ti-calendar mT-5 p-5"></i>
+                                <input type="text" class="form-control bdc-grey-200 start-date" placeholder="종료일" data-provide="datepicker" name ="inout_edate" id="inout_edate"  value="{{applyDate.edate}}" readonly style="background-color:white" {{block}}>
                             </div>
                         </div>
+                    </div>
 
-                        <div class="form-group col-md-2">
-                            <label for="inout_purpose_type">방문목적</label>
-                            <select id="inout_purpose_type" name="input_purpose_type" class="form-control" {{block}} style="background-color:white">
-                                    {% for visitCategory in visitCategorys%}
-                                        {% if catagory == visitCategory.code_nm %}
-                                            <option value='{{visitCategory.code_nm}}' selected>{{visitCategory.code_nm}}</option>
-                                        {% else %}
-                                            <option value='{{visitCategory.code_nm}}'>{{visitCategory.code_nm}}</option>
-                                        {% endif %}
-                                    {% endfor %}
+                    <div class="form-group col-md-2">
+                        <label for="inout_purpose_type">방문목적</label>
+                        <select id="inout_purpose_type" name="input_purpose_type" class="form-control" {{block}} style="background-color:white">
+                            {% for visitCategory in visitCategorys%}
+                            {% if catagory == visitCategory.code_nm %}
+                            <option value='{{visitCategory.code_nm}}' selected>{{visitCategory.code_nm}}</option>
+                            {% else %}
+                            <option value='{{visitCategory.code_nm}}'>{{visitCategory.code_nm}}</option>
+                            {% endif %}
+                            {% endfor %}
 
-                            </select>
-                        </div>
+                        </select>
+                    </div>
 
-                        <div class="form-group col-md-3">
-                            <label for="inout_title" style="visibility:hidden">&nbsp</label><input type="text"  class="form-control" name="inout_title" id="inout_title" value="{{vcapplymaster.visit_purpose}}" placeholder = '방문명을 입력해주세요' style="background-color:white" {{block}}>
-                        </div>
+                    <div class="form-group col-md-3">
+                        <label for="inout_title" style="visibility:hidden">&nbsp</label><input type="text"  class="form-control" name="inout_title" id="inout_title" value="{{vcapplymaster.visit_purpose}}" placeholder = '방문명을 입력해주세요' style="background-color:white" {{block}}>
+                    </div>
 
+                </div>
+
+
+                <div class="form-row">
+                    <div class="form-group col-md-2"><label for="inout_location">방문지역</label>
+                        <select  class="form-control"  id="inout_location" name="inout_location" {{block}} style="background-color:white">
+                            {% for location in locations%}
+                            {% if site_nm == location.code_nm %}
+                            <option code = '{{location.code}}' value='{{location.code_nm}}' selected>{{location.code_nm}}</option>
+                            {% else %}
+                            <option  code = '{{location.code}}' value='{{location.code_nm}}'>{{location.code_nm}}</option>
+                            {% endif %}
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <div class="form-group col-md-2"><label for="inout_location2">&nbsp</label>
+                        <select  class="form-control"  id="inout_location2" name="inout_location2" {{block}} style="background-color:white">
+                            {% for door in doors%}
+                            {% if site_nm2 == door.code_nm %}
+                            <option code = '{{door.code}}' value='{{door.code_nm}}' selected>{{door.code_nm}}</option>
+                            {% else %}
+                            <option  code = '{{door.code}}' value='{{door.code_nm}}'>{{door.code_nm}}</option>
+                            {% endif %}
+                            {% endfor %}
+
+                        </select>
                     </div>
 
 
-                    <div class="form-row">
-                        <div class="form-group col-md-2"><label for="inout_location">방문지역</label>
-                            <select  class="form-control"  id="inout_location" name="inout_location" {{block}} style="background-color:white">
-                                      {% for location in locations%}
-                                        {% if site_nm == location.code_nm %}
-                                            <option code = '{{location.code}}' value='{{location.code_nm}}' selected>{{location.code_nm}}</option>
-                                        {% else %}
-                                            <option  code = '{{location.code}}' value='{{location.code_nm}}'>{{location.code_nm}}</option>
-                                        {% endif %}
-                                    {% endfor %}
-                            </select>
-                        </div>
+                </div>
 
-                        <div class="form-group col-md-2"><label for="inout_location2">&nbsp</label>
-                            <select  class="form-control"  id="inout_location2" name="inout_location2" {{block}} style="background-color:white">
-                                {% for door in doors%}
-                                        {% if site_nm2 == door.code_nm %}
-                                            <option code = '{{door.code}}' value='{{door.code_nm}}' selected>{{door.code_nm}}</option>
-                                        {% else %}
-                                            <option  code = '{{door.code}}' value='{{door.code_nm}}'>{{door.code_nm}}</option>
-                                        {% endif %}
-                                    {% endfor %}
-
-                            </select>
-                        </div>
+                <div class="form-row">
+                    <div class="form-group col-md-6">
+                        <label for="inout_purpose_desc">상세기술</label>
+                        <textarea class="form-control" id="inout_purpose_desc"  name="inout_purpose_desc" style="height:100px; background-color:white"  {{block}}/>{{vcapplymaster.visit_desc}}</textarea>
 
 
-                    </div>
-
-                    <div class="form-row">
-                        <div class="form-group col-md-6">
-                            <label for="inout_purpose_desc">상세기술</label>
-                            <textarea class="form-control" id="inout_purpose_desc"  name="inout_purpose_desc" style="height:100px; background-color:white"  {{block}}/>{{vcapplymaster.visit_desc}}</textarea>
-
-
-                        </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
+</div>
 
 
-    <!--SECTION03-->
+<!--SECTION03-->
 
-    <div class="row gap-20 masonry pos-r">
-        <div class="masonry-sizer col-md-12"></div>
-        <div class="masonry-item col-md-12">
-            <div class="bgc-white p-20 bd">
-                <h6 class="c-grey-900">접견자 정보</h6>
-                <hr>
+<div class="row gap-20 masonry pos-r">
+    <div class="masonry-sizer col-md-12"></div>
+    <div class="masonry-item col-md-12">
+        <div class="bgc-white p-20 bd">
+            <h6 class="c-grey-900">접견자 정보</h6>
+            <hr>
 
-                <div class="mT-30">
-                    <div class="form-row">
-                        <div class="form-group col-md-1"><label for="interviewer_name">부서</label> <input type="text"  class="form-control" name="interviewer_dept" id="interviewer_dept" value="{{scuser.dept_nm}}" readonly style="background-color:white">
-                        </div>
-                    </div>
-
-                    <div class="form-row">
-                        <div class="form-group col-md-1"><label for="interviewer_name">감독자</label> <input type="text"  class="form-control" name="interviewer_name" id="interviewer_name"  value="{{scuser.name}}" readonly style="background-color:white" ></div>
-                        <div class="form-group col-md-3"><label for="interviewer_phone">연락처</label> <input type="text"  class="form-control" name="interviewer_phone" id="interviewer_phone" value="{{scuser.phone}}"readonly style="background-color:white"></div>
-                        <div class="form-group col-md-2" >
-                            <label style="visibility:hidden">&nbsp</label>
-                            <button type="button" style="display:block;" class="btn btn-primary"  data-toggle="modal" data-target="#interviewModal" {{block}}>
-                                <i class="search-icon ti-search pdd-right-10"></i>
-                            </button>
-                        </div>
+            <div class="mT-30">
+                <div class="form-row">
+                    <div class="form-group col-md-1"><label for="interviewer_name">부서</label> <input type="text"  class="form-control" name="interviewer_dept" id="interviewer_dept" value="{{scuser.dept_nm}}" readonly style="background-color:white">
                     </div>
                 </div>
 
+                <div class="form-row">
+                    <div class="form-group col-md-1"><label for="interviewer_name">감독자</label> <input type="text"  class="form-control" name="interviewer_name" id="interviewer_name"  value="{{scuser.name}}" readonly style="background-color:white" ></div>
+                    <div class="form-group col-md-3"><label for="interviewer_phone">연락처</label> <input type="text"  class="form-control" name="interviewer_phone" id="interviewer_phone" value="{{scuser.phone}}"readonly style="background-color:white"></div>
+                    <div class="form-group col-md-2" >
+                        <label style="visibility:hidden">&nbsp</label>
+                        <button type="button" style="display:block;" class="btn btn-primary"  data-toggle="modal" data-target="#interviewModal" {{block}}>
+                            <i class="search-icon ti-search pdd-right-10"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+
+<!--SECTION04-->
+<div class="row gap-20 masonry pos-r">
+    <div class="masonry-sizer col-md-12"></div>
+    <div class="masonry-item col-md-12">
+        <div class="bgc-white p-20 bd">
+            <div class="mT-30">
+
+                <div class="form-row">
+                    <p class="h4  text-danger" id="errorMsg"></p>
+                    <button type="button" style="display:block; margin-left:auto; margin-bottom:2px; margin-right:2px;" id="addUser"class="btn btn-primary text-center text-right" {{block}} >
+                        <i class="ti-plus"></i>
+                    </button>
+
+                    <button type="button" style="display:block; margin-bottom:2px;" id="delUser" class="btn btn-danger text-right" {{block}}>
+                        <i class="ti-minus"></i>
+                    </button>
+
+                    <div id="table" class="table-responsive mediaDiv" {{block}}>
+                        <table name="user_info"  class="table table-bordered mediaTable" cellspacing="0" width="100%" >
+                            <thead class="mediaTable" id="'mediaThead">
+                            <tr id="thead" class="mediaTable mediaTheadTr">
+                                <th style="width: 15px;" class="mediaTable"></th>
+                                <th style="" class="mediaTable">방문자</th>
+                                <th style="" class="mediaTable">휴대폰번호</th>
+                                <th style="" class="mediaTable">차량종류</th>
+                                <th style="" class="mediaTable">차량번호</th>
+                                {% for rule in currentRule%}
+                                <th style="" class="mediaTable">{{rule}}</th>
+                                {% endfor %}
+                            </tr>
+                            </thead>
+                            <tbody id="tableBody" class="mediaTable">
+
+
+                            {% for tr in tableList%}
+                            <tr class="hide mediaTable mediaTableTbodyTr" >
+                                <td class='mediaTable mediaTableTbodyTd' valueChange = '0'>
+                                    <input type="checkbox" id="checkbox" class="peer leave resposiveTd mediaTable" {{block}} style="background-color:white">
+                                </td>
+
+                                <td class='mediaTable mediaTableTbodyTd'>
+                                    <div class="form-group">
+                                        <input type="text" class="form-control leave resposiveTd mediaTable" id="tvisitor" value="{{tr.name}}" {{block}} style="background-color:white;">
+                                    </div>
+                                </td>
+
+                                <td class='mediaTable mediaTableTbodyTd'>
+                                    <div class="form-group">
+                                        <input type="text" id="tphone" value="{{tr.phone}}" class="form-control leave ctphone resposiveTd mediaTable" {{block}} style="background-color:white">
+                                    </div>
+                                </td>
+
+                                <td class='mediaTable mediaTableTbodyTd'>
+                                    <div class="form-group mediaTable" >
+                                        <select  class="form-control leave resposiveTd resposiveSelect mediaTable" {{block}} style="background-color:white; width:130px;">
+                                            {% for car in cars%}
+                                            {% if tr.vehicle_type == car.code_nm %}
+                                            <option value='{{car.code_nm}}' selected>{{car.code_nm}}</option>
+                                            {% else %}
+                                            <option value='{{car.code_nm}}'>{{car.code_nm}}</option>
+                                            {% endif %}
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                </td>
+                                <td class='mediaTable mediaTableTbodyTd'>
+                                    <input type="text" value="{{tr.vehicle_num}}" class="form-control leave resposiveTd mediaTable" {{block}} style="background-color:white">
+                                </td>
+
+                                {% for rule in tr.rule%}
+                                {% if rule.rule_type == '텍스트' %}
+                                <td class='mediaTable mediaTableTbodyTd'><input type="text" value = '{{rule.textDesc}}'class="form-control rule-text leave resposiveTd mediaTable" rule='{{rule.rule_name}}' {{block}} style="background-color:white"></td>
+                                {% elif rule.rule_type == '달력' %}
+                                <td class='mediaTable mediaTableTbodyTd'>
+                                    <div class="input-group resposiveTd" >
+                                        <i class="ti-calendar mT-5 p-5" ></i>
+                                        <input type="text" class="form-control start-date rule-calendar leave rule" placeholder="달력" data-provide="datepicker" value='{{rule.sdate}}' rule='{{rule.rule_name}}' {{block}} style="background-color:white">
+                                    </div>
+                                </td>
+
+                                {% elif rule.rule_type == '파일' %}
+                                <td class='mediaTable mediaTableTbodyTd'>
+                                    <div class="input-group custom-file resposiveTd" >
+                                        <input id='{{rule.fileClassId}}' accept="image/*,video/*" type="file" class="form-control file rule-file leave file-upload rule custom-file-input"  data-browse-on-zone-click="true" rule='{{rule.rule_name}}'>
+                                        <label  class="custom-file-label" for='{{rule.fileClassId}}'  >파일선택</label>
+                                    </div>
+                                    <a href ={{rule.bucketUrl}} target="_new" class='' >다운로드</a>
+                                </td>
+                                {% endif %}
+
+                                {% endfor %}
+                                <td class='mediaTable mediaTableTbodyTd'style="visibility:hidden" is-valid="1" is-user="1"></td>
+                            </tr>
+                            {% endfor %}
+
+
+                            </tbody>
+                        </table>
+
+                    </div>
+                </div>
             </div>
         </div>
     </div>
+</div>
 
 
-    <!--SECTION04-->
-    <div class="row gap-20 masonry pos-r">
-        <div class="masonry-sizer col-md-12"></div>
-        <div class="masonry-item col-md-12">
-            <div class="bgc-white p-20 bd">
-                <div class="mT-30">
 
-                    <div class="form-row">
-                        <p class="h4  text-danger" id="errorMsg"></p>
-                        <button type="button" style="display:block; margin-left:auto; margin-bottom:2px; margin-right:2px;" id="addUser"class="btn btn-primary text-center text-right" {{block}} >
-                            <i class="ti-plus"></i>
-                        </button>
 
-                        <button type="button" style="display:block; margin-bottom:2px;" id="delUser" class="btn btn-danger text-right" {{block}}>
-                            <i class="ti-minus"></i>
-                        </button>
+<!-- 신청자정보 Modal -->
+<div class="modal fade" id="visitModal" tabindex="-1" role="dialog"
+     aria-labelledby="interviewModalCenterTitle" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title c-grey-900 mB-20" id="visitModalCenterTitle">신청자 검색</h5>
+                <button type="button" class="close visitApply" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="bgc-white bd bdrs-3 p-20">
 
-                        <div id="table" class="table-responsive mediaDiv" {{block}}>
-                            <table name="user_info"  class="table table-bordered mediaTable" cellspacing="0" width="100%" >
-                                <thead class="mediaTable" id="'mediaThead">
-                                <tr id="thead" class="mediaTable mediaTheadTr">
-                                    <th style="width: 15px;" class="mediaTable"></th>
-                                    <th style="" class="mediaTable">방문자</th>
-                                    <th style="" class="mediaTable">휴대폰번호</th>
-                                    <th style="" class="mediaTable">차량종류</th>
-                                    <th style="" class="mediaTable">차량번호</th>
-                                       {% for rule in currentRule%}
-                                                <th style="" class="mediaTable">{{rule}}</th>
-                                      {% endfor %}
+                            <div>
+                                <input type="text"  id="visitInput" class="form-control" style="width:90%;float:left">
+                                <button type="button" id="visitSearchView" class="btn btn-primary" style="float:right">
+                                    <i class="search-icon ti-search pdd-right-10"></i>
+                                </button>
+                            </div>
+                            <!-- <p>Add <code class="highlighter-rouge">.table-hover</code> to enable a hover state
+                                on table rows within a <code class="highlighter-rouge">&lt;tbody&gt;</code>.</p> -->
+
+                            <table class="table table-hover">
+                                <thead>
+                                <tr>
+                                    <th scope="col">#</th>
+                                    <th scope="col">신청자</th>
+                                    <th scope="col">연락처</th>
+                                    <th scope="col">업체명</th>
+                                    <th scope="col">업체번호</th>
                                 </tr>
                                 </thead>
-                                <tbody id="tableBody" class="mediaTable">
+                                <tbody id="applyTbody">
+
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary visitApply" data-dismiss="modal">확인</button>
+                <button type="button" class="btn btn-secondary visitApply" data-dismiss="modal">취소</button>
+
+            </div>
+        </div>
+    </div>
+</div>
+<br>
 
 
-                                    {% for tr in tableList%}
-                                    <tr class="hide mediaTable mediaTableTbodyTr" >
-                                         <td class='mediaTable mediaTableTbodyTd' valueChange = '0'>
-                                             <input type="checkbox" id="checkbox" class="peer leave resposiveTd mediaTable" {{block}} style="background-color:white">
-                                         </td>
 
-                                         <td class='mediaTable mediaTableTbodyTd'>
-                                            <div class="form-group">
-                                                 <input type="text" class="form-control leave resposiveTd mediaTable" id="tvisitor" value="{{tr.name}}" {{block}} style="background-color:white;">
-                                             </div>
-                                         </td>
+<!--신청자조회(업체별)-->
+<!-- 신청자정보 Modal -->
+<div class="modal fade" id="visitModal2" tabindex="-1" role="dialog"
+     aria-labelledby="interviewModalCenterTitle" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title c-grey-900 mB-20" id="visitModalCenterTitle2">업체 검색</h5>
+                <button type="button" class="close visitApply2" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="bgc-white bd bdrs-3 p-20">
 
-                                         <td class='mediaTable mediaTableTbodyTd'>
-                                             <div class="form-group">
-                                                 <input type="text" id="tphone" value="{{tr.phone}}" class="form-control leave ctphone resposiveTd mediaTable" {{block}} style="background-color:white">
-                                             </div>
-                                         </td>
+                            <div>
+                                <input type="text"  id="visitInput2" class="form-control" style="width:90%;float:left" placeholder="업체명을 입력해주세요">
+                                <button type="button" id="visitSearchView2" class="btn btn-primary" style="float:right" >
+                                    <i class="search-icon ti-search pdd-right-10"></i>
+                                </button>
+                            </div>
+                            <!-- <p>Add <code class="highlighter-rouge">.table-hover</code> to enable a hover state
+                                on table rows within a <code class="highlighter-rouge">&lt;tbody&gt;</code>.</p> -->
 
-                                         <td class='mediaTable mediaTableTbodyTd'>
-                                            <div class="form-group mediaTable" >
-                                                     <select  class="form-control leave resposiveTd resposiveSelect mediaTable" {{block}} style="background-color:white; width:130px;">
-                                                                {% for car in cars%}
-                                                                    {% if tr.vehicle_type == car.code_nm %}
-                                                                        <option value='{{car.code_nm}}' selected>{{car.code_nm}}</option>
-                                                                    {% else %}
-                                                                        <option value='{{car.code_nm}}'>{{car.code_nm}}</option>
-                                                                    {% endif %}
-                                                                {% endfor %}
-                                                     </select>
-                                             </div>
-                                         </td>
-                                        <td class='mediaTable mediaTableTbodyTd'>
-                                            <input type="text" value="{{tr.vehicle_num}}" class="form-control leave resposiveTd mediaTable" {{block}} style="background-color:white">
-                                        </td>
+                            <table class="table table-hover">
+                                <thead>
+                                <tr>
+                                    <th scope="col">#</th>
+                                    <th scope="col" style="width:67px;">신청자</th>
+                                    <th scope="col">연락처</th>
+                                    <th scope="col">업체명</th>
+                                    <th scope="col">업체번호</th>
+                                </tr>
+                                </thead>
+                                <tbody id="applyTbody2">
 
-                                        {% for rule in tr.rule%}
-                                            {% if rule.rule_type == '텍스트' %}
-                                                <td class='mediaTable mediaTableTbodyTd'><input type="text" value = '{{rule.textDesc}}'class="form-control rule-text leave resposiveTd mediaTable" rule='{{rule.rule_name}}' {{block}} style="background-color:white"></td>
-                                            {% elif rule.rule_type == '달력' %}
-                                                <td class='mediaTable mediaTableTbodyTd'>
-                                                    <div class="input-group resposiveTd" >
-                                                    <i class="ti-calendar mT-5 p-5" ></i>
-                                                    <input type="text" class="form-control start-date rule-calendar leave rule" placeholder="달력" data-provide="datepicker" value='{{rule.sdate}}' rule='{{rule.rule_name}}' {{block}} style="background-color:white">
-                                                    </div>
-                                                </td>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary visitApply2" data-dismiss="modal">확인</button>
+                <button type="button" class="btn btn-secondary visitApply2" data-dismiss="modal">취소</button>
 
-                                            {% elif rule.rule_type == '파일' %}
-                                               <td class='mediaTable mediaTableTbodyTd'>
-                                                    <div class="input-group custom-file resposiveTd" >
-                                                        <input id='{{rule.fileClassId}}' accept="image/*,video/*" type="file" class="form-control file rule-file leave file-upload rule custom-file-input"  data-browse-on-zone-click="true" rule='{{rule.rule_name}}'>
-                                                        <label  class="custom-file-label" for='{{rule.fileClassId}}'  >파일선택</label>
-                                                    </div>
-                                                     <a href ={{rule.bucketUrl}} target="_new" class='' >다운로드</a>
-                                                </td>
-                                            {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+<br>
 
-                                        {% endfor %}
-                                            <td class='mediaTable mediaTableTbodyTd'style="visibility:hidden" is-valid="1" is-user="1"></td>
-                                            </tr>
-                                    {% endfor %}
+
+
+
+
+
+
+<!-- 출입정보 Modal -->
+<div class="modal fade" id="compSearchModal" tabindex="-1" role="dialog"
+     aria-labelledby="interviewModalCenterTitle" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title c-grey-900 mB-20" id="compSearchCenterTitle">업체 검색</h5>
+                <button type="button" class="close initApply"  data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="bgc-white bd bdrs-3 p-20">
+
+                            <div>
+                                <input type="text" id="compSearchInput" class="form-control" placeholder="업체명을 입력해주세요" style="width:90%;float:left">
+                                <button type="button" class="btn btn-primary"  id="compSearchView" style="float:right">
+                                    <i class="search-icon ti-search pdd-right-10"></i>
+                                </button>
+                            </div>
+
+                            <table class="table table-hover">
+                                <thead>
+                                <tr>
+                                    <th scope="col">#</th>
+                                    <th scope="col">업체명</th>
+                                    <th scope="col">업체번호</th>
+                                </tr>
+                                </thead>
+                                <tbody id="compTbody">
 
 
                                 </tbody>
                             </table>
-
                         </div>
                     </div>
                 </div>
             </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary initApply" data-dismiss="modal">확인</button>
+                <button type="button" class="btn btn-secondary initApply" data-dismiss="modal">취소</button>
+            </div>
         </div>
     </div>
+</div>
 
 
 
+<!-- 접견자정보 Modal -->
+<div class="modal fade" id="interviewModal" tabindex="-1" role="dialog"
+     aria-labelledby="interviewModalCenterTitle" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title c-grey-900 mB-20" id="interviewModalCenterTitle">접견자 검색</h5>
+                <button type="button" class="close interviewInit"  data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="bgc-white bd bdrs-3 p-20">
 
-    <!-- 신청자정보 Modal -->
-    <div class="modal fade" id="visitModal" tabindex="-1" role="dialog"
-         aria-labelledby="interviewModalCenterTitle" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title c-grey-900 mB-20" id="visitModalCenterTitle">신청자 검색</h5>
-                    <button type="button" class="close visitApply" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                </div>
-                <div class="modal-body">
-                    <div class="row">
-                        <div class="col-md-12">
-                            <div class="bgc-white bd bdrs-3 p-20">
-
-                                <div>
-                                    <input type="text"  id="visitInput" class="form-control" style="width:90%;float:left">
-                                    <button type="button" id="visitSearchView" class="btn btn-primary" style="float:right">
-                                        <i class="search-icon ti-search pdd-right-10"></i>
-                                    </button>
-                                </div>
-                                <!-- <p>Add <code class="highlighter-rouge">.table-hover</code> to enable a hover state
-                                    on table rows within a <code class="highlighter-rouge">&lt;tbody&gt;</code>.</p> -->
-
-                                <table class="table table-hover">
-                                    <thead>
-                                    <tr>
-                                        <th scope="col">#</th>
-                                        <th scope="col">신청자</th>
-                                        <th scope="col">연락처</th>
-                                        <th scope="col">업체명</th>
-                                        <th scope="col">업체번호</th>
-                                    </tr>
-                                    </thead>
-                                    <tbody id="applyTbody">
-
-                                    </tbody>
-                                </table>
+                            <div>
+                                <input type="text" id="interviewInput" class="form-control" placeholder="이름을 입력해주세요" style="width:90%;float:left">
+                                <button type="button" class="btn btn-primary"  id="interviewSearch" style="float:right">
+                                    <i class="search-icon ti-search pdd-right-10"></i>
+                                </button>
                             </div>
+                            <!-- <p>Add <code class="highlighter-rouge">.table-hover</code> to enable a hover state
+                                on table rows within a <code class="highlighter-rouge">&lt;tbody&gt;</code>.</p> -->
+
+                            <table class="table table-hover">
+                                <thead>
+                                <tr>
+                                    <th scope="col">#</th>
+                                    <th scope="col">부서</th>
+                                    <th scope="col">이름</th>
+                                    <th scope="col">휴대폰번호</th>
+                                </tr>
+                                </thead>
+                                <tbody id="interviewTbody">
+                                </tbody>
+                            </table>
                         </div>
                     </div>
                 </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-primary visitApply" data-dismiss="modal">확인</button>
-                    <button type="button" class="btn btn-secondary visitApply" data-dismiss="modal">취소</button>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary interviewInit" data-dismiss="modal">확인</button>
+                <button type="button" class="btn btn-secondary interviewInit " data-dismiss="modal">취소</button>
 
-                </div>
             </div>
         </div>
     </div>
-    <br>
+</div>
 
 
-    <!-- 출입정보 Modal -->
-    <div class="modal fade" id="compSearchModal" tabindex="-1" role="dialog"
-         aria-labelledby="interviewModalCenterTitle" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title c-grey-900 mB-20" id="compSearchCenterTitle">업체 검색</h5>
-                    <button type="button" class="close initApply"  data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                </div>
-                <div class="modal-body">
-                    <div class="row">
-                        <div class="col-md-12">
-                            <div class="bgc-white bd bdrs-3 p-20">
-
-                                <div>
-                                    <input type="text" id="compSearchInput" class="form-control" placeholder="업체명을 입력해주세요" style="width:90%;float:left">
-                                    <button type="button" class="btn btn-primary"  id="compSearchView" style="float:right">
-                                        <i class="search-icon ti-search pdd-right-10"></i>
-                                    </button>
-                                </div>
-
-                                <table class="table table-hover">
-                                    <thead>
-                                    <tr>
-                                        <th scope="col">#</th>
-                                        <th scope="col">업체명</th>
-                                        <th scope="col">업체번호</th>
-                                    </tr>
-                                    </thead>
-                                    <tbody id="compTbody">
 
 
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-primary initApply" data-dismiss="modal">확인</button>
-                    <button type="button" class="btn btn-secondary initApply" data-dismiss="modal">취소</button>
-                </div>
+
+<!--방문규칙 alert-->
+<div id = "alertModal" class="modal" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">인원차량 출입신청</h5>
+                <button id="blockModal" type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true" data-dismiss="modal">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <p id="modalContent"></p>
+            </div>
+            <div class="modal-footer">
+                <button id="confirmModal" type="button" class="btn btn-primary" data-dismiss="modal">확인</button>
             </div>
         </div>
     </div>
+</div>
 
 
 
-    <!-- 접견자정보 Modal -->
-    <div class="modal fade" id="interviewModal" tabindex="-1" role="dialog"
-         aria-labelledby="interviewModalCenterTitle" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title c-grey-900 mB-20" id="interviewModalCenterTitle">접견자 검색</h5>
-                    <button type="button" class="close interviewInit"  data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                </div>
-                <div class="modal-body">
-                    <div class="row">
-                        <div class="col-md-12">
-                            <div class="bgc-white bd bdrs-3 p-20">
 
-                                <div>
-                                    <input type="text" id="interviewInput" class="form-control" placeholder="이름을 입력해주세요" style="width:90%;float:left">
-                                    <button type="button" class="btn btn-primary"  id="interviewSearch" style="float:right">
-                                        <i class="search-icon ti-search pdd-right-10"></i>
-                                    </button>
-                                </div>
-                                <!-- <p>Add <code class="highlighter-rouge">.table-hover</code> to enable a hover state
-                                    on table rows within a <code class="highlighter-rouge">&lt;tbody&gt;</code>.</p> -->
 
-                                <table class="table table-hover">
-                                    <thead>
-                                    <tr>
-                                        <th scope="col">#</th>
-                                        <th scope="col">부서</th>
-                                        <th scope="col">이름</th>
-                                        <th scope="col">휴대폰번호</th>
-                                    </tr>
-                                    </thead>
-                                    <tbody id="interviewTbody">
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-primary interviewInit" data-dismiss="modal">확인</button>
-                    <button type="button" class="btn btn-secondary interviewInit " data-dismiss="modal">취소</button>
 
-                </div>
-            </div>
-        </div>
+
+
+
+<div class="row">
+    <div class="col text-center">
+        <button id ='appylbtn' type="button" class="btn btn-primary" >방문예약 수정</button>
+
     </div>
-
-
-
-
-
-    <!--방문규칙 alert-->
-    <div id = "alertModal" class="modal" tabindex="-1" role="dialog">
-        <div class="modal-dialog modal-dialog-centered" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title">인원차량 출입신청</h5>
-                    <button id="blockModal" type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true" data-dismiss="modal">&times;</span>
-                    </button>
-                </div>
-                <div class="modal-body">
-                    <p id="modalContent"></p>
-                </div>
-                <div class="modal-footer">
-                    <button id="confirmModal" type="button" class="btn btn-primary" data-dismiss="modal">확인</button>
-                </div>
-            </div>
-        </div>
-    </div>
-
-
-
-
-
-
-
-
-
-    <div class="row">
-        <div class="col text-center">
-            <button id ='appylbtn' type="button" class="btn btn-primary" >방문예약 수정</button>
-
-        </div>
-    </div>
+</div>
 </div>
 
 
