@@ -19,8 +19,13 @@ def index():
     sccompinfo = db.session.query(Sccompinfo).filter(
         db.and_(Sccompinfo.tenant_id == tenant_id, Sccompinfo.id == biz_id, Sccompinfo.use_yn == '1')).first()
     scrules = db.session.query(Scrule).all()  # 페이지 로드전 동적규칙 조회
+
+    now = datetime.now()
+    nextWeek = now + timedelta(weeks=1)
+    stime = now.strftime('%m/%d/%Y')
+    etime = nextWeek.strftime('%m/%d/%Y')
     return render_template(current_app.config['TEMPLATE_THEME'] + '/inout_apply/section4.html', sccompinfo=sccompinfo,
-                           scrules=scrules)
+                           scrules=scrules, stime=stime, etime=etime)
 
 
 # 출입신청 수정

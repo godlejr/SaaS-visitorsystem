@@ -98,24 +98,24 @@ $(document).ready(function() {
              <td class='mediaTable mediaTableTbodyTd' valueChange = '0'>
 
 
-                     <input type="checkbox" id="checkbox" class="peer leave resposiveTd mediaTable">
+                     <input type="checkbox" class="peer leave resposiveTd mediaTable">
              </td>
 
              <td class='mediaTable mediaTableTbodyTd'>
                 <div class="form-group">
-                     <input type="text" class="form-control leave resposiveTd mediaTable" id="tvisitor"  >
+                     <input type="text" class="form-control leave resposiveTd mediaTable" >
                  </div>
              </td>
 
              <td class='mediaTable mediaTableTbodyTd'>
                  <div class="form-group">
-                     <input type="text" id="tphone"  class="form-control leave ctphone resposiveTd mediaTable">
+                     <input type="text" class="form-control leave ctphone resposiveTd mediaTable">
                  </div>
              </td>
 
              <td class='mediaTable mediaTableTbodyTd'>
                 <div class="form-group mediaTable" >
-                         <select id="" name="" class="form-control leave resposiveTd resposiveSelect mediaTable">
+                         <select class="form-control leave resposiveTd resposiveSelect mediaTable">
                                 ${str}
                          </select>
                  </div>
@@ -640,6 +640,7 @@ $(document).ready(function() {
                 dataSet['applyId'] = $('#main').attr('applyId');
                 option = $(this);
                 option.dataSet = dataSet;
+                console.log('rule호출 계속호출')
                 apiCallPost(urlMake('USER_SEARCH'), userSearchHandler, dataSet, option);
 
             });
