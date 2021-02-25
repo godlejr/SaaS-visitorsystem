@@ -196,7 +196,10 @@ def getApplyListBySearchCondition(searchCondition):
     if searchCondition['comp_nm'] != '':
         selectApplyLists = selectApplyLists.join(Sccompinfo).filter(Sccompinfo.comp_nm.like("%" + searchCondition['comp_nm'] + "%"))
     if searchCondition['visit_sdate'] != "" and searchCondition['visit_edate'] != "":
-        selectApplyLists = selectApplyLists.filter(and_(Vcapplymaster.created_at >= searchCondition['visit_sdate'], Vcapplymaster.created_at <= searchCondition['visit_edate']))
+        searchCondition['visit_edate']
+        condition_edate = datetime.datetime.strptime(searchCondition['visit_edate'], '%Y-%m-%d')
+        condition_edate = str(condition_edate + datetime.timedelta(days=1))
+        selectApplyLists = selectApplyLists.filter(and_(Vcapplymaster.created_at >= searchCondition['visit_sdate'], Vcapplymaster.created_at <= condition_edate))
 
     pagination = Pagination(page, pages, selectApplyLists.count())
     #페이지 개수
