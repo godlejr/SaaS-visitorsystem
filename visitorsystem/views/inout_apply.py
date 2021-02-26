@@ -93,7 +93,7 @@ def edit(number):
         state = vcapplymaster.approval_state
         block = ''
 
-        print(state)
+
         if state == '반려' or state == '승인':
             block = 'disabled'
 
@@ -540,7 +540,7 @@ def fileUpload():
         bucketUrl = str(
             tenantId) + '/data/user/' + loginId + '/files/rule/' + name + phone + '/' + uuid + filename + '/' + filename
 
-        print(bucketUrl)
+
         # STEP02. S3 Upload
         s3 = boto3.client('s3', aws_access_key_id=AWS_ACCESS_KEY, aws_secret_access_key=AWS_SECRET_KEY)
         s3.put_object(
@@ -586,6 +586,11 @@ def ruleValidate():
     phone = request.form['phone']  # 휴대폰 번호
     vsdate = request.form['sdate']  # 방문시작 날짜
     vedate = request.form['edate']  # 방문종료 날짜
+
+    print(name)
+    print(phone)
+    print(vsdate)
+    print(vedate)
 
     lists = []
     # Step01.Rule전체조회
@@ -659,11 +664,6 @@ def ruleValidateBefore():
             lists.append(dict)
 
     # Step02.tenant에 등록된 RULE을 기준으로, name/phone/유효일자를 검색하는 로직, 규칙시작일(s_date) <=방문시작일(vsdate) / 규칙종료일(e_date) >=방문종료일(vedate) 검증
-    print(vsdate)
-    print(vedate)
-    print(name)
-    print(phone)
-    print(tenant_id)
     for row in db.session.query(Vcstackuser).filter(db.and_(Vcstackuser.tenant_id == tenant_id,
                                                             Vcstackuser.name == name,
                                                             Vcstackuser.phone == phone,
@@ -671,7 +671,7 @@ def ruleValidateBefore():
                                                             # Vcstackuser.s_date <= vsdate,
                                                             Vcstackuser.e_date >= vedate)).order_by(
         db.desc(Vcstackuser.created_at)).all():
-        print('찍힘2')
+
         for dict in lists:
             rule_id = dict['rule_id']
 
