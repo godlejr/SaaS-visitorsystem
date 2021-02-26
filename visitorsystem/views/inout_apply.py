@@ -587,10 +587,6 @@ def ruleValidate():
     vsdate = request.form['sdate']  # 방문시작 날짜
     vedate = request.form['edate']  # 방문종료 날짜
 
-    print(name)
-    print(phone)
-    print(vsdate)
-    print(vedate)
 
     lists = []
     # Step01.Rule전체조회

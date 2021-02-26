@@ -782,7 +782,6 @@ $(document).ready(function() {
 
             $('.leave').blur(function(e) {
                 e.stopImmediatePropagation();
-                console.log('leave event')
                 var sdate = $('#inout_sdate').val() || ''; //시작날짜
                 var edate = $('#inout_edate').val() || ''; //종료날짜
                 var name = $(this).closest('tr').children().eq(1).children().children().val() || ''; //이름
