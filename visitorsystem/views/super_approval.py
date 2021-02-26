@@ -29,7 +29,7 @@ def index(page):
         'visit_purpose': request.args.get('visit_purpose', ''),
         'comp_nm': request.args.get('comp_nm', ''),
         'page': request.args.get('page', page),
-        'pages': request.args.get('pages', 10)
+        'pages': request.args.get('pages', 3)
     }
 
     searchResult = getApplyListBySearchCondition(searchCondition)
@@ -108,7 +108,7 @@ def detail():
 
     # 2. 선택한 작업 ID에 포함된 방문자 User 리스트
     users = []
-    for row in selectApplyInfo.group_by(Vcvisituser.name, Vcvisituser.phone, Vcvisituser.apply_id).all():
+    for row in selectApplyInfo.group_by(Vcvisituser.name, Vcvisituser.phone, Vcvisituser.apply_id, Vcvisituser.apply_id).all():
         results = {
             "id": row.id,
             "name": row.name,
@@ -122,33 +122,33 @@ def detail():
 
     RuleInfolist = []
     for row in selectApplyInfo.all():
-        # 규칙 타입이 파일 경우 s3 경로 Setting
-        if row.scrule.rule_type == "파일":
+        # 텍스트 필드가 비어있으면, 달력 or 파일
+        if row.text_desc == "":
             scrulefile = db.session.query(ScRuleFile).filter(db.and_(ScRuleFile.tenant_id == current_user.ssctenant.id,
                                                                      ScRuleFile.use_yn == '1',
                                                                      ScRuleFile.visit_id == row.id)).first()
-            scrulefile.s3_url
-            if scrulefile.s3_url != '':
-                ruleRes = '가능'
-                ruleDesc = bucketUrl + scrulefile.s3_url
+            #규칙의 Type이 바뀌었을 경우, 예전 기록들을 올바르게 조회하기 위함 (변경 전 Type으로)
+            #달력
+            if scrulefile == None:
+                ruleType = '달력'
+                if (visit_sdate >= row.s_date) and (visit_edate <= row.e_date):
+                    ruleRes = '가능'
+                else:
+                    ruleRes = '불가'
+            #파일
             else:
-                ruleRes = '불가'
-                ruleDesc = ''
-
-        elif row.scrule.rule_type == "텍스트":
+                ruleType = '파일'
+                if scrulefile.s3_url != '':
+                    ruleRes = '가능'
+                    ruleDesc = bucketUrl + scrulefile.s3_url
+                else:
+                    ruleRes = '불가'
+                    ruleDesc = ''
+        else:
+            ruleType = '텍스트'
             ruleDesc = row.text_desc
+            ruleRes = '가능'
 
-            if ruleDesc != '':
-                ruleRes = '가능'
-            else:
-                ruleRes = '불가'
-
-        elif row.scrule.rule_type == "달력":
-            # 달력 규칙이 유효한지 만료인지 기간 검증
-            if (visit_sdate >= row.s_date) and (visit_edate <= row.e_date):
-                ruleRes = '가능'
-            else:
-                ruleRes = '불가'
 
         results = {
             "id": row.id,  # User ID
@@ -157,7 +157,7 @@ def detail():
             "phone": row.phone,  # 방문자 핸드폰
             "rule_id": row.rule_id,  # Rule ID
             "rule_name": row.scrule.rule_name,  # Rule 명칭
-            "rule_type": row.scrule.rule_type,  # Rule Type
+            "rule_type": ruleType,  # Rule Type
             "rule_duedate": row.scrule.rule_duedate,  # Rule 기간
             "s_date": row.s_date,  # 달력 Rule 시작일
             "e_date": row.e_date,  # 달력 Rule 종료일
