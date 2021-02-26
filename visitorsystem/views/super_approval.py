@@ -1,12 +1,13 @@
 import datetime
-from flask import Blueprint, current_app, render_template, request, session, jsonify
-from flask_login import current_user
 from math import ceil
+
+from flask import Blueprint, current_app, render_template, request, jsonify
+from flask_login import current_user
 from sqlalchemy import and_
 
 from loggers import log
 from visitorsystem.forms import Pagination
-from visitorsystem.models import db, Ssctenant, Vcapplymaster, Sccode, Sccompinfo, Scrule, Vcvisituser, ScRuleFile
+from visitorsystem.models import db, Vcapplymaster, Sccode, Sccompinfo, Scrule, Vcvisituser, ScRuleFile
 
 super_approval = Blueprint('super_approval', __name__)
 
@@ -29,7 +30,7 @@ def index(page):
         'visit_purpose': request.args.get('visit_purpose', ''),
         'comp_nm': request.args.get('comp_nm', ''),
         'page': request.args.get('page', page),
-        'pages': request.args.get('pages', 3)
+        'pages': request.args.get('pages', 10)
     }
 
     searchResult = getApplyListBySearchCondition(searchCondition)
@@ -74,7 +75,8 @@ def search():
         return jsonify({'msg': lists,
                         'listSize': searchResult['listSize'],
                         'pagination': pagination.serializable(page_iter, searchResult['p_pages']),
-                        'query_string': "request.query_string.decode('utf-8')"})
+                        'query_string': "request.query_string.decode('utf-8')",
+                        'searchCondition': request.form})
 
 
 @super_approval.route('/save', methods=['POST'])
@@ -203,7 +205,6 @@ def getApplyListBySearchCondition(searchCondition):
         selectApplyLists = selectApplyLists.join(Sccompinfo).filter(
             Sccompinfo.comp_nm.like("%" + searchCondition['comp_nm'] + "%"))
     if searchCondition['visit_sdate'] != "" and searchCondition['visit_edate'] != "":
-        searchCondition['visit_edate']
         condition_edate = datetime.datetime.strptime(searchCondition['visit_edate'], '%Y-%m-%d')
         condition_edate = str(condition_edate + datetime.timedelta(days=1))
         selectApplyLists = selectApplyLists.filter(and_(Vcapplymaster.created_at >= searchCondition['visit_sdate'],

@@ -3,32 +3,9 @@
 {% block mainContent %}
 <!-- mainContent의 상단 조회조건 설정 부분 -->
 <script>
-    function url_for(param){
-        var sdate = $('#visit_sdate').val();
-        var edate = $('#visit_edate').val();
-        var dataSet = {};
-
-        if (!sdate || !edate) {
-            return;
-        }
-
-        sdate = sdate.split('/'); edate = edate.split('/');
-        dataSet['visit_sdate'] = sdate[2] + "-" + sdate[0] + "-" + sdate[1];
-        dataSet['visit_edate'] = edate[2] + "-" + edate[0] + "-" + edate[1];
-        dataSet['visit_category'] = $('#type').val();
-        dataSet['visit_purpose'] = $('#visit-purpose').val();
-        dataSet['comp_nm'] = $('#comp-nm').val();
-        dataSet['approval_state'] = $('#inputState').val();
-        dataSet['page'] = 1;    //Search 버튼 누르면 초기페이지는 1번째로 Set
-        dataSet['pages'] = 10;  //한 페이지에 조회되는 개수
-
-        document.location.href =  "{{url_for( 'super_approval.index')}}page/" + param +
-                                    "?visit_sdate="+ dataSet['visit_sdate'] + "&visit_edate=" + dataSet['visit_edate'] +
-                                    "&visit_category=" + dataSet['visit_category'] + "&visit_purpose=" + dataSet['visit_purpose'] +
-                                    "&comp_nm=" + dataSet['comp_nm'] + "&approval_state=" + dataSet['approval_state'] +
-                                    "&pages=" + dataSet['pages'];
+    function url_for(param, searchCondition){
+        document.location.href =  "{{url_for( 'super_approval.index')}}page/" + param + searchCondition;
     }
-
 </script>
 
 <div class="mainContent-top">
