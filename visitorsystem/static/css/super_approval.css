@@ -16,3 +16,11 @@
 .btn-right {
     float : right;
 }
+
+
+.scroll {
+    white-space:nowrap;
+    width:100%;
+    height:200px;
+    overflow:auto
+}

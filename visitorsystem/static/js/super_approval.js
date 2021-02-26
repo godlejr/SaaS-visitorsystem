@@ -38,11 +38,11 @@ $(document).ready(function() {
 	//목록 페이징
 	function Paging(endpoint, pagination, query_string) {
         var pageBtnHtml = '';
-        pageBtnHtml += '<div class="custom-pagination btn-group mr-2" style="display: flex">';
+        pageBtnHtml += '<div class="custom-pagination btn-group mr-1" style="display: flex">';
         pageBtnHtml += '<div class="custom-pagination-center" style="margin: 0 auto">';
 
         if(pagination.page > 1) {
-            pageBtnHtml += '<button type="button" class="btn btn-primary" onclick="javascript:url_for(' + (parseInt(pagination.page) - 1) + ')" ';
+            pageBtnHtml += '<button type="button" class="btn btn-primary mr-1" onclick="javascript:url_for(' + (parseInt(pagination.page) - 1) + ')" ';
 
             if (query_string) {
                 pageBtnHtml += query_string;
@@ -54,14 +54,14 @@ $(document).ready(function() {
             var idx = (page*1) + 1
             if (page) {
                 if(idx != pagination.page) {
-                    pageBtnHtml += '<button type="button" class="btn btn-primary" onclick="javascript:url_for('+ idx + ')" ';
+                    pageBtnHtml += '<button type="button" class="btn btn-primary mr-1" onclick="javascript:url_for('+ idx + ')" ';
                     if (query_string) {
                         pageBtnHtml += query_string;
                     }
                     pageBtnHtml += '><div>' + idx + '</div></a></button>';
                 }
                 else {
-                    pageBtnHtml += '<button type="button" class="btn"> <div class="active"> ' + idx + '</div></button>';
+                    pageBtnHtml += '<button type="button" class="btn mr-1"> <div class="active"> ' + idx + '</div></button>';
                 }
             }
             else {
