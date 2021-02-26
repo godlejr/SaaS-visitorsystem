@@ -288,6 +288,8 @@ $(document).ready(function() {
 			dataSet['page'] = 1;    //Search 버튼 누르면 초기페이지는 1번째로 Set
 			dataSet['pages'] = 10;  //한 페이지에 조회되는 개수
 
+			//권한별 추가
+
 			apiCallPost(urlMake('SEARCH'), setSearchFormHandler, dataSet);
 		});
 
