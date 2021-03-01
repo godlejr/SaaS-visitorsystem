@@ -74,6 +74,12 @@ class Config(object):
     AWS_SECRET_KEY = "yeulUsAN54/j7oipEpNMOEXhF0jzM13SDwIvyUHS"
     BUCKET_NAME = "vms-tenants-bucket-dev"
 
+    #SNS Key
+
+    AWS_SNS_ACCESS_KEY = "AKIAUOEDDROYK2II6BGE"
+    AWS_SNS_SECRET_KEY = "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"
+    AWS_SNS_REGION_NAME = "ap-northeast-1"
+    AWS_SNS_SMS_TOPIC_ARN = "arn:aws:sns:ap-northeast-1:305217637296:VMS_SMS"
 
 
 

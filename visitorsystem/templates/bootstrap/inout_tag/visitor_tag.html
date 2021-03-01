@@ -1,0 +1,67 @@
+{% extends "bootstrap/inout_tag/base.html" %}
+
+
+{% block modalContent %}
+<!-- 여기서 html 작성하세요-->
+<div class="mainContent-top">
+    <div class="row gap-20 masonry pos-r mR-10" style=" height: 200px;">
+        <div class="masonry-sizer col-md-12"></div>
+        <div class="masonry-item col-md-12">
+            <div class="bgc-white bd p-20 col-md-12">
+                <div class="content-top mB-5">
+                    <div class="page-header"><h5 class="c-grey-900"> 출입 QR 코드 </h5><br></div>
+                </div>
+                <div class="mT-30">
+                </div>
+            </div>
+            <br>
+            <!-- mainContent 최상단 : 페이지 명칭, 버튼 위치-->
+            <div style="display: flex;">
+
+                <img id="qrcode" style="margin: 0 auto;" src=''/>
+
+            </div>
+            <br>
+            <br>
+            <div class="bgc-white bd p-20 col-md-12 ">
+                <div class="content-top " style="display: flex;">
+                    <div class="page-header"><p class="c-grey-600"  > 사업장 출입 시 <br>
+                        정문에서 QR 코드를 반드시 인증 하고 방문하시기 바랍니다. </p></div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.0/jquery.min.js"></script>
+<script type="text/javascript">
+
+   $(document).ready(function(){
+
+
+        function init() {
+              url = '{{ssctenant.event_url}}' + '/inoutManage/save/users/' + '{{applyuser.id}}';
+
+              googleQRUrl = "https://chart.googleapis.com/chart?chs=200x200&cht=qr&chl=";
+
+
+                $('#qrcode').attr('src', googleQRUrl + url +'&choe=UTF-8');
+
+
+        }
+        init();
+
+
+
+	});
+
+
+
+
+
+
+</script>
+
+{% endblock %}

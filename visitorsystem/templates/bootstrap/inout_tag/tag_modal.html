@@ -1,0 +1,121 @@
+{% extends "bootstrap/inout_tag/base.html" %}
+
+{% block modalContent %}
+<!--작업에 대한 출입자 정보 확인 모달-->
+<div id="visitantDocModal" class="modal" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title"> 출입자 상세 정보 </h4>
+                <button type="button" class="btn btn-primary exitModal" value="visitantDocModal"> ×</button>
+            </div>
+            <div class="modal-body">
+                <p class="applyName"></p>
+                <div class="scroll">
+                    <table id="userInfoTable" class="table table-bordered">
+                        <thead class="thead-light tableHead">
+                        <tr>
+                            <th>No</th>
+                            <th>방문자</th>
+                            <th>휴대폰번호</th>
+                            <th>규칙유효성</th>
+                        </tr>
+                        </thead>
+                        <tbody class="userInfomodalBody">
+
+                        </tbody>
+                    </table>
+                </div>
+
+                <br>
+
+                <div style="font-weight:bold; font-size: medium;">
+                    <span class="userName"></span>님의 규칙 상세정보
+                </div>
+                <div class="scroll">
+                    <table id="userRuleTable" class="table table-bordered">
+                        <thead class="thead-light tableHead">
+                        <tr>
+                            <th>No</th>
+                            <th>방문자</th>
+                            <th>규칙명</th>
+                            <th>규칙타입</th>
+                            <th>규칙상세</th>
+                            <th>유효성검사</th>
+                        </tr>
+                        </thead>
+                        <tbody class="userRulemodalBody">
+
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary exitModal" value="visitantDocModal"> 닫기</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!--승인 및 반려 Modal Div-->
+<div id="signModal" class="modal fade bs-example-modal-md" tabindex="-1" role="dialog" aria-labelledby="classInfo"
+     aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title"> 출입증 발급 </h4>
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true"> ×</button>
+            </div>
+            <div class="modal-body">
+                총 <span class="chkCnt">0</span>건의 신청내역을 <span class="appr-name" id="status"></span> 하시겠습니까?
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" id="okBtn" value="okBtn"> 확인</button>
+                <button type="button" class="btn btn-primary" data-dismiss="modal"> 취소</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 결과 알림 Modal (성공 / 실패) -->
+<div id="alertModal" class="modal" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title"> 출입증 발급 </h4>
+                <button type="button" class="btn btn-primary exitModal" value="alertModal"> ×</button>
+            </div>
+            <div class="modal-body">
+                {% with messages = get_flashed_messages() %}
+                <p id="modalContent"></p>
+                {% endwith %}
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary exitModal" value="alertModal">확인</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<!-- 조회기간 Null일 때, 경고 알람 -->
+<div id="nullChkModal" class="modal fade bs-example-modal-md" tabindex="-1" role="dialog" aria-labelledby="classInfo"
+     aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title"> 알림 </h4>
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true"> ×</button>
+            </div>
+            <div class="modal-body">
+                <p>조회 기간을 설정하세요.</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" data-dismiss="modal"> 닫기</button>
+            </div>
+        </div>
+    </div>
+</div>
+{% block mainContent %} {% endblock%}
+
+{% endblock %}

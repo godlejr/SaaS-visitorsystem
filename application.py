@@ -39,11 +39,13 @@ def utility_processor():
         return ssctenant
 
     def get_menu():
-        authId = current_user.get_auth.code
-        scMenu = Scmenu.query.join(Scmenuauth).filter(Scmenuauth.auth_id == authId,
-                                                      Scmenu.id == Scmenuauth.menu_id).order_by(Scmenu.group_id,
-                                                                                                Scmenu.depth,
-                                                                                                Scmenu.position)
+        scMenu = []
+        if current_user.is_authenticated :
+            authId = current_user.get_auth.code
+            scMenu = Scmenu.query.join(Scmenuauth).filter(Scmenuauth.auth_id == authId,
+                                                          Scmenu.id == Scmenuauth.menu_id).order_by(Scmenu.group_id,
+                                                                                                    Scmenu.depth,
+                                                                                                    Scmenu.position)
         return scMenu
 
     return dict(url_for_s3=url_for_s3, get_tenant=get_tenant, get_menu=get_menu)
