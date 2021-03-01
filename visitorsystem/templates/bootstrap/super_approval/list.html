@@ -24,8 +24,7 @@
             <div class="bgc-white bd p-20">
                 <div class="mT-10">
                     <div id="superApprovalSearchForm">
-                        <button type="submit" class="btn cur-p btn-primary mB-10 mR-10 btn-right search-btn"
-                                id="searchBtn">조회
+                        <button type="submit" class="btn cur-p btn-primary mB-10 mR-10 btn-right search-btn" id="searchBtn">조회
                         </button>
                         <div class="form-row">
                             <div class="form-group col-md-4"><label class="fw-500">신청일자</label>
@@ -41,6 +40,30 @@
                                     </div>
                                 </div>
                             </div>
+
+                            <!-- AUTH_ADMIN, AUTH_APPROVAL 권힌 보유자만 해당 검색조건이 보임 -->
+                            {% if userAuth == current_app.config['AUTH_ADMIN'] or userAuth == current_app.config['AUTH_APPROVAL'] %}
+                                <div class="form-group col-md-2"><label for="location">사업장</label>
+                                    <select id="location" class="form-control" name="site_nm">
+                                        <option selected="selected" value="all">-전체-</option>
+                                        {% for list in siteList %}
+                                            <option name="{{list.code}}" value="{{list.code}}">{{list.code_nm}}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                            {% endif %}
+
+                            <div class="form-group col-md-2"><label for="inputState">진행상태</label>
+                                <select id="inputState" class="form-control" name="approval_state">
+                                    <option selected="selected" value="all">-전체-</option>
+                                    <option name="승인">승인</option>
+                                    <option name="대기">대기</option>
+                                    <option name="반려">반려</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="form-row">
                             <div class="form-group col-md-2"><label for="type">방문유형</label>
                                 <select id="type" class="form-control" name="visit_category">
                                     <option selected="selected" value="all">-전체-</option>
@@ -49,9 +72,6 @@
                                     {% endfor %}
                                 </select>
                             </div>
-                        </div>
-
-                        <div class="form-row">
                             <div class="form-group col-md-3"><label for="visit-purpose">방문목적</label> <input type="text"
                                                                                                             class="form-control"
                                                                                                             id="visit-purpose"
@@ -64,14 +84,7 @@
                                                                                                      id="comp-nm"
                                                                                                      name="comp_nm">
                             </div>
-                            <div class="form-group col-md-2"><label for="inputState">진행상태</label>
-                                <select id="inputState" class="form-control" name="approval_state">
-                                    <!-- all / state0 / state1 / state2-->
-                                    <option selected="selected" value="all">-전체-</option>
-                                    <option name="승인">승인</option>
-                                    <option name="대기">대기</option>
-                                    <option name="반려">반려</option>
-                                </select></div>
+
                         </div>
                     </div>
                 </div>
