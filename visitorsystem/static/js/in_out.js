@@ -265,7 +265,7 @@ $(document).ready(function() {
     //규칙검증 컨트롤러(완료)
     function rulevalidHandler(dataSet, opt) {
         var dataSet = dataSet.msg; //데이터 송신값
-        var msg = opt.name+"님의 ";
+        var msg = opt.name + "님의 ";
         var check = false;
         var rule = opt.closest('tr').children();
         var offset = 5;
@@ -590,18 +590,6 @@ $(document).ready(function() {
             }
 
 
-
-            //출입자 정보 check
-            check = $('#tableBody tr').length;
-
-            if (check.length == 0) {
-                $("#alertModal").show();
-                $("#modalContent").text('');
-                $("#modalContent").text('한 명 이상의 접견자를 추가해주세요');
-                return;
-            }
-
-
             //출입유효성 check
             $('#tableBody tr').each(function() {
                 check = $(this).children().eq(-1).attr('is-valid')
@@ -638,6 +626,21 @@ $(document).ready(function() {
             } else {
                 $tableID.find('tbody').last().append(newTr.replace(/applyFile/gi, 'applyFile' + uuidv4()));
             }
+
+
+            //차량없음 이벤트 적용
+            $('.carCheck').change(function(e) {
+                e.stopImmediatePropagation();
+                var value = $(this).val();
+                if (value == '차량없음') {
+                    $(this).parent().parent().next().children().attr('readonly', true);
+                    $(this).parent().parent().next().children().val('');
+                } else {
+                    console.log('test')
+                    $(this).parent().parent().next().children().attr('readonly', false);
+                }
+            })
+
 
 
 
@@ -704,22 +707,22 @@ $(document).ready(function() {
                             trans_num = trans_num.replace(/^(01[016789]{1}|02|0[3-9]{1}[0-9]{1})-?([0-9]{3,4})-?([0-9]{4})$/, "$1-$2-$3");
                             $(this).val(trans_num);
                         } else {
-                                $(this).val("");
-                                $(this).focus();
-                                $("#alertModal").show();
-                                $("#modalContent").text('');
-                                $("#modalContent").text('유효하지 않은 전화번호 입니다.');
-                                validCheck($(this))//HHJ
+                            $(this).val("");
+                            $(this).focus();
+                            $("#alertModal").show();
+                            $("#modalContent").text('');
+                            $("#modalContent").text('유효하지 않은 전화번호 입니다.');
+                            validCheck($(this)) //HHJ
                         }
 
 
                     } else {
-                                $(this).val("");
-                                $(this).focus();
-                                $("#alertModal").show();
-                                $("#modalContent").text('');
-                                $("#modalContent").text('유효하지 않은 전화번호 입니다.');
-                                validCheck($(this))//HHJ
+                        $(this).val("");
+                        $(this).focus();
+                        $("#alertModal").show();
+                        $("#modalContent").text('');
+                        $("#modalContent").text('유효하지 않은 전화번호 입니다.');
+                        validCheck($(this)) //HHJ
                     }
                 }
             });
@@ -734,51 +737,38 @@ $(document).ready(function() {
                 for (var i = 0; i < checkSize; i++) {
                     var currentTarget = target.eq(i + offset); //다음 규칙 검색
 
-                    if(i==0){//차량번호
-                        currentTarget.children().children().val('차량없음').prop("selected",true);
-                    }else if(i==1){//차량종류
+                    if (i == 0) { //차량종류
+                        currentTarget.children().children().val('차량없음').prop("selected", true);
+                    } else if (i == 1) { //차량번호
 
-                        currentTarget.children('input').attr('readonly',true);
+                        currentTarget.children('input').attr('readonly', true);
+                        currentTarget.children('input').val('');
                     }
 
-                    if (currentTarget.children('input').hasClass('rule-text')) {//텍스트
+                    if (currentTarget.children('input').hasClass('rule-text')) { //텍스트
                         currentTarget.children('input').val('');
-                        currentTarget.children('input').addClass('is-invalid');//invalid 적용
+                        currentTarget.children('input').addClass('is-invalid'); //invalid 적용
 
 
 
-                    } else if (currentTarget.children().children('input').hasClass('rule-calendar')) {//캘린더
+                    } else if (currentTarget.children().children('input').hasClass('rule-calendar')) { //캘린더
                         currentTarget.children().children('input').val('');
-                        currentTarget.children().children('input').addClass('is-invalid');//invalid 적용
+                        currentTarget.children().children('input').addClass('is-invalid'); //invalid 적용
 
-                    } else if (currentTarget.children().children('input').hasClass('rule-file')) {//파일
-                        currentTarget.children().next().attr('href','');
+                    } else if (currentTarget.children().children('input').hasClass('rule-file')) { //파일
+                        currentTarget.children().next().attr('href', '');
                         currentTarget.children().next().attr('hidden', true)
-                        currentTarget.children().children('input').addClass('is-invalid');//invalid 적용
+                        currentTarget.children().children('input').addClass('is-invalid'); //invalid 적용
 
 
                     }
                 }
-                $(select).closest('tr').children().eq(0).attr('valueChange','0');//규칙 값 변경 활상화
-                target.eq(-1).attr('is-valid','0');//유효하지 않는 상태
-                target.eq(-1).attr('is-user','0');//사용자가 존재하는 상태
+                $(select).closest('tr').children().eq(0).attr('valueChange', '0'); //규칙 값 변경 활상화
+                target.eq(-1).attr('is-valid', '0'); //유효하지 않는 상태
+                target.eq(-1).attr('is-user', '0'); //사용자가 존재하는 상태
 
 
             }
-
-                //HHJ
-            $('.carCheck').change(function(e){
-                e.stopImmediatePropagation();
-                var value = $(this).val();
-                if(value=='차량없음'){
-                   $(this).parent().parent().next().children().attr('readonly',true);
-                }else{
-                    $(this).parent().parent().next().children().attr('readonly',false);
-                }
-            })
-
-
-
 
             $('.leave').blur(function(e) {
                 e.stopImmediatePropagation();
@@ -834,9 +824,9 @@ $(document).ready(function() {
                     }
                 });
 
-                if (check) {
+                if (check)
                     return;
-                }
+
                 sdate = sdate.split('/');
                 edate = edate.split('/');
                 dataSet['sdate'] = sdate[2] + "-" + sdate[0] + "-" + sdate[1]; //시작날짜
@@ -893,7 +883,7 @@ $(document).ready(function() {
                     return;
                 }
 
-                if(name.length == 0 || phone.length == 0){
+                if (name.length == 0 || phone.length == 0) {
                     $("#alertModal").show();
                     $("#modalContent").text('');
                     $("#modalContent").text('방문자 정보를 입력해주세요');
@@ -930,6 +920,9 @@ $(document).ready(function() {
             });
 
         });
+
+
+
 
         //삭제버튼
         $('#delUser').click(function(e) {
@@ -1004,10 +997,6 @@ $(document).ready(function() {
 
         //사업장조회
         apiCallPost(urlMake('WORKSPACE_SEARCH'), workspaceSearchHandler)
-        // set default dates
-        var start = new Date();
-        // set end date to max one year period:
-        var end = new Date(new Date().setYear(start.getFullYear() + 1));
 
         //from~to적용
         $('#inout_sdate').datepicker({

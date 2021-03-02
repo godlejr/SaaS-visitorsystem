@@ -92,10 +92,14 @@ def edit(number):
 
         state = vcapplymaster.approval_state
         block = ''
-
+        type = 'file'
+        event = 'leave'
 
         if state == '반려' or state == '승인':
             block = 'disabled'
+            type = ''
+            event = ''
+
 
         # 차량종류 조회
         cars = db.session.query(Sccode).filter(
@@ -113,8 +117,12 @@ def edit(number):
 
         # 출입신청 하나에 연결된, 사용자리스트 조회
         for vcapplyuser in vcapplyusers:
-            obj = {'name': vcapplyuser.visitant, 'phone': vcapplyuser.phone, 'vehicle_type': vcapplyuser.vehicle_type,
+            obj = {'name': vcapplyuser.visitant, 'phone': vcapplyuser.phone, 'vehicle_type': vcapplyuser.vehicle_type, 'readonly' : '',
                    'vehicle_num': vcapplyuser.vehicle_num, 'rule': []}
+
+            if obj['vehicle_type'] == '차량없음':
+                obj['readonly'] = 'readonly'
+
 
             for vcvisituser in db.session.query(Vcvisituser).filter(
                     db.and_(Vcvisituser.tenant_id == tenant_id, Vcvisituser.apply_id == num,
@@ -151,7 +159,7 @@ def edit(number):
                                scrules=scrules, vcapplymaster=vcapplymaster, sccompinfo=sccompinfo, scuser=scuser,
                                applyDate=applyDate, visitCategorys=visitCategorys, catagory=catagory,
                                currentRule=currentRule,
-                               locations=locations, site_nm=site_nm, doors=doors, site_nm2=site_nm2, block=block,
+                               locations=locations, site_nm=site_nm, doors=doors, site_nm2=site_nm2, block=block, type=type, event=event,
                                state=state, cars=cars, tableList=tableList)
 
 
