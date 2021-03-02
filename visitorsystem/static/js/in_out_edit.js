@@ -423,7 +423,7 @@ $(document).ready(function() {
             if (state == '반려' || state == '승인') {
                 $("#alertModal").show();
                 $("#modalContent").text('');
-                $("#modalContent").text(`${state} 상태에는 출입수정을 할 수 없습니다.`);
+                $("#modalContent").text(`${state}상태에서는 출입수정을 할 수 없습니다.`);
                 return;
 
             }

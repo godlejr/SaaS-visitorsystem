@@ -963,6 +963,7 @@ $(document).ready(function() {
             var interviewName = $('#interviewInput').val();
             dataSet['interviewName'] = interviewName;
             dataSet['site_nm'] = $('#inout_location').val();
+
             apiCallPost(urlMake('INTERVIEW_SEARCH'), interViewSearchHandler, dataSet)
 
         });
