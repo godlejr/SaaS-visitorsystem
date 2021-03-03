@@ -5,7 +5,7 @@
 <script src="{{ url_for('static', filename='js/in_out_edit.js') }}" rel="stylesheet"></script>
 <div id="main" applyId="{{vcapplymaster.id}}" state="{{vcapplymaster.approval_state}}">
     <div class="bgc-white bd p-20 mR-30 col-md-12">
-        <div class="mT-30">
+        <div >
             <div class="content-top mB-5">
                 <div class="page-header"><h5 class="c-grey-900"> 방문신청 > 인원차량 방문신청</h5></div>
             </div>
@@ -23,12 +23,12 @@
 
                 <div class="mT-30">
                     <div class="form-row">
-                        <div class="form-group col-md-4" >
+                        <div class="form-group col-md-1" >
                             <label for="applicant_name">신청자</label>
                             <input type="text" class="form-control" name="applicant_name" value="{{vcapplymaster.applicant}}" id="applicant_name" readonly style="background-color:white">
                         </div>
 
-                        <div class="form-group col-md-3">
+                        <div class="form-group col-md-2">
                             <label for="applicant_phone">연락처</label>
                             <input type="text"  class="form-control" name="applicant_phone"  value="{{vcapplymaster.phone}}" id="applicant_phone" readonly style="background-color:white">
                         </div>
@@ -45,7 +45,7 @@
 
                     <div class="form-row">
                         <div class="form-group col-md-1"><label for="applicant_biz_no">업체명</label> <input type="text"  class="form-control" name="applicant_biz_no" id="applicant_biz_no" value="{{vcapplymaster.applicant_comp_id}}"  readonly style="background-color:white"></div>
-                        <div class="form-group col-md-3">
+                        <div class="form-group col-md-2">
                             <div >
                                 <label for="applicant_comp_nm" style="visibility:hidden">업체번호</label>
                                 <input type="text"  class="form-control" name="applicant_comp_nm"  id="applicant_comp_nm" value="{{vcapplymaster.applicant_comp_nm}}" readonly style="background-color:white">
@@ -175,7 +175,7 @@
 
                 <div class="form-row">
                     <div class="form-group col-md-1"><label for="interviewer_name">접견자</label> <input type="text"  class="form-control" name="interviewer_name" id="interviewer_name"  value="{{scuser.name}}" readonly style="background-color:white" ></div>
-                    <div class="form-group col-md-3"><label for="interviewer_phone">연락처</label> <input type="text"  class="form-control" name="interviewer_phone" id="interviewer_phone" value="{{scuser.phone}}"readonly style="background-color:white"></div>
+                    <div class="form-group col-md-2"><label for="interviewer_phone">연락처</label> <input type="text"  class="form-control" name="interviewer_phone" id="interviewer_phone" value="{{scuser.phone}}"readonly style="background-color:white"></div>
                     <div class="form-group col-md-2" >
                         <label style="visibility:hidden">&nbsp</label>
                         <button type="button" style="display:block;" class="btn btn-primary"  data-toggle="modal" data-target="#interviewModal" {{block}}>
