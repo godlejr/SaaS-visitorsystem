@@ -103,7 +103,7 @@
                     <button type="button" class="btn cur-p btn-primary mR-10 btn-right modal-btn" id="reject">반려</button>
                     <button type="button" class="btn cur-p btn-primary mR-10 btn-right modal-btn" id="agree">승인</button>
                 </div>
-                <h5 class="c-grey-900 mB-20">출입신청내역</h5>
+                <h5 class="c-grey-900 mB-20">방문신청내역</h5>
                 <hr/>
                 <section id="no-more-tables">
                     <table id="applyListTable" class="table table-striped table-bordered applyListTable" cellspacing="0" width="100%">
@@ -119,7 +119,7 @@
                             <th style="width: 120px;" class="numeric">시작일</th>
                             <th style="width: 120px;" class="numeric">종료일</th>
                             <th style="width: 110px;" class="numeric">신청사업장</th>
-                            <th style="width: 110px;" class="numeric">신청출입문</th>
+                            <th style="width: 110px;" class="numeric">신청방문문</th>
                             <th style="width: 120px;" class="numeric">진행단계</th>
                         </tr>
                         </thead>
@@ -129,7 +129,7 @@
                             <text> 조회된 내역이 없습니다.</text>
                         </td>
                         {% else %}
-                        <!-- 출입신청마스터에서 작업내역 데이터 출력 부분-->
+                        <!-- 방문신청마스터에서 작업내역 데이터 출력 부분-->
                         {% for list in lists %}
                         <tr>
                             <td data-title="선택"><input type="checkbox" name="chk" value1={{list.id}} value2={{list.approval_state}}></td>
@@ -143,7 +143,7 @@
                             <td data-title="시작일">{{list.visit_sdate}}</td>
                             <td data-title="종료일">{{list.visit_edate}}</td>
                             <td data-title="신청사업장">{{list.site_nm}}</td>
-                            <td data-title="신청출입문">{{list.site_nm2}}</td>
+                            <td data-title="신청방문문">{{list.site_nm2}}</td>
                             <td data-title="진행단계">{{list.approval_state}}</td>
                         </tr>
                         {% endfor %}

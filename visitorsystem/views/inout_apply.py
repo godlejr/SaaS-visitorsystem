@@ -28,7 +28,7 @@ def index():
                            scrules=scrules, stime=stime, etime=etime)
 
 
-# 출입신청 수정
+# 방문신청 수정
 @inout_apply.route('/edit/<int:number>', methods=['GET'])
 def edit(number):
     if request.method == 'GET':
@@ -37,7 +37,7 @@ def edit(number):
         tenant_id = current_user.ssctenant.id  # 로그인 사용자의 테넌트 아이디
         scrules = db.session.query(Scrule).all()  # 페이지 로드전 동적규칙 조회
 
-        # 출입신청마스터 조회
+        # 방문신청마스터 조회
         vcapplymaster = db.session.query(Vcapplymaster).filter(
             db.and_(Vcapplymaster.tenant_id == tenant_id, Vcapplymaster.id == num,
                     Vcapplymaster.use_yn == '1')).first()
@@ -66,7 +66,7 @@ def edit(number):
         site_id = vcapplymaster.site_id
         site_nm = vcapplymaster.site_nm
 
-        # 출입신청시 적용된 rule
+        # 방문신청시 적용된 rule
         currentRule = []
         for row in db.session.query(Vcvisituser).filter(
                 db.and_(Vcvisituser.tenant_id == tenant_id, Vcvisituser.apply_id == num,
@@ -75,7 +75,7 @@ def edit(number):
                 db.and_(Scrule.tenant_id == tenant_id, Scrule.id == row.rule_id)).first().rule_name
             currentRule.append(rule_name)
 
-        # 출입문 조회
+        # 방문문 조회
         doors = db.session.query(Sccode).filter(
             db.and_(Sccode.tenant_id == tenant_id, Sccode.class_id == 2, Sccode.attb_a == site_id,
                     Sccode.use_yn == '1')).all()
@@ -115,7 +115,7 @@ def edit(number):
             db.and_(Vcapplyuser.tenant_id == tenant_id, Vcapplyuser.apply_id == num, Vcapplymaster.use_yn == '1')).all()
         tableList = []
 
-        # 출입신청 하나에 연결된, 사용자리스트 조회
+        # 방문신청 하나에 연결된, 사용자리스트 조회
         for vcapplyuser in vcapplyusers:
             obj = {'name': vcapplyuser.visitant, 'phone': vcapplyuser.phone, 'vehicle_type': vcapplyuser.vehicle_type, 'readonly' : '',
                    'vehicle_num': vcapplyuser.vehicle_num, 'rule': []}
@@ -153,7 +153,7 @@ def edit(number):
 
             tableList.append(obj)
 
-            # 출입신청 시점에서 적용된 규칙이름 조회
+            # 방문신청 시점에서 적용된 규칙이름 조회
 
         return render_template(current_app.config['TEMPLATE_THEME'] + '/inout_apply/edit.html',
                                scrules=scrules, vcapplymaster=vcapplymaster, sccompinfo=sccompinfo, scuser=scuser,
@@ -163,7 +163,7 @@ def edit(number):
                                state=state, cars=cars, tableList=tableList)
 
 
-# 출입신청 수정저장
+# 방문신청 수정저장
 @inout_apply.route('/save', methods=['POST'])
 def save():
     if request.method == 'POST':
@@ -215,7 +215,7 @@ def save():
             vcapplymaster.site_nm = request.form['inout_location']  # 방문목적상세
             vcapplymaster.site_id2 = request.form['inout_location_code2']  # 방문목적상세
             vcapplymaster.site_nm2 = request.form['inout_location2']  # 방문목적상세
-            vcapplymaster.user_id = current_user.id  # 출입신청자 아이디
+            vcapplymaster.user_id = current_user.id  # 방문신청자 아이디
             vcapplymaster.interview_id = interViewUser.id  # 접견부서 아이디
             vcapplymaster.visit_type = '0'  # 0(로그인 한 사용자, 작업자용) #1(로그인 안 함 사용자, 일반사용자용)
             vcapplymaster.use_yn = '1'
@@ -227,7 +227,7 @@ def save():
             for row in visitors:
                 vcapplyuser = Vcapplyuser()
                 vcapplyuser.tenant_id = tenant_id  # 테넌트 아이디
-                vcapplyuser.apply_id = vcapplymaster.id  # 출입신청 아이디
+                vcapplyuser.apply_id = vcapplymaster.id  # 방문신청 아이디
                 vcapplyuser.visitant = row['name']  # 방문자 이름
                 vcapplyuser.phone = row['phone']  # 방문자 핸드폰 번호
                 vcapplyuser.vehicle_type = row['carType']  # 방문자 차량유형
@@ -248,7 +248,7 @@ def save():
                 for rule in row['rule']:
                     vcvisituser = Vcvisituser()
                     vcvisituser.tenant_id = tenant_id  # 테넌트 아이디
-                    vcvisituser.apply_id = applyId  # 출입신청 아이디
+                    vcvisituser.apply_id = applyId  # 방문신청 아이디
                     vcvisituser.name = row['name']  # 방문자이름
                     vcvisituser.phone = row['phone']  # 방문자휴대폰 번호
 
@@ -271,7 +271,7 @@ def save():
                         scruleFile = ScRuleFile()
                         scruleFile.tenant_id = tenant_id  # 테넌트 아이디
                         scruleFile.rule_id = scrule.id  # 규칙 아이디
-                        scruleFile.visit_id = vcvisituser.id  # 출입신청 방문 아이디
+                        scruleFile.visit_id = vcvisituser.id  # 방문신청 방문 아이디
                         scruleFile.file_name = rule['bucketUrl'].split('/')[-1]  # 파일명
                         scruleFile.s3_url = rule['bucketUrl'].split(current_app.config['S3_BUCKET_NAME_VMS'])[-1]  # 버킷주소
 
@@ -281,7 +281,7 @@ def save():
     return jsonify({'msg': "HTTP STATE CODE 200"})
 
 
-# 출입신청
+# 방문신청
 @inout_apply.route('/create', methods=['POST'])
 def create():
     if request.method == 'POST':
@@ -307,7 +307,7 @@ def create():
                     Sccompinfo.use_yn == '1')).first()
 
         # STEP01. Vcapplymaster 생성
-        vcapplymaster = Vcapplymaster()  # 출입마스터 생성
+        vcapplymaster = Vcapplymaster()  # 방문마스터 생성
 
         vcapplymaster.tenant_id = tenant_id  # 로그인 사용자의 태넌트아이디
         vcapplymaster.interviewr = request.form['interviewer_name']  # 감독자
@@ -327,9 +327,9 @@ def create():
         vcapplymaster.site_nm = request.form['inout_location']  # 방문목적상세
         vcapplymaster.site_id2 = request.form['inout_location_code2']  # 방문목적상세
         vcapplymaster.site_nm2 = request.form['inout_location2']  # 방문목적상세
-        vcapplymaster.user_id = current_user.id  # 출입신청자 아이디
+        vcapplymaster.user_id = current_user.id  # 방문신청자 아이디
         vcapplymaster.interview_id = interViewUser.id  # 접견부서 아이디
-        vcapplymaster.approval_state = '대기'  # 출입승인 상태 저장
+        vcapplymaster.approval_state = '대기'  # 방문승인 상태 저장
         vcapplymaster.visit_type = '0'  # 0(로그인 한 사용자, 작업자용) #1(로그인 안 함 사용자, 일반사용자용)
         vcapplymaster.use_yn = '1'
         db.session.add(vcapplymaster)
@@ -340,7 +340,7 @@ def create():
         for row in visitors:
             vcapplyuser = Vcapplyuser()
             vcapplyuser.tenant_id = tenant_id  # 테넌트 아이디
-            vcapplyuser.apply_id = vcapplymaster.id  # 출입신청 아이디
+            vcapplyuser.apply_id = vcapplymaster.id  # 방문신청 아이디
             vcapplyuser.visitant = row['name']  # 방문자 이름
             vcapplyuser.phone = row['phone']  # 방문자 핸드폰 번호
             vcapplyuser.vehicle_type = row['carType']  # 방문자 차량유형
@@ -361,7 +361,7 @@ def create():
             for rule in row['rule']:
                 vcvisituser = Vcvisituser()
                 vcvisituser.tenant_id = tenant_id  # 테넌트 아이디
-                vcvisituser.apply_id = vcapplymaster.id  # 출입신청 아이디
+                vcvisituser.apply_id = vcapplymaster.id  # 방문신청 아이디
                 vcvisituser.name = row['name']  # 방문자이름
                 vcvisituser.phone = row['phone']  # 방문자휴대폰 번호
 
@@ -385,7 +385,7 @@ def create():
                     scruleFile = ScRuleFile()
                     scruleFile.tenant_id = tenant_id  # 테넌트 아이디
                     scruleFile.rule_id = scrule.id  # 규칙 아이디
-                    scruleFile.visit_id = vcvisituser.id  # 출입신청 방문 아이디
+                    scruleFile.visit_id = vcvisituser.id  # 방문신청 방문 아이디
                     scruleFile.file_name = rule['bucketUrl'].split('/')[-1]  # 파일명
                     scruleFile.s3_url = rule['bucketUrl'].split(current_app.config['S3_BUCKET_NAME_VMS'])[-1]  # 버킷주소
 
@@ -422,12 +422,12 @@ def ruleSearch():
                     'msg2': lists2})
 
 
-# 규칙 조회(출입신청 시점의 규칙조회)
+# 규칙 조회(방문신청 시점의 규칙조회)
 @inout_apply.route('/rule/search/before', methods=['POST'])
 def ruleSearchBefore():
     tenant_id = current_user.ssctenant.id
 
-    # 특정시점의 출입신청 아이디(정책은 출입신청 시점에서 적용된다.)
+    # 특정시점의 방문신청 아이디(정책은 방문신청 시점에서 적용된다.)
     applyId = request.form['applyId']
     vcvisitusers = db.session.query(Vcvisituser).filter(
         db.and_(Vcvisituser.tenant_id == tenant_id, Vcvisituser.apply_id == applyId)).group_by(
@@ -645,14 +645,14 @@ def ruleValidateBefore():
     vsdate = request.form['sdate']  # 방문시작 날짜
     vedate = request.form['edate']  # 방문종료 날짜
 
-    # 특정시점의 출입신청 아이디(정책은 출입신청 시점에서 적용된다.)
+    # 특정시점의 방문신청 아이디(정책은 방문신청 시점에서 적용된다.)
     applyId = request.form['applyId']
     vcvisitusers = db.session.query(Vcvisituser).filter(
         db.and_(Vcvisituser.tenant_id == tenant_id, Vcvisituser.apply_id == applyId)).group_by(
         Vcvisituser.rule_id).all()
 
     lists = []
-    # Step01.Rule(출입신청 시점에 적용된 규칙적용)
+    # Step01.Rule(방문신청 시점에 적용된 규칙적용)
     for vcvisituser in vcvisitusers:
 
         for row in db.session.query(Scrule).filter(
@@ -844,7 +844,7 @@ def workSpaceSearch():
 
         attb_a = lists[0]['code']
 
-        # 해당 사업장의 출입지역을 조회해온다.
+        # 해당 사업장의 방문지역을 조회해온다.
         for row in db.session.query(Sccode).filter(
                 db.and_(Sccode.tenant_id == tenant_id, Sccode.class_id == 2, Sccode.attb_a == attb_a,
                         Sccode.use_yn == '1')).all():
@@ -858,7 +858,7 @@ def workSpaceSearch():
                         'msg2': lists2});
 
 
-# 출입지역
+# 방문지역
 @inout_apply.route('/door/search', methods=['POST'])
 def doorSearch():
     if request.method == 'POST':
@@ -867,7 +867,7 @@ def doorSearch():
         code = request.form['code']  # 코드
         code_nm = request.form['code_nm']  # 코드이름
 
-        # 해당 사업장의 출입지역을 조회해온다. 
+        # 해당 사업장의 방문지역을 조회해온다.
         for row in db.session.query(Sccode).filter(
                 db.and_(Sccode.tenant_id == tenant_id, Sccode.class_id == 2, Sccode.attb_a == code,
                         Sccode.use_yn == '1')).all():
@@ -961,7 +961,7 @@ def userSearchBefore():
         phone = request.form['phone']  # 사용자 휴대폰번호
         lists = []
 
-        # 특정시점의 출입신청 아이디(정책은 출입신청 시점에서 적용된다.)
+        # 특정시점의 방문신청 아이디(정책은 방문신청 시점에서 적용된다.)
         applyId = request.form['applyId']
 
         vcvisitusers = db.session.query(Vcvisituser).filter(

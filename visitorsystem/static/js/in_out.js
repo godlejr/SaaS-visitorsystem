@@ -161,11 +161,11 @@ $(document).ready(function() {
         newTr = newTr + append + '</tr>';
     }
 
-    //출입신청 컨트롤러(완료)
+    //방문신청 컨트롤러(완료)
     function applyHandler(dataSet) {
         $("#alertModal").show();
         $("#modalContent").text('');
-        $("#modalContent").text('출입신청이 성공적으로 이뤄졌습니다.');
+        $("#modalContent").text('방문신청이 성공적으로 이뤄졌습니다.');
         $(location).attr('href', '/')
 
 
@@ -424,7 +424,7 @@ $(document).ready(function() {
             dataSet['code'] = $("#inout_location option:selected").attr('code');
             dataSet['code_nm'] = $("#inout_location option:selected").val();
 
-            //출입문조회
+            //방문문조회
             apiCallPost(urlMake('DOOR_SEARCH'), doorSearchHandler, dataSet);
 
         });
@@ -432,7 +432,7 @@ $(document).ready(function() {
 
     }
 
-    //출입문조회 핸들러
+    //방문문조회 핸들러
     function doorSearchHandler(data) {
         data = data.msg;
         var str = '';
@@ -545,7 +545,7 @@ $(document).ready(function() {
 
 
 
-            //출입지역 code
+            //방문지역 code
             dataSet["inout_location_code"] = $("#inout_location option:selected").attr('code')
             dataSet["inout_location_code2"] = $("#inout_location2 option:selected").attr('code')
             dataSet["visitors"] = JSON.stringify(lists);
@@ -561,7 +561,7 @@ $(document).ready(function() {
                 return;
             }
 
-            //출입 정보 check
+            //방문 정보 check
             var check = dataSet['inout_title'];
 
             if (check.length == 0) {
@@ -580,7 +580,7 @@ $(document).ready(function() {
                 return;
             }
 
-            //출입자 정보 check
+            //방문자 정보 check
             check = $('#tableBody tr').length;
             if (check == 0) {
                 $("#alertModal").show();
@@ -590,13 +590,13 @@ $(document).ready(function() {
             }
 
 
-            //출입유효성 check
+            //방문유효성 check
             $('#tableBody tr').each(function() {
                 check = $(this).children().eq(-1).attr('is-valid')
                 if (check == '0') {
                     $("#alertModal").show();
                     $("#modalContent").text('');
-                    $("#modalContent").text('방문자의 출입유효성을 점검해주세요');
+                    $("#modalContent").text('방문자의 방문유효성을 점검해주세요');
                 }
             });
 

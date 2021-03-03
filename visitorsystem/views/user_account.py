@@ -39,7 +39,7 @@ def update():
         # applyform = UserAccountFrom(request.form)
         # apply = Vcapplymaster()
         # apply.apply_code ='APPLY-002'
-        # apply.apply_nm = '출입신청 2번'
+        # apply.apply_nm = '방문신청 2번'
         # apply.interviewr = request.form['interviewer_name']  # 감독자
         # apply.applicant = request.form['applicant_name'] # 신청자
         # apply.phone = request.form['applicant_phone'] # 감독자 휴대폰
@@ -54,7 +54,7 @@ def update():
         # # apply.site_id = request.form['inout_location'].data #
         # # apply.site_nm = request.form['inout_location_desc'].data
         # apply.login_id = 'admin' #로그인 아이디(세션에서 가져오기)
-        # apply.approval_state = '대기' #출입승인 상태 저장
+        # apply.approval_state = '대기' #방문승인 상태 저장
         # db.session.add(apply)
         # db.session.commit()
 

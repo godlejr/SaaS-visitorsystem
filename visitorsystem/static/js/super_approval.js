@@ -98,7 +98,7 @@ $(document).ready(function() {
 	function setSearchFormHandler(data) {
 		var dataSet = data.msg;
 
-        //조회 결과에 따른 출입신청정보 Table Set
+        //조회 결과에 따른 방문신청정보 Table Set
 		if (dataSet.length < 1) {
 			$('.applyListTable>tbody').html('<td colspan="12" style="text-align:center"><text> 조회된 내역이 없습니다. </text></td>');
 		} else {
@@ -114,7 +114,7 @@ $(document).ready(function() {
 				htmlData += '<td data-title="시작일">' + dataSet[i].visit_sdate + '</td>';
 				htmlData += '<td data-title="종료일">' + dataSet[i].visit_edate + '</td>';
 				htmlData += '<td data-title="신청사업장">' + dataSet[i].site_nm + '</td>';
-				htmlData += '<td data-title="신청출입문">' + dataSet[i].site_nm2 + '</td>';
+				htmlData += '<td data-title="신청방문문">' + dataSet[i].site_nm2 + '</td>';
 				htmlData += '<td data-title="진행단계">' + dataSet[i].approval_state + '</td>';
 				htmlData += '</tr>';
 			}
@@ -177,7 +177,7 @@ $(document).ready(function() {
 		return userRuleInfoHtml;
     }
 
-    //출입신청 건에 포함된 방문자 및 규칙 정보리스트 Modal
+    //방문신청 건에 포함된 방문자 및 규칙 정보리스트 Modal
 	function searchApplyMasterDetailHandler(dataSet) {
 		//작업에 대한 작업자 상세 정보 Modal에 띄어야 함.
 		users = dataSet.users;
@@ -213,7 +213,7 @@ $(document).ready(function() {
 		$('#userInfoTable > tbody').html(userInfoHtml);
 
         //방문자별 상세 규칙 리스트 출력
-        //출입상세정보 중 1명 row 선택시, 선택한 사람의 Rule 정보를 보임.
+        //방문상세정보 중 1명 row 선택시, 선택한 사람의 Rule 정보를 보임.
 		userRuleInfoHtml = userRuleInfoDetail(0, users, userRuleInfoList);
 		$('#userRuleTable > tbody').html(userRuleInfoHtml);
 
@@ -350,7 +350,7 @@ $(document).ready(function() {
 			apiCallPost(urlMake('SAVE'), updateApprovalStateHandler, dataSet);
 		});
 
-        //출입신청내역 중 출입상세정보 출력
+        //방문신청내역 중 방문상세정보 출력
 		$("[name=guestInfo]").unbind('click').click(function() {
 			var id = $(this).attr('value');
 			var dataSet = {};

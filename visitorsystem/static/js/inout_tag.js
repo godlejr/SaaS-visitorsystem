@@ -34,15 +34,32 @@ $(document).ready(function() {
 		}
 		return reqUrl;
 	}
+     function dataToString(data,userAuth) {
+        var res = "admin_sdate="+ data.admin_sdate  + "&admin_edate=" + data.admin_edate  +
+                                    "&visit_category=" + data.visit_category  + "&visit_purpose=" + data.visit_purpose  +
+                                    "&comp_nm=" + data.comp_nm  + "&approval_state=" + data.approval_state  + "&visit_interviewer=" + data.visit_interviewer  +
+                                    "&visit_user=" + data.visit_user  +
+                                    "&pages=" + data.pages ;
+
+        //관리자
+        if (userAuth == '9990') {
+            res += '&site_id=' + data.site_id;
+        }
+
+        res = '\'?' + res + '\'';
+        return res;
+    }
 
 	//목록 페이징
-	function Paging(endpoint, pagination, query_string) {
+	function Paging(endpoint, pagination, query_string, data, userAuth) {
+        searchCondition = dataToString(data, userAuth);
+
         var pageBtnHtml = '';
         pageBtnHtml += '<div class="custom-pagination btn-group mr-1" style="display: flex">';
         pageBtnHtml += '<div class="custom-pagination-center" style="margin: 0 auto">';
 
         if(pagination.page > 1) {
-            pageBtnHtml += '<button type="button" class="btn btn-primary mr-1" onclick="javascript:url_for(' + (parseInt(pagination.page) - 1) + ')" ';
+            pageBtnHtml += '<button type="button" class="btn btn-primary mr-1" onclick="javascript:url_for(' + (parseInt(pagination.page) - 1) + ',' + searchCondition + ')" ';
 
             if (query_string) {
                 pageBtnHtml += query_string;
@@ -54,7 +71,7 @@ $(document).ready(function() {
             var idx = (page*1) + 1
             if (page) {
                 if(idx != pagination.page) {
-                    pageBtnHtml += '<button type="button" class="btn btn-primary mr-1" onclick="javascript:url_for('+ idx + ')" ';
+                    pageBtnHtml += '<button type="button" class="btn btn-primary mr-1" onclick="javascript:url_for('+ idx + ',' + searchCondition + ')" ';
                     if (query_string) {
                         pageBtnHtml += query_string;
                     }
@@ -70,7 +87,7 @@ $(document).ready(function() {
         }
 
         if(pagination.page < pagination.p_pages) {
-            pageBtnHtml += '<button type="button" class="btn btn-primary" onclick="javascript:url_for(' + (parseInt(pagination.page) + 1) + ')" ';
+            pageBtnHtml += '<button type="button" class="btn btn-primary" onclick="javascript:url_for(' + (parseInt(pagination.page) + 1) + ',' + searchCondition + ')" ';
 
             if (query_string) {
                 pageBtnHtml += query_string;
@@ -80,11 +97,12 @@ $(document).ready(function() {
         pageBtnHtml += '</div></div>';
         return pageBtnHtml;
 	}
+
 //하다말음 - 김동주
 	function setSearchFormHandler(data) {
 		var dataSet = data.msg;
 
-        //조회 결과에 따른 출입신청정보 Table Set
+        //조회 결과에 따른 방문신청정보 Table Set
 		if (dataSet.length < 1) {
 			$('.applyListTable>tbody').html('<td colspan="12" style="text-align:center"><text> 조회된 내역이 없습니다. </text></td>');
 		} else {
@@ -101,7 +119,7 @@ $(document).ready(function() {
 				htmlData += '<td data-title="시작일">' + dataSet[i].visit_sdate + '</td>';
 				htmlData += '<td data-title="종료일">' + dataSet[i].visit_edate + '</td>';
 				htmlData += '<td data-title="신청사업장">' + dataSet[i].site_nm + '</td>';
-				htmlData += '<td data-title="신청출입문">' + dataSet[i].site_nm2 + '</td>';
+				htmlData += '<td data-title="신청방문문">' + dataSet[i].site_nm2 + '</td>';
 				htmlData += '<td data-title="발급상태">' + dataSet[i].barcode_state + '</td>';
 				htmlData += '</tr>';
 			}
@@ -109,7 +127,7 @@ $(document).ready(function() {
 		}
 
         // 조회 결과에 따른 페이지 버튼 Set (endpoint, Pagination 정보 객체, 쿼리 스트링)
-        var pageBtnHtml = Paging('inout_tag.index', data.pagination, data.query_string);
+        var pageBtnHtml = Paging('super_approval.index', data.pagination, data.query_string, data.searchCondition, data.userAuth);
         $('#pagination').html(pageBtnHtml);
 
         init();
@@ -164,7 +182,7 @@ $(document).ready(function() {
 		return userRuleInfoHtml;
     }
 
-    //출입신청 건에 포함된 방문자 및 규칙 정보리스트 Modal
+    //방문신청 건에 포함된 방문자 및 규칙 정보리스트 Modal
 	function searchApplyMasterDetailHandler(dataSet) {
 		//작업에 대한 작업자 상세 정보 Modal에 띄어야 함.
 //		console.log(dataSet.users);
@@ -202,7 +220,7 @@ $(document).ready(function() {
 		$('#userInfoTable > tbody').html(userInfoHtml);
 
         //방문자별 상세 규칙 리스트 출력
-        //출입상세정보 중 1명 row 선택시, 선택한 사람의 Rule 정보를 보임.
+        //방문상세정보 중 1명 row 선택시, 선택한 사람의 Rule 정보를 보임.
 		userRuleInfoHtml = userRuleInfoDetail(0, users, userRuleInfoList);
 		$('#userRuleTable > tbody').html(userRuleInfoHtml);
 
@@ -290,6 +308,9 @@ $(document).ready(function() {
 			dataSet['page'] = 1;    //Search 버튼 누르면 초기페이지는 1번째로 Set
 			dataSet['pages'] = 10;  //한 페이지에 조회되는 개수
 
+            //site_id가 없으면 undefined
+			dataSet['site_id'] = $("#location").val();
+
 			apiCallPost(urlMake('SEARCH'), setSearchFormHandler, dataSet);
 		});
 
@@ -337,7 +358,7 @@ $(document).ready(function() {
 			apiCallPost(urlMake('SAVE'), updateApprovalStateHandler, dataSet);
 		});
 
-        //출입신청내역 중 출입상세정보 출력
+        //방문신청내역 중 방문상세정보 출력
 		$("[name=guestInfo]").unbind('click').click(function() {
 			var applyMasterId = $(this).attr('value1');
 			var applyUserId = $(this).attr('value2');

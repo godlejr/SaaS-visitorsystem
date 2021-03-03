@@ -182,7 +182,7 @@ class ApplyForm(Form):
     inout_location_desc = StringField('지역상세')
 
     approve_interviewer = StringField('감독자')
-    approve_state = StringField('출입승인상태')
+    approve_state = StringField('방문승인상태')
     approve_date = StringField('일시')
     approve_remark = StringField('비고')
 

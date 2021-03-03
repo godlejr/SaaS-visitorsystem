@@ -10,7 +10,8 @@ from visitorsystem.lib.auth_decorators import visit_admin_required
 
 from visitorsystem.forms import Pagination
 from visitorsystem.notification import publish_message
-from visitorsystem.models import db, Vcapplymaster, Sccode, Sccompinfo, Scrule, Vcvisituser, ScRuleFile, Vcapplyuser, \
+from visitorsystem.models import db, Vcapplymaster, Sccode, Sccompinfo, Scrule, Vcvisituser, ScRuleFile, Scclass, \
+    Vcapplyuser, \
     Ssctenant
 
 inout_tag = Blueprint('inout_tag', __name__)
@@ -20,6 +21,10 @@ inout_tag = Blueprint('inout_tag', __name__)
 @inout_tag.route('/page/<int:page>')
 @visit_admin_required
 def index(page):
+    siteList = db.session.query(Sccode).join(Scclass, Scclass.id == Sccode.class_id) \
+        .filter(and_(Scclass.class_cd == 'SITE', Scclass.use_yn == 1,
+                     Sccode.tenant_id == current_user.ssctenant.id, Sccode.use_yn == 1)).all()
+
     visitCategory = db.session.query(Sccode).filter(
         and_(Sccode.tenant_id == current_user.ssctenant.id, Sccode.class_id == '6', Sccode.use_yn == '1')).all()
 
@@ -37,7 +42,8 @@ def index(page):
         'barcode_state': request.args.get('barcode_state', 'all'),
         'comp_nm': request.args.get('comp_nm', ''),
         'page': request.args.get('page', page),
-        'pages': request.args.get('pages', 10)
+        'pages': request.args.get('pages', 10),
+        'site_id': request.args.get('site_id', 'all')
     }
 
     searchResult = getApplyVisitorListBySearchCondition(searchCondition)
@@ -48,7 +54,9 @@ def index(page):
                            visitCategory=visitCategory,
                            lists=searchResult['applyVisitorList'],
                            pagination=searchResult['pagination'],
-                           query_string=request.query_string.decode('utf-8'))
+                           query_string=request.query_string.decode('utf-8'),
+                           siteList=siteList,
+                           userAuth=searchResult['userAuth'])
 
 
 @inout_tag.route('/search', methods=['POST'])
@@ -90,13 +98,14 @@ def search():
         return jsonify({'msg': lists,
                         'listSize': searchResult['listSize'],
                         'pagination': pagination.serializable(page_iter, searchResult['p_pages']),
-                        'query_string': "request.query_string.decode('utf-8')"})
-
+                        'query_string': "request.query_string.decode('utf-8')",
+                        'searchCondition': request.form,
+                        'userAuth': searchResult['userAuth']})
 
 
 @inout_tag.route('/detail', methods=['POST'])
 def detail():
-    # 작업 ID에 대한 출입자 명단 상세정보 출력
+    # 작업 ID에 대한 방문자 명단 상세정보 출력
     id = request.form['id']
     applyUserId = request.form['user_id']
     visit_sdate = request.form['sdate']
@@ -126,42 +135,42 @@ def detail():
 
     RuleInfolist = []
     for row in selectApplyInfo.all():
-        # 규칙 타입이 파일 경우 s3 경로 Setting
-        if row.scrule.rule_type == "파일":
+        # 텍스트 필드가 비어있으면, 달력 or 파일
+        if row.text_desc == "":
             scrulefile = db.session.query(ScRuleFile).filter(db.and_(ScRuleFile.tenant_id == current_user.ssctenant.id,
                                                                      ScRuleFile.use_yn == '1',
                                                                      ScRuleFile.visit_id == row.id)).first()
-            scrulefile.s3_url
-            if scrulefile.s3_url != '':
-                ruleRes = '가능'
-                ruleDesc = bucketUrl + scrulefile.s3_url
-            else:
+            # 규칙의 Type이 바뀌었을 경우, 예전 기록들을 올바르게 조회하기 위함 (변경 전 Type으로)
+            # 달력
+            if scrulefile == None:
+                ruleType = '달력'
+                if (visit_sdate >= row.s_date) and (visit_edate <= row.e_date):
+                    ruleRes = '가능'
+                else:
+                    ruleType
                 ruleRes = '불가'
-                ruleDesc = ''
-
-        elif row.scrule.rule_type == "텍스트":
+            # 파일
+            else:
+                ruleType = '파일'
+                if scrulefile.s3_url != '':
+                    ruleRes = '가능'
+                    ruleDesc = bucketUrl + scrulefile.s3_url
+                else:
+                    ruleRes = '불가'
+                    ruleDesc = ''
+        else:
+            ruleType = '텍스트'
             ruleDesc = row.text_desc
-
-            if ruleDesc != '':
-                ruleRes = '가능'
-            else:
-                ruleRes = '불가'
-
-        elif row.scrule.rule_type == "달력":
-            # 달력 규칙이 유효한지 만료인지 기간 검증
-            if (visit_sdate >= row.s_date) and (visit_edate <= row.e_date):
-                ruleRes = '가능'
-            else:
-                ruleRes = '불가'
+            ruleRes = '가능'
 
         results = {
             "id": row.id,  # User ID
-            "apply_id": row.apply_id,  # 출입신청 ID
+            "apply_id": row.apply_id,  # 방문신청 ID
             "name": row.name,  # 방문자 이름
             "phone": row.phone,  # 방문자 핸드폰
             "rule_id": row.rule_id,  # Rule ID
             "rule_name": row.scrule.rule_name,  # Rule 명칭
-            "rule_type": row.scrule.rule_type,  # Rule Type
+            "rule_type": ruleType,  # Rule Type
             "rule_duedate": row.scrule.rule_duedate,  # Rule 기간
             "s_date": row.s_date,  # 달력 Rule 시작일
             "e_date": row.e_date,  # 달력 Rule 종료일
@@ -170,8 +179,7 @@ def detail():
         }
         RuleInfolist.append(results)
 
-    return jsonify({'users': users,
-                    'userRuleInfoList': RuleInfolist})
+    return jsonify({'users': users, 'userRuleInfoList': RuleInfolist})
 
 
 @inout_tag.route('users/<int:id>/qrcode')
@@ -179,9 +187,8 @@ def qrcode(id):
     ssctenant = Ssctenant.query.filter_by(event_url=request.host).first()
     applyuser = db.session.query(Vcapplyuser).filter(Vcapplyuser.id == id).first()
 
-
     return render_template(current_app.config['TEMPLATE_THEME'] + '/inout_tag/visitor_tag.html',
-                           current_app=current_app,applyuser=applyuser,ssctenant=ssctenant)
+                           current_app=current_app, applyuser=applyuser, ssctenant=ssctenant)
 
 
 @inout_tag.route('/save', methods=['POST'])
@@ -220,7 +227,7 @@ def save():
                     'lists': lists})
 
 
-# 조회조건에 맞게 출입신청리스트 SELECT Function
+# 조회조건에 맞게 방문신청리스트 SELECT Function
 def getApplyVisitorListBySearchCondition(searchCondition):
     page = int(searchCondition['page'])
     pages = int(searchCondition['pages'])
@@ -235,9 +242,14 @@ def getApplyVisitorListBySearchCondition(searchCondition):
         Vcapplymaster.approval_state == '승인').order_by(
         Vcapplymaster.id.desc())
 
-    # 본인 사업장만 조회
+    # AUTH_VISIT_ADMIN: 본인 사업장만 조회
     if userAuth == current_app.config['AUTH_VISIT_ADMIN']:
         applyVisitorList = applyVisitorList.filter(Vcapplymaster.site_nm == current_user.site_nm)
+
+    # AUTH_ADMIN : 전체관리자 - 사업장 다봐야함
+    if userAuth == current_app.config['AUTH_ADMIN']:
+        if searchCondition['site_id'] != "all":
+            applyVisitorList = applyVisitorList.filter(Vcapplymaster.site_id == searchCondition['site_id'])
 
     # 조회조건에 따른 쿼리
     if searchCondition['barcode_state'] != "all":
@@ -260,12 +272,10 @@ def getApplyVisitorListBySearchCondition(searchCondition):
                                                                         "%" + searchCondition['comp_nm'] + "%"))
 
     if searchCondition['visit_user'] != '':
-        applyVisitorList = applyVisitorList.filter(
-            Vcapplyuser.visitant == searchCondition['visit_user'])
+        applyVisitorList = applyVisitorList.filter(Vcapplyuser.visitant == searchCondition['visit_user'])
 
     if searchCondition['visit_interviewer'] != '':
-        applyVisitorList = applyVisitorList.filter(
-            Vcapplymaster.interviewr == searchCondition['visit_interviewer'])
+        applyVisitorList = applyVisitorList.filter(Vcapplymaster.interviewr == searchCondition['visit_interviewer'])
 
     if searchCondition['admin_sdate'] != "" and searchCondition['admin_edate'] != "":
         applyVisitorList = applyVisitorList.filter(and_(Vcapplymaster.approval_date >= searchCondition['admin_sdate'],
@@ -281,4 +291,5 @@ def getApplyVisitorListBySearchCondition(searchCondition):
     return {'pagination': pagination,
             'p_pages': p_pages,
             'applyVisitorList': applyVisitorList,
-            'listSize': listCount}
+            'listSize': listCount,
+            'userAuth': userAuth}

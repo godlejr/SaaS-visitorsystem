@@ -18,9 +18,9 @@ def index(page):
     visitCategory = db.session.query(Sccode).filter(
         and_(Sccode.tenant_id == current_user.ssctenant.id, Sccode.class_id == '6', Sccode.use_yn == '1')).all()
 
-    siteList = db.session.query(Sccode).join(Scclass, Scclass.id == Sccode.class_id)\
-                                            .filter(and_(Scclass.class_cd == 'SITE', Scclass.use_yn == 1,
-                                                         Sccode.tenant_id == current_user.ssctenant.id, Sccode.use_yn == 1)).all()
+    siteList = db.session.query(Sccode).join(Scclass, Scclass.id == Sccode.class_id) \
+        .filter(and_(Scclass.class_cd == 'SITE', Scclass.use_yn == 1,
+                     Sccode.tenant_id == current_user.ssctenant.id, Sccode.use_yn == 1)).all()
     today = datetime.datetime.now()
     end_date = today
     start_date = today - datetime.timedelta(days=7)
@@ -85,6 +85,7 @@ def search():
                         'searchCondition': request.form,
                         'userAuth': searchResult['userAuth']})
 
+
 @super_approval.route('/save', methods=['POST'])
 def save():
     approval_date = request.form['approval_date']
@@ -104,7 +105,7 @@ def save():
 
 @super_approval.route('/detail', methods=['POST'])
 def detail():
-    # 작업 ID에 대한 출입자 명단 상세정보 출력
+    # 작업 ID에 대한 방문자 명단 상세정보 출력
     id = request.form['id']
     visit_sdate = request.form['sdate']
     visit_edate = request.form['edate']
@@ -160,7 +161,7 @@ def detail():
 
         results = {
             "id": row.id,  # User ID
-            "apply_id": row.apply_id,  # 출입신청 ID
+            "apply_id": row.apply_id,  # 방문신청 ID
             "name": row.name,  # 방문자 이름
             "phone": row.phone,  # 방문자 핸드폰
             "rule_id": row.rule_id,  # Rule ID
@@ -178,7 +179,7 @@ def detail():
                     'userRuleInfoList': RuleInfolist})
 
 
-# 조회조건에 맞게 출입신청리스트 SELECT Function
+# 조회조건에 맞게 방문신청리스트 SELECT Function
 def getApplyListBySearchCondition(searchCondition):
     page = int(searchCondition['page'])
     pages = int(searchCondition['pages'])
@@ -192,16 +193,25 @@ def getApplyListBySearchCondition(searchCondition):
 
     # AUTH_ADMIN, AUTH_VISIT_ADMIN : 모든 사업장의 신청내역을 볼 수 있음
     # AUTH_APPROVAL : 본인에게 요청 온 신청내역만 볼 수 있음
-    if (userAuth == current_app.config['AUTH_ADMIN']) or (userAuth == current_app.config['AUTH_VISIT_ADMIN']):
-        selectApplyLists = db.session.query(Vcapplymaster).filter(and_(Vcapplymaster.use_yn == 1, Vcapplymaster.tenant_id == current_user.ssctenant.id))\
-                                                          .order_by(Vcapplymaster.id.desc())
+    if userAuth == current_app.config['AUTH_ADMIN']:
+        selectApplyLists = db.session.query(Vcapplymaster).filter(
+            and_(Vcapplymaster.use_yn == 1, Vcapplymaster.tenant_id == current_user.ssctenant.id)) \
+            .order_by(Vcapplymaster.id.desc())
+
     elif userAuth == current_app.config['AUTH_APPROVAL']:
-        selectApplyLists = db.session.query(Vcapplymaster).filter(and_(Vcapplymaster.use_yn == 1, Vcapplymaster.interview_id == current_user.id,
-                                                                       Vcapplymaster.tenant_id == current_user.ssctenant.id)).order_by(Vcapplymaster.id.desc())
+        selectApplyLists = db.session.query(Vcapplymaster).filter(
+            and_(Vcapplymaster.use_yn == 1, Vcapplymaster.interview_id == current_user.id,
+                 Vcapplymaster.tenant_id == current_user.ssctenant.id)).order_by(Vcapplymaster.id.desc())
+
+    elif userAuth == current_app.config['AUTH_VISIT_ADMIN']:
+        selectApplyLists = db.session.query(Vcapplymaster).filter(
+            and_(Vcapplymaster.use_yn == 1, Vcapplymaster.tenant_id == current_user.ssctenant.id,
+                 Vcapplymaster.site_nm == current_user.site_nm)) \
+            .order_by(Vcapplymaster.id.desc())
 
     # AUTH_ADMIN : 전체관리자 - 사업장 다봐야함
     # AUTH_APPROVAL : 내부직원- 사업장 상관없이 본인에게 온거 다 조회 가능
-    # AUTH_VISIT_ADMIN : 출입관리자 - 본인사업장
+    # AUTH_VISIT_ADMIN : 방문관리자 - 본인사업장
     if (userAuth == current_app.config['AUTH_ADMIN']) or (userAuth == current_app.config['AUTH_APPROVAL']):
         if searchCondition['site_id'] != "all":
             selectApplyLists = selectApplyLists.filter(Vcapplymaster.site_id == searchCondition['site_id'])
@@ -213,9 +223,12 @@ def getApplyListBySearchCondition(searchCondition):
     if searchCondition['approval_state'] != "all":
         selectApplyLists = selectApplyLists.filter(Vcapplymaster.approval_state == searchCondition['approval_state'])
     if searchCondition['visit_purpose'] != '':
-        selectApplyLists = selectApplyLists.filter(Vcapplymaster.visit_purpose.like("%" + searchCondition['visit_purpose'] + "%"))
+        selectApplyLists = selectApplyLists.filter(
+            Vcapplymaster.visit_purpose.like("%" + searchCondition['visit_purpose'] + "%"))
     if searchCondition['comp_nm'] != '':
-        selectApplyLists = selectApplyLists.join(Sccompinfo).filter(Sccompinfo.comp_nm.like("%" + searchCondition['comp_nm'] + "%"))
+        selectApplyLists = selectApplyLists.join(Sccompinfo).filter(Vcapplymaster.biz_id == Sccompinfo.id,
+                                                                    Sccompinfo.comp_nm.like(
+                                                                        "%" + searchCondition['comp_nm'] + "%"))
     if searchCondition['visit_sdate'] != "" and searchCondition['visit_edate'] != "":
         condition_edate = datetime.datetime.strptime(searchCondition['visit_edate'], '%Y-%m-%d')
         condition_edate = str(condition_edate + datetime.timedelta(days=1))

@@ -843,7 +843,7 @@ class Scuser(db.Model, UserMixin):
 
 
 class Vcapplymaster(db.Model, BaseMixin):
-    """출입신청 마스터"""
+    """방문신청 마스터"""
     __tablename__ = 'vc_apply_master'
     tenant_id = db.Column(db.Integer, db.ForeignKey('ssc_tenants.id'), nullable=False)
     interviewr = db.Column(db.String(30), nullable=False)
@@ -883,7 +883,7 @@ class Vcapplymaster(db.Model, BaseMixin):
 
 
 class Vcapplyuser(db.Model, BaseMixin):
-    """출입인원 정보"""
+    """방문인원 정보"""
     __tablename__ = 'vc_apply_user'
     tenant_id = db.Column(db.Integer, db.ForeignKey('ssc_tenants.id'), nullable=False)
     apply_id = db.Column(db.Integer, db.ForeignKey('vc_apply_master.id'), nullable=False)
@@ -905,7 +905,7 @@ class Vcapplyuser(db.Model, BaseMixin):
 
 
 class Vcinoutinfo(db.Model, BaseMixin):
-    """입출입정보"""
+    """입방문정보"""
     __tablename__ = 'vc_inout_info'
     tenant_id = db.Column(db.Integer, db.ForeignKey('ssc_tenants.id'), nullable=False)
     apply_user_id = db.Column(db.Integer, db.ForeignKey('vc_apply_user.id'), nullable=False)

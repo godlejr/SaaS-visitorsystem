@@ -3,35 +3,8 @@
 {% block mainContent %}
 <!-- mainContent의 상단 조회조건 설정 부분 -->
 <script>
-    function url_for(param){
-        var sdate = $('#admin_sdate').val();
-        var edate = $('#admin_edate').val();
-        var dataSet = {};
-
-        if (!sdate || !edate) {
-            return;
-        }
-
-        sdate = sdate.split('/');
-        edate = edate.split('/');
-
-        dataSet['admin_sdate'] = sdate[2] + "-" + sdate[0] + "-" + sdate[1];
-        dataSet['admin_edate'] = edate[2] + "-" + edate[0] + "-" + edate[1];
-        dataSet['visit_user'] = $('#visit-user').val();
-        dataSet['visit_interviewer'] = $('#visit-interviewer').val();
-        dataSet['visit_category'] = $('#type').val();
-        dataSet['visit_purpose'] = $('#visit-purpose').val();
-        dataSet['comp_nm'] = $('#comp-nm').val();
-        dataSet['barcode_state'] = $('#inputState').val();
-        dataSet['page'] = 1;    //Search 버튼 누르면 초기페이지는 1번째로 Set
-        dataSet['pages'] = 10;  //한 페이지에 조회되는 개수
-
-        document.location.href =  "{{url_for( 'inout_tag.index')}}page/" + param +
-                                    "?admin_sdate="+ dataSet['admin_sdate'] + "&admin_edate=" + dataSet['admin_edate'] +
-                                    "&visit_category=" + dataSet['visit_category'] + "&visit_purpose=" + dataSet['visit_purpose'] +
-                                    "&comp_nm=" + dataSet['comp_nm'] + "&approval_state=" + dataSet['approval_state'] + "&visit_interviewer=" + dataSet['visit_interviewer'] +
-                                    "&visit_user=" + dataSet['visit_user'] +
-                                    "&pages=" + dataSet['pages'];
+    function url_for(param, searchCondition){
+        document.location.href =  "{{url_for( 'super_approval.index')}}page/" + param + searchCondition
     }
 
 </script>
@@ -42,7 +15,7 @@
         <div class="masonry-item col-md-12">
             <div class="bgc-white bd p-20 col-md-12">
                 <div class="content-top mB-5">
-                    <div class="page-header"><h5 class="c-grey-900"> 출입조희 > 출입증 발급 </h5><br></div>
+                    <div class="page-header"><h5 class="c-grey-900"> 방문조희 > 방문증 발급 </h5><br></div>
                 </div>
                 <div class="mT-30">
                 </div>
@@ -79,6 +52,17 @@
                                     {% endfor %}
                                 </select>
                             </div>
+                              <!-- AUTH_ADMIN, 권힌 보유자만 해당 검색조건이 보임 -->
+                            {% if userAuth == current_app.config['AUTH_ADMIN'] %}
+                                <div class="form-group col-md-2"><label for="location">사업장</label>
+                                    <select id="location" class="form-control" name="site_nm">
+                                        <option selected="selected" value="all">-전체-</option>
+                                        {% for list in siteList %}
+                                            <option name="{{list.code}}" value="{{list.code}}">{{list.code_nm}}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                            {% endif %}
                         </div>
 
                         <div class="form-row">
@@ -106,7 +90,7 @@
                                                                                                      id="comp-nm"
                                                                                                      name="comp_nm">
                             </div>
-                            <div class="form-group col-md-2"><label for="inputState">출입증 발급 상태</label>
+                            <div class="form-group col-md-2"><label for="inputState">방문증 발급 상태</label>
                                 <select id="inputState" class="form-control" name="approval_state">
                                     <!-- all / state0 / state1 / state2-->
                                     <option selected="selected" value="all">-전체-</option>
@@ -132,7 +116,7 @@
                     </button>
                     <button type="button" class="btn cur-p btn-primary mR-10 btn-right modal-btn" id="agree">발급</button>
                 </div>
-                <h5 class="c-grey-900 mB-20">출입증 발급</h5>
+                <h5 class="c-grey-900 mB-20">방문증 발급</h5>
                 <hr/>
                 <section id="no-more-tables">
                     <table id="applyListTable" class="table table-striped table-bordered applyListTable" cellspacing="0"
@@ -151,7 +135,7 @@
                             <th style="width: 120px;" class="numeric">시작일</th>
                             <th style="width: 120px;" class="numeric">종료일</th>
                             <th style="width: 110px;" class="numeric">신청사업장</th>
-                            <th style="width: 110px;" class="numeric">신청출입문</th>
+                            <th style="width: 110px;" class="numeric">신청방문문</th>
                             <th style="width: 120px;" class="numeric">발급상태</th>
                         </tr>
                         </thead>
@@ -161,7 +145,7 @@
                             <text> 조회된 내역이 없습니다.</text>
                         </td>
                         {% else %}
-                        <!-- 출입신청마스터에서 작업내역 데이터 출력 부분-->
+                        <!-- 방문신청마스터에서 작업내역 데이터 출력 부분-->
                         {% for visitUser in lists %}
                         <tr>
                             <td data-title="선택"><input type="checkbox" name="chk" value1="{{visitUser.id}}"
@@ -181,7 +165,7 @@
                             <td data-title="시작일">{{visitUser.vcapplymaster.visit_sdate}}</td>
                             <td data-title="종료일">{{visitUser.vcapplymaster.visit_edate}}</td>
                             <td data-title="신청사업장">{{visitUser.vcapplymaster.site_nm}}</td>
-                            <td data-title="신청출입문">{{visitUser.vcapplymaster.site_nm2}}</td>
+                            <td data-title="신청방문문">{{visitUser.vcapplymaster.site_nm2}}</td>
                             <td data-title="발급상태">{% if (barcode|length) %}발급{% else
                                 %}미발급{% endif %}
                             </td>
