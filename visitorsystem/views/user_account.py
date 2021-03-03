@@ -40,9 +40,9 @@ def update():
         # apply = Vcapplymaster()
         # apply.apply_code ='APPLY-002'
         # apply.apply_nm = '방문신청 2번'
-        # apply.interviewr = request.form['interviewer_name']  # 감독자
+        # apply.interviewr = request.form['interviewer_name']  # 접견자
         # apply.applicant = request.form['applicant_name'] # 신청자
-        # apply.phone = request.form['applicant_phone'] # 감독자 휴대폰
+        # apply.phone = request.form['applicant_phone'] # 접견자 휴대폰
         # apply.visit_category = request.form['inout_purpose_type'] # 방문종류
         # apply.biz_no = request.form['inout_biz_no'] # 사업자번호
         # apply.visit_sdate = request.form['inout_sdate'] # 방문시작일

@@ -233,7 +233,7 @@ $(document).ready(function() {
 
     }
 
-    //감독자조회 컨트롤러
+    //접견자조회 컨트롤러
     function interViewSearchHandler(dataSet) {
         dataSet = dataSet.msg
         var str = ''
@@ -339,7 +339,7 @@ $(document).ready(function() {
     }
 
 
-    //감독자조회 컨트롤러
+    //접견자조회 컨트롤러
     function interviewSearchHandler(dataSet) {
         dataSet = dataSet.msg
         var str = '';

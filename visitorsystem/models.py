@@ -860,7 +860,7 @@ class Vcapplymaster(db.Model, BaseMixin):
     site_id = db.Column(db.String(30), nullable=False)
     site_nm = db.Column(db.String(50), nullable=False)
     user_id = db.Column(db.Integer, db.ForeignKey('sc_user.id'), nullable=False) #신청자 아이디
-    interview_id = db.Column(db.Integer, nullable=False)  # 감독관 아이디
+    interview_id = db.Column(db.Integer, nullable=False)  # 접견관 아이디
     approval_state = db.Column(db.String(20), nullable=False)
     # 추가부분
     site_id2 = db.Column(db.String(30), nullable=False)

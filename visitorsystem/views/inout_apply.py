@@ -174,7 +174,7 @@ def save():
         interviewer_name = request.form['interviewer_name']  # 접견자 이름
         interviewer_phone = request.form['interviewer_phone']  # 접견자 휴대폰번호
 
-        # 감독자 조회(내부직원)
+        # 접견자 조회(내부직원)
         interViewUser = db.session.query(Scuser).filter(db.and_(Scuser.tenant_id == tenant_id, Scuser.user_type == '0',
                                                                 Scuser.name == interviewer_name,
                                                                 Scuser.phone == interviewer_phone,
@@ -198,7 +198,7 @@ def save():
         db.session.query(Vcapplyuser).filter(Vcapplyuser.tenant_id == tenant_id,
                                              Vcapplyuser.apply_id == applyId).delete()
         if vcapplymaster:
-            vcapplymaster.interviewr = request.form['interviewer_name']  # 감독자
+            vcapplymaster.interviewr = request.form['interviewer_name']  # 접견자
 
             vcapplymaster.applicant = request.form['applicant_name']  # 신청자
             vcapplymaster.applicant_comp_id = request.form['applicant_biz_no']  # 신청자 업체번호
@@ -292,7 +292,7 @@ def create():
         interviewer_name = request.form['interviewer_name']  # 접견자 이름
         interviewer_phone = request.form['interviewer_phone']  # 접견자 휴대폰번호
 
-        # 감독자 조회(내부직원)
+        # 접견자 조회(내부직원)
         interViewUser = db.session.query(Scuser).filter(db.and_(Scuser.tenant_id == tenant_id, Scuser.user_type == '0',
                                                                 Scuser.name == interviewer_name,
                                                                 Scuser.phone == interviewer_phone,
@@ -310,7 +310,7 @@ def create():
         vcapplymaster = Vcapplymaster()  # 방문마스터 생성
 
         vcapplymaster.tenant_id = tenant_id  # 로그인 사용자의 태넌트아이디
-        vcapplymaster.interviewr = request.form['interviewer_name']  # 감독자
+        vcapplymaster.interviewr = request.form['interviewer_name']  # 접견자
 
         vcapplymaster.applicant = request.form['applicant_name']  # 신청자
         vcapplymaster.applicant_comp_id = request.form['applicant_biz_no']  # 신청자 업체번호
