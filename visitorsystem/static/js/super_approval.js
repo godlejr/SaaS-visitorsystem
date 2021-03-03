@@ -114,7 +114,7 @@ $(document).ready(function() {
 				htmlData += '<td data-title="시작일">' + dataSet[i].visit_sdate + '</td>';
 				htmlData += '<td data-title="종료일">' + dataSet[i].visit_edate + '</td>';
 				htmlData += '<td data-title="신청사업장">' + dataSet[i].site_nm + '</td>';
-				htmlData += '<td data-title="신청방문문">' + dataSet[i].site_nm2 + '</td>';
+				htmlData += '<td data-title="신청출입문">' + dataSet[i].site_nm2 + '</td>';
 				htmlData += '<td data-title="진행단계">' + dataSet[i].approval_state + '</td>';
 				htmlData += '</tr>';
 			}

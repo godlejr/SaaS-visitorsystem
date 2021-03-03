@@ -135,7 +135,7 @@
                             <th style="width: 120px;" class="numeric">시작일</th>
                             <th style="width: 120px;" class="numeric">종료일</th>
                             <th style="width: 110px;" class="numeric">신청사업장</th>
-                            <th style="width: 110px;" class="numeric">신청방문문</th>
+                            <th style="width: 110px;" class="numeric">신청출입문</th>
                             <th style="width: 120px;" class="numeric">발급상태</th>
                         </tr>
                         </thead>
@@ -165,7 +165,7 @@
                             <td data-title="시작일">{{visitUser.vcapplymaster.visit_sdate}}</td>
                             <td data-title="종료일">{{visitUser.vcapplymaster.visit_edate}}</td>
                             <td data-title="신청사업장">{{visitUser.vcapplymaster.site_nm}}</td>
-                            <td data-title="신청방문문">{{visitUser.vcapplymaster.site_nm2}}</td>
+                            <td data-title="신청출입문">{{visitUser.vcapplymaster.site_nm2}}</td>
                             <td data-title="발급상태">{% if (barcode|length) %}발급{% else
                                 %}미발급{% endif %}
                             </td>
