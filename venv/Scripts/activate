@@ -37,7 +37,7 @@ deactivate () {
 # unset irrelevant variables
 deactivate nondestructive
 
-VIRTUAL_ENV="C:\dev\VMS_dev\venv\Scripts\venv"
+VIRTUAL_ENV="C:\Users\godlejr\PycharmProjects\visitorsystem\venv"
 
 export VIRTUAL_ENV
 

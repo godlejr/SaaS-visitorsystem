@@ -114,7 +114,7 @@ $(document).ready(function() {
 				htmlData += '<td data-title="업체명">' + dataSet[i].comp_nm + '</td>';
 				htmlData += '<td data-title="방문목적">' + dataSet[i].visit_purpose + '</td>';
 				htmlData += '<td data-title="방문자">' + dataSet[i].visit_user + '</td>';
-				htmlData += '<td data-title="방문자 정보" style="text-decoration: underline; cursor:pointer;" data-toggle="modal" class="guestInfo" name="guestInfo" value1=' + dataSet[i].master_id + ' value2=' + dataSet[i].user_id + '>방문자 정보</td>';
+				htmlData += '<td data-title="방문자 정보" style=" cursor:pointer; text-decoration: underline; cursor:pointer;" data-toggle="modal" class="guestInfo" name="guestInfo" value1=' + dataSet[i].master_id + ' value2=' + dataSet[i].user_id + '>방문자 정보</td>';
                 htmlData += '<td data-title="접견자">' + dataSet[i].visit_interviewr + '</td>';
 				htmlData += '<td data-title="시작일">' + dataSet[i].visit_sdate + '</td>';
 				htmlData += '<td data-title="종료일">' + dataSet[i].visit_edate + '</td>';

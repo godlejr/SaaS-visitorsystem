@@ -1,0 +1,26 @@
+.masonry {
+    height: 328.438px;
+    position: relative;
+    padding-right: 15px;
+    padding-left: 15px;
+}
+
+.page-header  {
+    float:left;
+}
+
+.table-header{
+    float:left;
+}
+
+.btn-right {
+    float : right;
+}
+
+
+.scroll {
+    white-space:nowrap;
+    width:100%;
+    height:200px;
+    overflow:auto
+}

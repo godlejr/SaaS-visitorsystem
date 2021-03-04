@@ -20,7 +20,7 @@ $(document).ready(function() {
 
 	//type에 맞는 URL을 반환하는 함수
 	function urlMake(url, args) {
-		var reqUrl = "/superApproval/";
+		var reqUrl = "/inoutApplyManage/";
 		switch (url) {
 			case 'SEARCH':
 				reqUrl = reqUrl + 'search';
@@ -31,12 +31,16 @@ $(document).ready(function() {
 			case 'SAVE':
 				reqUrl = reqUrl + 'save';
 				break;
+			case 'APPLICANT_SEARCH':
+				reqUrl = reqUrl + 'applicant/search';
+				break;
 		}
 		return reqUrl;
 	}
 
     function dataToString(data, userAuth) {
-        var res = 'visit_sdate=' + data.visit_sdate + '&visit_edate=' + data.visit_edate +
+        var res = 'applicant_name=' + data.applicant_name + '&applicant_phone=' + data.applicant_phone +
+                  'visit_sdate=' + data.visit_sdate + '&visit_edate=' + data.visit_edate +
                   '&visit_category=' + data.visit_category + '&visit_purpose=' + data.visit_purpose +
                   '&comp_nm=' + data.comp_nm + '&approval_state=' + data.approval_state + '&pages=' + data.pages;
 
@@ -104,8 +108,7 @@ $(document).ready(function() {
 		} else {
 			var htmlData = '';
 			for (var i = 0; i < dataSet.length; i++) {
-				htmlData += '<tr>';
-				htmlData += '<td data-title="선택"><input type="checkbox" name="chk" value1=' + dataSet[i].id + ' value2=' + dataSet[i].approval_state + '></td>';
+				htmlData += '<tr style="cursor:pointer;" onclick="document.location.href="/inoutApply/edit/' + dataSet[i].id + '">';
 				htmlData += '<td data-title="방문유형">' + dataSet[i].visit_category + '</td>';
 				htmlData += '<td data-title="업체명">' + dataSet[i].comp_nm + '</td>';
 				htmlData += '<td data-title="방문목적">' + dataSet[i].visit_purpose + '</td>';
@@ -242,23 +245,35 @@ $(document).ready(function() {
     $('#visit_sdate').val(getFormatDate(new Date(), "sdate"));
     $('#visit_edate').val(getFormatDate(new Date(), "edate"));
 
-    //체크 개수, 승인, 반려 Modal 창에 값 전달하는 부분
-    function modalOpen(val) {
-        var cnt = $("input:checkbox[name=chk]:checked").length;
-
-        $(".appr-name").html(val);
-        $(".chkCnt").html(cnt);
-
-        if (cnt == 0) {
-            alert(val + " 진행할 건을 체크해주세요.");
-            return false;
-        } else {
-            $('#signModal').modal({
-                backdrop: 'static',
-                keyboard: false
-            });
-            $('#signModal').modal('show');
+    //신청자조회 컨트롤러(완료)
+    function applySearchHandler(dataSet) {
+        dataSet = dataSet.msg
+        var str = ''
+        for (var i = 0; i < dataSet.length; i++) {
+            var name = dataSet[i].name;
+            var phone = dataSet[i].phone;
+            var comp_nm = dataSet[i].comp_nm;
+            var biz_no = dataSet[i].biz_no;
+            $('#applyTbody').children().remove();
+            var temp = `<tr class='applyTtr'>
+                                 <th scope="row">${i+1}</th>
+                                 <td>${name}</td>
+                                 <td>${phone}</td>
+                                 <td>${comp_nm}</td>
+                                 <td>${biz_no}</td>
+                            </tr>`;
+            str += temp;
         }
+
+        $('#applyTbody').append(str);
+        $('.applyTtr').click(function() {
+            $('#applicant_name').val($(this).children('td:eq(0)').text());
+            $('#applicant_phone').val($(this).children('td:eq(1)').text());
+            $('#applicant_comp_nm').val($(this).children('td:eq(2)').text());
+            $('#applicant_biz_no').val($(this).children('td:eq(3)').text());
+
+        });
+
     }
 
 	//event리스너
@@ -268,15 +283,6 @@ $(document).ready(function() {
 	        var modalName = '#'+$(this).val();
             $(modalName).hide();
         });
-
-		//체크박스 전체 선택,해제
-		$("#checkall").unbind('click').click(function() {
-			if ($("#checkall").prop("checked")) {
-				$("input[name=chk]").prop("checked", true);
-			} else {
-				$("input[name=chk]").prop("checked", false);
-			}
-		});
 
         //조회시, 달력 포맷 수정
 		$("#searchBtn").unbind('click').click(function() {
@@ -303,52 +309,24 @@ $(document).ready(function() {
             //site_id가 없으면 undefined
 			dataSet['site_id'] = $("#location").val();
 
+            //신청자 정보
+			dataSet['applicant_name'] = $("#applicant_name").val();
+            dataSet['applicant_phone'] = $("#applicant_phone").val();
+
 			//권한별 추가
 			apiCallPost(urlMake('SEARCH'), setSearchFormHandler, dataSet);
 		});
 
-		$("#agree").unbind('click').click(function() {
-			$('#status').val("승인");
-			modalOpen($("#agree").html());
-		});
 
-		$("#reject").unbind('click').click(function() {
-			$('#status').val("반려");
-			modalOpen($("#reject").html());
-		});
 
-		//승인 및 반려 버튼 눌렀을 때, 체크된 작업ID에 대해 승인 및 반려
-		$("#okBtn").unbind('click').click(function() {
-			$('#signModal').modal('hide');
+		//신청자조회 모달
+        $('#visitSearchView').unbind('click').click(function() {
+            var dataSet = {};
+            var visitInput = $('#visitInput').val();
+            dataSet['visitInput'] = visitInput;
 
-			var obj = $("[name=chk]");
-			var chkArray = []; // 배열 선언
-			var exit = false;
-
-			// 체크된 체크박스의 value 값을 가지고 온다. value1 : ID , value2 : 승인상태
-			$('input:checkbox[name=chk]:checked').each(function() {
-				chkArray.push($(this).attr("value1"));
-
-				if ($(this).attr("value2") != "대기") {
-					alert("이미 승인 및 반려된 건은 수정할 수 없습니다.");
-					exit = true;
-				}
-			});
-
-			if (exit) {
-				$(".modal-backdrop").hide();
-				return false;
-			}
-
-			var dataSet = {};
-			approval_date = getFormatDate(new Date(), "");
-			approval_date = approval_date.split('/');
-			dataSet['approval_date'] = approval_date[2] + "-" + approval_date[0] + "-" + approval_date[1];
-			dataSet['approval_state'] = $('#status').val();
-			dataSet['lists'] = chkArray;
-
-			apiCallPost(urlMake('SAVE'), updateApprovalStateHandler, dataSet);
-		});
+            apiCallPost(urlMake('APPLICANT_SEARCH'), applySearchHandler, dataSet);
+        });
 
         //방문신청내역 중 방문상세정보 출력
 		$("[name=guestInfo]").unbind('click').click(function() {

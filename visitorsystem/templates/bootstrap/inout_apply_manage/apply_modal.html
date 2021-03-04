@@ -1,0 +1,116 @@
+{% extends "bootstrap/inout_apply_manage/base.html" %}
+
+{% block modalContent %}
+<!-- 신청자정보 Modal -->
+<div class="modal fade" id="visitModal" tabindex="-1" role="dialog"
+     aria-labelledby="interviewModalCenterTitle" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title c-grey-900 mB-20" id="visitModalCenterTitle">신청자 검색</h5>
+                <button type="button" class="close visitApply" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="bgc-white bd bdrs-3 p-20">
+
+                            <div>
+                                <input type="text" id="visitInput" class="form-control" style="width:90%;float:left"
+                                       placeholder="이름을 입력해주세요">
+                                <button type="button" id="visitSearchView" class="btn btn-primary" style="float:right">
+                                    <i class="search-icon ti-search pdd-right-10"></i>
+                                </button>
+                            </div>
+                            <!-- <p>Add <code class="highlighter-rouge">.table-hover</code> to enable a hover state
+                                on table rows within a <code class="highlighter-rouge">&lt;tbody&gt;</code>.</p> -->
+
+                            <table id='applyTables' class="table table-hover">
+                                <thead>
+                                <tr>
+                                    <th scope="col">#</th>
+                                    <th scope="col" style="width:67px;">신청자</th>
+                                    <th scope="col">연락처</th>
+                                    <th scope="col">업체명</th>
+                                    <th scope="col">업체번호</th>
+                                </tr>
+                                </thead>
+                                <tbody id="applyTbody">
+
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary visitApply" data-dismiss="modal">확인</button>
+                <button type="button" class="btn btn-secondary visitApply" data-dismiss="modal">취소</button>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+<!--작업에 대한 방문자 정보 확인 모달-->
+<div id="visitantDocModal" class="modal" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title"> 방문자 상세 정보 </h4>
+                <button type="button" class="btn btn-primary exitModal" value="visitantDocModal"> ×</button>
+            </div>
+            <div class="modal-body">
+                <p class="applyName"></p>
+                <div class="scroll">
+                    <table id="userInfoTable" class="table table-bordered">
+                        <thead class="thead-light tableHead">
+                            <tr>
+                                <th>No</th>
+                                <th>방문자</th>
+                                <th>휴대폰번호</th>
+                                <th>규칙유효성</th>
+                            </tr>
+                        </thead>
+                        <tbody class="userInfomodalBody">
+
+                        </tbody>
+                    </table>
+                </div>
+                <br>
+
+                <div style="font-weight:bold; font-size: medium;">
+                    <span class="userName"></span>님의 규칙 상세정보
+                </div>
+
+                <div class="scroll">
+                    <table id="userRuleTable" class="table table-bordered">
+                        <thead class="thead-light tableHead">
+                            <tr>
+                                <th>No</th>
+                                <th>방문자</th>
+                                <th>규칙명</th>
+                                <th>규칙타입</th>
+                                <th>규칙상세</th>
+                                <th>유효성검사</th>
+                            </tr>
+                        </thead>
+                        <tbody class="userRulemodalBody">
+
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary exitModal" value="visitantDocModal"> 닫기 </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+{% block mainContent %} {% endblock%}
+
+{% endblock %}
