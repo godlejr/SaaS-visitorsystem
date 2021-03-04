@@ -59,6 +59,8 @@ def create_app(config_name):
     from visitorsystem.views.common_code import common_code as common_code_blueprint
     from visitorsystem.views.inout_apply import inout_apply as inout_apply_blueprint
     from visitorsystem.views.inout_manage import inout_manage as inout_manage_blueprint
+    from visitorsystem.views.inout_apply_manage import inout_apply_manage as inout_apply_manage_blueprint
+
     from visitorsystem.views.inout_ruleset import inout_ruleset as inout_ruleset_blueprint
     from visitorsystem.views.inout_tag import inout_tag as inout_tag_blueprint
     from visitorsystem.views.statistics import statistics as statistics_blueprint
@@ -70,6 +72,8 @@ def create_app(config_name):
     application.register_blueprint(common_code_blueprint, url_prefix='/commonCode')
     application.register_blueprint(inout_apply_blueprint, url_prefix='/inoutApply')
     application.register_blueprint(inout_manage_blueprint, url_prefix='/inoutManage')
+    application.register_blueprint(inout_apply_manage_blueprint, url_prefix='/inoutApplyManage')
+
     application.register_blueprint(inout_ruleset_blueprint, url_prefix='/inoutRuleset')
     application.register_blueprint(inout_tag_blueprint, url_prefix='/inoutTag')
     application.register_blueprint(statistics_blueprint, url_prefix='/statistics')

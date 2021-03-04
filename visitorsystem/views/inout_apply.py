@@ -29,17 +29,16 @@ def index():
 
 
 # 방문신청 수정
-@inout_apply.route('/edit/<int:number>', methods=['GET'])
-def edit(number):
+@inout_apply.route('/edit/<int:id>', methods=['GET'])
+def edit(id):
     if request.method == 'GET':
-        num = number
 
         tenant_id = current_user.ssctenant.id  # 로그인 사용자의 테넌트 아이디
         scrules = db.session.query(Scrule).all()  # 페이지 로드전 동적규칙 조회
 
         # 방문신청마스터 조회
         vcapplymaster = db.session.query(Vcapplymaster).filter(
-            db.and_(Vcapplymaster.tenant_id == tenant_id, Vcapplymaster.id == num,
+            db.and_(Vcapplymaster.tenant_id == tenant_id, Vcapplymaster.id == id,
                     Vcapplymaster.use_yn == '1')).first()
 
         if not vcapplymaster:
@@ -69,7 +68,7 @@ def edit(number):
         # 방문신청시 적용된 rule
         currentRule = []
         for row in db.session.query(Vcvisituser).filter(
-                db.and_(Vcvisituser.tenant_id == tenant_id, Vcvisituser.apply_id == num,
+                db.and_(Vcvisituser.tenant_id == tenant_id, Vcvisituser.apply_id == id,
                         Vcvisituser.use_yn == '1')).group_by(Vcvisituser.rule_id).all():
             rule_name = db.session.query(Scrule).filter(
                 db.and_(Scrule.tenant_id == tenant_id, Scrule.id == row.rule_id)).first().rule_name
@@ -107,12 +106,12 @@ def edit(number):
 
         # 규칙조회
         vcvisitusers = db.session.query(Vcvisituser).filter(
-            db.and_(Vcvisituser.tenant_id == tenant_id, Vcvisituser.apply_id == num, Vcvisituser.use_yn == '1')).all()
+            db.and_(Vcvisituser.tenant_id == tenant_id, Vcvisituser.apply_id == id, Vcvisituser.use_yn == '1')).all()
 
         # 방문자조회(Table)
 
         vcapplyusers = db.session.query(Vcapplyuser).filter(
-            db.and_(Vcapplyuser.tenant_id == tenant_id, Vcapplyuser.apply_id == num, Vcapplymaster.use_yn == '1')).all()
+            db.and_(Vcapplyuser.tenant_id == tenant_id, Vcapplyuser.apply_id == id, Vcapplymaster.use_yn == '1')).all()
         tableList = []
 
         # 방문신청 하나에 연결된, 사용자리스트 조회
@@ -125,7 +124,7 @@ def edit(number):
 
 
             for vcvisituser in db.session.query(Vcvisituser).filter(
-                    db.and_(Vcvisituser.tenant_id == tenant_id, Vcvisituser.apply_id == num,
+                    db.and_(Vcvisituser.tenant_id == tenant_id, Vcvisituser.apply_id == id,
                             Vcvisituser.name == obj['name'], Vcvisituser.phone == obj['phone'],
                             Vcvisituser.use_yn == '1')).all():
                 dict = {'rule_id': '', 'rule_type': '', 'rule_name': '', 'sdate': '', 'edate': '', 'textDesc': '',
@@ -726,7 +725,7 @@ def interviewSearch():
 
 
 # 신청자조회 Modal
-@inout_apply.route('/apply/search', methods=['POST'])
+@inout_apply.route('/applicant/search', methods=['POST'])
 def applySearch():
     if request.method == 'POST':
         tenant_id = current_user.ssctenant.id

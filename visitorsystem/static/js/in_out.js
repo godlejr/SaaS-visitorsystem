@@ -35,8 +35,8 @@ $(document).ready(function() {
                 reqUrl = reqUrl + `rule/valid`;
                 break;
 
-            case 'APPLY_SEARCH':
-                reqUrl = reqUrl + `apply/search`;
+            case 'APPLICANT_SEARCH':
+                reqUrl = reqUrl + `applicant/search`;
                 break;
 
             case 'COMP_SEARCH':
@@ -945,7 +945,7 @@ $(document).ready(function() {
             var visitInput = $('#visitInput').val();
             dataSet['visitInput'] = visitInput;
 
-            apiCallPost(urlMake('APPLY_SEARCH'), applySearchHandler, dataSet)
+            apiCallPost(urlMake('APPLICANT_SEARCH'), applySearchHandler, dataSet)
         });
 
         //업체조회 모달(HHJ)

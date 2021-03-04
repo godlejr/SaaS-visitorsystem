@@ -103,7 +103,7 @@
                     <button type="button" class="btn cur-p btn-primary mR-10 btn-right modal-btn" id="reject">반려</button>
                     <button type="button" class="btn cur-p btn-primary mR-10 btn-right modal-btn" id="agree">승인</button>
                 </div>
-                <h5 class="c-grey-900 mB-20">방문신청내역</h5>
+                <h5 class="c-grey-900 mB-20">방문 신청 내역</h5>
                 <hr/>
                 <section id="no-more-tables">
                     <table id="applyListTable" class="table table-striped table-bordered applyListTable" cellspacing="0" width="100%">
@@ -137,7 +137,7 @@
                             <td data-title="업체명">{{list.sccompinfo.comp_nm}}</td>
                             <td data-title="방문목적">{{list.visit_purpose}}</td>
                             <td data-title="신청자">{{list.applicant}}</td>
-                            <td data-title="방문자 정보" style="text-decoration: underline;" data-toggle="modal"
+                            <td data-title="방문자 정보" style="text-decoration: underline; cursor:pointer;" data-toggle="modal"
                                 class="guestInfo" name="guestInfo" value={{list.id}}>방문자 정보
                             </td>
                             <td data-title="시작일">{{list.visit_sdate}}</td>
