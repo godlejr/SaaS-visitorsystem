@@ -29,10 +29,10 @@ def index():
 
 
 # 방문신청 수정
-@inout_apply.route('/edit/<int:id>', methods=['GET'])
+@inout_apply.route('/edit/<id>', methods=['GET'])
 def edit(id):
     if request.method == 'GET':
-
+        id = int(id)
         tenant_id = current_user.ssctenant.id  # 로그인 사용자의 테넌트 아이디
         scrules = db.session.query(Scrule).all()  # 페이지 로드전 동적규칙 조회
 

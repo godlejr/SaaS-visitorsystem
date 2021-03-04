@@ -108,12 +108,12 @@ $(document).ready(function() {
 		} else {
 			var htmlData = '';
 			for (var i = 0; i < dataSet.length; i++) {
-				htmlData += '<tr style="cursor:pointer;" onclick="document.location.href="/inoutApply/edit/' + dataSet[i].id + '">';
+				htmlData += '<tr style="cursor:pointer;" onclick="javascript:url_for_edit(' + dataSet[i].id + ')">';
 				htmlData += '<td data-title="방문유형">' + dataSet[i].visit_category + '</td>';
 				htmlData += '<td data-title="업체명">' + dataSet[i].comp_nm + '</td>';
 				htmlData += '<td data-title="방문목적">' + dataSet[i].visit_purpose + '</td>';
 				htmlData += '<td data-title="신청자">' + dataSet[i].applicant + '</td>';
-				htmlData += '<td data-title="방문자 정보" style=" cursor:pointer; text-decoration: underline;" data-toggle="modal" class="guestInfo" name="guestInfo" value=' + dataSet[i].id + '>방문자 정보</td>';
+				htmlData += '<td data-title="방문자 정보" onclick="event.cancelBubble = true;" style=" cursor:pointer; text-decoration: underline;" data-toggle="modal" class="guestInfo" name="guestInfo" value=' + dataSet[i].id + '>방문자 정보</td>';
 				htmlData += '<td data-title="시작일">' + dataSet[i].visit_sdate + '</td>';
 				htmlData += '<td data-title="종료일">' + dataSet[i].visit_edate + '</td>';
 				htmlData += '<td data-title="신청사업장">' + dataSet[i].site_nm + '</td>';

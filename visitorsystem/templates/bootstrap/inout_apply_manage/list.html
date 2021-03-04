@@ -7,9 +7,13 @@
         document.location.href =  "{{url_for( 'inout_apply_manage.index')}}page/" + param + searchCondition;
     }
 
+    function url_for_edit(id){
+        document.location.href =  "{{url_for('inout_apply.edit',id='' )}}" + id;
+    }
+
+
 
 </script>
-
 
 
 <div class="mainContent-top">
@@ -36,14 +40,16 @@
                         <div class="form-row">
                             <div class="form-group col-md-1">
                                 <label class="fw-500" for="applicant_name">신청자</label>
-                                <input type="text" class="form-control" name="applicant_name" id="applicant_name"  style="{% if current_user.user_type != '1' %}background-color:white{% endif %}"
+                                <input type="text" class="form-control" name="applicant_name" id="applicant_name"
+                                       style="{% if current_user.user_type != '1' %}background-color:white{% endif %}"
                                        value="{% if current_user.user_type == '1' %}{{current_user.name}}{% endif %}"
                                        readonly>
                             </div>
 
                             <div class="form-group col-md-2">
                                 <label class="fw-500" for="applicant_phone">연락처</label>
-                                <input type="text" class="form-control" name="applicant_phone" id="applicant_phone" style="{% if current_user.user_type != '1' %}background-color:white{% endif %}"
+                                <input type="text" class="form-control" name="applicant_phone" id="applicant_phone"
+                                       style="{% if current_user.user_type != '1' %}background-color:white{% endif %}"
                                        value="{% if current_user.user_type == '1' %}{{current_user.phone}}{% endif %}"
                                        readonly>
                             </div>
@@ -52,7 +58,7 @@
                             <div class="form-group col-md-2">
                                 <label style="visibility:hidden">&nbsp</label>
                                 <button type="button" style="display:block" class="btn btn-primary" data-toggle="modal"
-                                        data-target="#visitModal" >
+                                        data-target="#visitModal">
                                     <i class="search-icon ti-search pdd-right-10"></i>
                                 </button>
                             </div>
@@ -163,12 +169,14 @@
                         {% else %}
                         <!-- 방문신청마스터에서 작업내역 데이터 출력 부분-->
                         {% for list in lists %}
-                        <tr style="cursor:pointer;" onclick="location.href='{{ url_for('inout_apply.edit', id=list.id) }}'">
+                        <tr style="cursor:pointer;"
+                            onclick="location.href='{{ url_for('inout_apply.edit', id=list.id) }}'">
                             <td data-title="방문유형">{{list.visit_category}}</td>
                             <td data-title="업체명">{{list.sccompinfo.comp_nm}}</td>
                             <td data-title="방문목적">{{list.visit_purpose}}</td>
                             <td data-title="신청자">{{list.applicant}}</td>
-                            <td data-title="방문자 정보" style="text-decoration: underline; cursor:pointer;" data-toggle="modal"
+                            <td data-title="방문자 정보" style="text-decoration: underline; cursor:pointer;" onclick="event.cancelBubble = true;"
+                                data-toggle="modal"
                                 class="guestInfo" name="guestInfo" value={{list.id}}>방문자 정보
                             </td>
                             <td data-title="시작일">{{list.visit_sdate}}</td>
