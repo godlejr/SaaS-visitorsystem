@@ -40,7 +40,7 @@ $(document).ready(function() {
 
     function dataToString(data, userAuth) {
         var res = 'applicant_name=' + data.applicant_name + '&applicant_phone=' + data.applicant_phone +
-                  'visit_sdate=' + data.visit_sdate + '&visit_edate=' + data.visit_edate +
+                  '&visit_sdate=' + data.visit_sdate + '&visit_edate=' + data.visit_edate +
                   '&visit_category=' + data.visit_category + '&visit_purpose=' + data.visit_purpose +
                   '&comp_nm=' + data.comp_nm + '&approval_state=' + data.approval_state + '&pages=' + data.pages;
 
@@ -124,8 +124,9 @@ $(document).ready(function() {
 			$('.applyListTable>tbody').html(htmlData);
 		}
 
+
         // 조회 결과에 따른 페이지 버튼 Set (endpoint, Pagination 정보 객체, 쿼리 스트링)
-        var pageBtnHtml = Paging('super_approval.index', data.pagination, data.query_string, data.searchCondition, data.userAuth);
+        var pageBtnHtml = Paging('inout_apply_manage.index', data.pagination, data.query_string, data.searchCondition, data.userAuth);
         $('#pagination').html(pageBtnHtml);
 
         init();
@@ -242,8 +243,18 @@ $(document).ready(function() {
         date = m + '/' + d + '/' + y;
         return date;
     }
-    $('#visit_sdate').val(getFormatDate(new Date(), "sdate"));
-    $('#visit_edate').val(getFormatDate(new Date(), "edate"));
+
+    var sdate = $('#visit_sdate').val();
+    var edate = $('#visit_edate').val();
+
+    if (sdate=="") {
+        $('#visit_sdate').val(getFormatDate(new Date(), "sdate"));
+    }
+
+    if (edate==""){
+        $('#visit_edate').val(getFormatDate(new Date(), "edate"));
+    }
+
 
     //신청자조회 컨트롤러(완료)
     function applySearchHandler(dataSet) {

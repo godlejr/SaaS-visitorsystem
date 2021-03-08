@@ -4,8 +4,11 @@
 <!-- mainContent의 상단 조회조건 설정 부분 -->
 <script>
     function url_for(param, searchCondition){
-        document.location.href =  "{{url_for( 'super_approval.index')}}page/" + param + searchCondition
+        document.location.href =  "{{url_for( 'inout_tag.index')}}page/" + param + searchCondition
     }
+
+
+
 
 </script>
 
@@ -15,7 +18,7 @@
         <div class="masonry-item col-md-12">
             <div class="bgc-white bd p-20 col-md-12">
                 <div class="content-top mB-5">
-                    <div class="page-header"><h5 class="c-grey-900"> 방문조희 > 방문증 발급 </h5><br></div>
+                    <div class="page-header"><h5 class="c-grey-900"> 방문 관리 > 방문증 발급 </h5><br></div>
                 </div>
                 <div class="mT-30">
                 </div>
@@ -34,13 +37,15 @@
                                     <div class="input-group">
                                         <i class="ti-calendar mT-5 p-5"></i>
                                         <input type="text" class="form-control bdc-grey-200 startDate"
-                                               data-provide="datepicker" name="admin_sdate" id="admin_sdate">
+                                               data-provide="datepicker" name="admin_sdate" id="admin_sdate"
+                                        />
 
                                         <h6 class="c-grey-900"> &nbsp~&nbsp</h6>
 
                                         <i class="ti-calendar mT-5 p-5"></i>
                                         <input type="text" class="form-control bdc-grey-200 ml-20 endDate"
-                                               data-provide="datepicker" name="admin_edate" id="admin_edate"/>
+                                               data-provide="datepicker" name="admin_edate" id="admin_edate"
+                                        />
                                     </div>
                                 </div>
                             </div>
@@ -52,16 +57,16 @@
                                     {% endfor %}
                                 </select>
                             </div>
-                              <!-- AUTH_ADMIN, 권힌 보유자만 해당 검색조건이 보임 -->
+                            <!-- AUTH_ADMIN, 권힌 보유자만 해당 검색조건이 보임 -->
                             {% if userAuth == current_app.config['AUTH_ADMIN'] %}
-                                <div class="form-group col-md-2"><label for="location">사업장</label>
-                                    <select id="location" class="form-control" name="site_nm">
-                                        <option selected="selected" value="all">-전체-</option>
-                                        {% for list in siteList %}
-                                            <option name="{{list.code}}" value="{{list.code}}">{{list.code_nm}}</option>
-                                        {% endfor %}
-                                    </select>
-                                </div>
+                            <div class="form-group col-md-2"><label for="location">사업장</label>
+                                <select id="location" class="form-control" name="site_nm">
+                                    <option selected="selected" value="all">-전체-</option>
+                                    {% for list in siteList %}
+                                    <option name="{{list.code}}" value="{{list.code}}">{{list.code_nm}}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
                             {% endif %}
                         </div>
 

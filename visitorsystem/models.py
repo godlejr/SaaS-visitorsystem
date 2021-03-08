@@ -882,6 +882,11 @@ class Vcapplymaster(db.Model, BaseMixin):
     Vcvisitusers = db.relationship('Vcvisituser', back_populates='vcapplymaster')
 
 
+    @hybrid_property
+    def get_interviewer(self):
+        #권한은 테넌트 조건이 없음..
+        return db.session.query(Scuser).filter(Scuser.tenant_id == self.tenant_id ,Scuser.use_yn == '1', Scuser.id == self.interview_id).first()
+
 class Vcapplyuser(db.Model, BaseMixin):
     """방문인원 정보"""
     __tablename__ = 'vc_apply_user'

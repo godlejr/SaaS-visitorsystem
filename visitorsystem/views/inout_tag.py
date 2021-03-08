@@ -22,8 +22,8 @@ inout_tag = Blueprint('inout_tag', __name__)
 @visit_admin_required
 def index(page):
     siteList = db.session.query(Sccode).join(Scclass, Scclass.id == Sccode.class_id) \
-        .filter(and_(Scclass.class_cd == 'SITE', Scclass.use_yn == 1,
-                     Sccode.tenant_id == current_user.ssctenant.id, Sccode.use_yn == 1)).all()
+        .filter(and_(Scclass.class_cd == 'SITE', Scclass.use_yn == '1',
+                     Sccode.tenant_id == current_user.ssctenant.id, Sccode.use_yn == '1')).all()
 
     visitCategory = db.session.query(Sccode).filter(
         and_(Sccode.tenant_id == current_user.ssctenant.id, Sccode.class_id == '6', Sccode.use_yn == '1')).all()
@@ -238,7 +238,7 @@ def getApplyVisitorListBySearchCondition(searchCondition):
 
     applyVisitorList = db.session.query(Vcapplyuser).join(Vcapplymaster).filter(
         Vcapplymaster.tenant_id == current_user.ssctenant.id, Vcapplyuser.tenant_id == current_user.ssctenant.id,
-        Vcapplymaster.id == Vcapplyuser.apply_id, Vcapplymaster.use_yn == 1,
+        Vcapplymaster.id == Vcapplyuser.apply_id, Vcapplymaster.use_yn == '1',
         Vcapplymaster.approval_state == '승인').order_by(
         Vcapplymaster.id.desc())
 

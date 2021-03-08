@@ -13,6 +13,8 @@
 
 
 
+
+
 </script>
 
 
@@ -72,13 +74,15 @@
                                     <div class="input-group">
                                         <i class="ti-calendar mT-5 p-5"></i>
                                         <input type="text" class="form-control bdc-grey-200 startDate"
-                                               data-provide="datepicker" name="visit_sdate" id="visit_sdate">
+                                               data-provide="datepicker" name="visit_sdate" id="visit_sdate"
+                                        >
 
                                         <h6 class="c-grey-900"> &nbsp~&nbsp</h6>
 
                                         <i class="ti-calendar mT-5 p-5"></i>
                                         <input type="text" class="form-control bdc-grey-200 ml-20 endDate"
-                                               data-provide="datepicker" name="visit_edate" id="visit_edate"/>
+                                               data-provide="datepicker" name="visit_edate" id="visit_edate"
+                                        />
                                     </div>
                                 </div>
                             </div>
@@ -175,7 +179,8 @@
                             <td data-title="업체명">{{list.sccompinfo.comp_nm}}</td>
                             <td data-title="방문목적">{{list.visit_purpose}}</td>
                             <td data-title="신청자">{{list.applicant}}</td>
-                            <td data-title="방문자 정보" style="text-decoration: underline; cursor:pointer;" onclick="event.cancelBubble = true;"
+                            <td data-title="방문자 정보" style="text-decoration: underline; cursor:pointer;"
+                                onclick="event.cancelBubble = true;"
                                 data-toggle="modal"
                                 class="guestInfo" name="guestInfo" value={{list.id}}>방문자 정보
                             </td>
@@ -191,7 +196,8 @@
                     </table>
                 </section>
                 <div id="pagination" class="pagination-nav">
-                    {{ func.render_pagination('super_approval.index', pagination, id=None, query_string=query_string) }}
+                    {{ func.render_pagination('inout_apply_manage.index', pagination, id=None,
+                    query_string=query_string) }}
                 </div>
             </div>
         </div>

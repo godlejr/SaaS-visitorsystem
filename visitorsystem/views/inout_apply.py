@@ -726,7 +726,7 @@ def interviewSearch():
 
 # 신청자조회 Modal
 @inout_apply.route('/applicant/search', methods=['POST'])
-def applySearch():
+def applicantSearch():
     if request.method == 'POST':
         tenant_id = current_user.ssctenant.id
         name = request.form['visitInput']

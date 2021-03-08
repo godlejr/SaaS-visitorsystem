@@ -116,8 +116,8 @@ $(document).ready(function() {
 				htmlData += '<td data-title="방문자">' + dataSet[i].visit_user + '</td>';
 				htmlData += '<td data-title="방문자 정보" style=" cursor:pointer; text-decoration: underline; cursor:pointer;" data-toggle="modal" class="guestInfo" name="guestInfo" value1=' + dataSet[i].master_id + ' value2=' + dataSet[i].user_id + '>방문자 정보</td>';
                 htmlData += '<td data-title="접견자">' + dataSet[i].visit_interviewr + '</td>';
-				htmlData += '<td data-title="시작일">' + dataSet[i].visit_sdate + '</td>';
-				htmlData += '<td data-title="종료일">' + dataSet[i].visit_edate + '</td>';
+				htmlData += '<td data-title="시작일">' + dataSet[i].admin_sdate + '</td>';
+				htmlData += '<td data-title="종료일">' + dataSet[i].admin_edate + '</td>';
 				htmlData += '<td data-title="신청사업장">' + dataSet[i].site_nm + '</td>';
 				htmlData += '<td data-title="신청출입문">' + dataSet[i].site_nm2 + '</td>';
 				htmlData += '<td data-title="발급상태">' + dataSet[i].barcode_state + '</td>';
@@ -126,8 +126,9 @@ $(document).ready(function() {
 			$('.applyListTable>tbody').html(htmlData);
 		}
 
+
         // 조회 결과에 따른 페이지 버튼 Set (endpoint, Pagination 정보 객체, 쿼리 스트링)
-        var pageBtnHtml = Paging('super_approval.index', data.pagination, data.query_string, data.searchCondition, data.userAuth);
+        var pageBtnHtml = Paging('inout_tag.index', data.pagination, data.query_string, data.searchCondition, data.userAuth);
         $('#pagination').html(pageBtnHtml);
 
         init();
@@ -246,8 +247,18 @@ $(document).ready(function() {
         date = m + '/' + d + '/' + y;
         return date;
     }
-    $('#admin_sdate').val(getFormatDate(new Date(), "sdate"));
-    $('#admin_edate').val(getFormatDate(new Date(), "edate"));
+
+
+    var sdate = $('#admin_sdate').val();
+    var edate = $('#admin_edate').val();
+
+    if (sdate=="") {
+        $('#admin_sdate').val(getFormatDate(new Date(), "sdate"));
+    }
+
+    if (edate==""){
+        $('#admin_edate').val(getFormatDate(new Date(), "edate"));
+    }
 
     //체크 개수, 승인, 반려 Modal 창에 값 전달하는 부분
     function modalOpen(val) {

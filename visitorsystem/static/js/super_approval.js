@@ -239,9 +239,17 @@ $(document).ready(function() {
         date = m + '/' + d + '/' + y;
         return date;
     }
-    $('#visit_sdate').val(getFormatDate(new Date(), "sdate"));
-    $('#visit_edate').val(getFormatDate(new Date(), "edate"));
 
+    var sdate = $('#visit_sdate').val();
+    var edate = $('#visit_edate').val();
+
+    if (sdate=="") {
+        $('#visit_sdate').val(getFormatDate(new Date(), "sdate"));
+    }
+
+    if (edate==""){
+        $('#visit_edate').val(getFormatDate(new Date(), "edate"));
+    }
     //체크 개수, 승인, 반려 Modal 창에 값 전달하는 부분
     function modalOpen(val) {
         var cnt = $("input:checkbox[name=chk]:checked").length;
@@ -316,6 +324,7 @@ $(document).ready(function() {
 			$('#status').val("반려");
 			modalOpen($("#reject").html());
 		});
+
 
 		//승인 및 반려 버튼 눌렀을 때, 체크된 작업ID에 대해 승인 및 반려
 		$("#okBtn").unbind('click').click(function() {

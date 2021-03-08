@@ -19,8 +19,8 @@ def index(page):
         and_(Sccode.tenant_id == current_user.ssctenant.id, Sccode.class_id == '6', Sccode.use_yn == '1')).all()
 
     siteList = db.session.query(Sccode).join(Scclass, Scclass.id == Sccode.class_id) \
-        .filter(and_(Scclass.class_cd == 'SITE', Scclass.use_yn == 1,
-                     Sccode.tenant_id == current_user.ssctenant.id, Sccode.use_yn == 1)).all()
+        .filter(and_(Scclass.class_cd == 'SITE', Scclass.use_yn == '1',
+                     Sccode.tenant_id == current_user.ssctenant.id, Sccode.use_yn == '1')).all()
     today = datetime.datetime.now()
     end_date = today
     start_date = today - datetime.timedelta(days=7)
@@ -54,7 +54,7 @@ def index(page):
 
 # 신청자조회 Modal
 @inout_apply_manage.route('/applicant/search', methods=['POST'])
-def applySearch():
+def applicantSearch():
     if request.method == 'POST':
         tenant_id = current_user.ssctenant.id
         name = request.form['visitInput']
@@ -223,7 +223,7 @@ def getApplyListBySearchCondition(searchCondition):
 
     if userAuth == current_app.config['AUTH_VISITOR']:
         selectApplyLists = db.session.query(Vcapplymaster).filter(
-            and_(Vcapplymaster.use_yn == 1, Vcapplymaster.tenant_id == current_user.ssctenant.id,
+            and_(Vcapplymaster.use_yn == '1', Vcapplymaster.tenant_id == current_user.ssctenant.id,
                  Vcapplymaster.applicant == current_user.name, Vcapplymaster.phone == current_user.phone)) \
             .order_by(Vcapplymaster.id.desc())
 
@@ -232,18 +232,18 @@ def getApplyListBySearchCondition(searchCondition):
     else :
         if userAuth == current_app.config['AUTH_ADMIN']:
             selectApplyLists = db.session.query(Vcapplymaster).filter(
-                and_(Vcapplymaster.use_yn == 1, Vcapplymaster.tenant_id == current_user.ssctenant.id)) \
+                and_(Vcapplymaster.use_yn == '1', Vcapplymaster.tenant_id == current_user.ssctenant.id)) \
                 .order_by(Vcapplymaster.id.desc())
 
 
         elif userAuth == current_app.config['AUTH_APPROVAL']:
             selectApplyLists = db.session.query(Vcapplymaster).filter(
-                and_(Vcapplymaster.use_yn == 1, Vcapplymaster.interview_id == current_user.id,
+                and_(Vcapplymaster.use_yn == '1', Vcapplymaster.interview_id == current_user.id,
                      Vcapplymaster.tenant_id == current_user.ssctenant.id)).order_by(Vcapplymaster.id.desc())
 
         elif userAuth == current_app.config['AUTH_VISIT_ADMIN']:
             selectApplyLists = db.session.query(Vcapplymaster).filter(
-                and_(Vcapplymaster.use_yn == 1, Vcapplymaster.tenant_id == current_user.ssctenant.id,
+                and_(Vcapplymaster.use_yn == '1', Vcapplymaster.tenant_id == current_user.ssctenant.id,
                      Vcapplymaster.site_nm == current_user.site_nm)) \
                 .order_by(Vcapplymaster.id.desc())
 
