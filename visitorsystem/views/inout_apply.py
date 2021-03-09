@@ -29,6 +29,7 @@ def index():
 
 
 # 방문신청 수정
+@inout_apply.route('/<id>', methods=['GET'])
 @inout_apply.route('/edit/<id>', methods=['GET'])
 def edit(id):
     if request.method == 'GET':

@@ -13,13 +13,17 @@ from werkzeug.security import check_password_hash, generate_password_hash
 
 from loggers import log, loggerSet
 from visitorsystem.forms import LoginForm
-from visitorsystem.models import db, Scuser, Ssctenant, Sccompinfo
+from visitorsystem.models import db, Scuser, Ssctenant, Sccompinfo, Vcapplymaster
 
 main = Blueprint('main', __name__)
 
+
 @main.route('/pricing')
 def pricing():
+    tenant_id = current_user.ssctenant.id  # 로그인 사용자의 테넌트 아이디
+
     return render_template(current_app.config['TEMPLATE_THEME'] + '/main/pricing.html')
+
 
 @main.route('/')
 @login_required
@@ -29,9 +33,10 @@ def index():
     today = time.strftime('%Y.%m.%d', time.localtime(time.time()))
 
     articles = get_article(current_user.ssctenant.comp_nm)
+    applyList = getApplyListByCurrentUserAuth()
 
     return render_template(current_app.config['TEMPLATE_THEME'] + '/main/index.html', today_covid=today_covid, day=day,
-                           today=today, articles=articles)
+                           today=today, articles=articles,applyList=applyList,current_app=current_app)
 
 
 @main.route('/login', methods=['GET', 'POST'])
@@ -353,7 +358,7 @@ def join():
         user.biz_id = biz_id
         user.comp_nm = request.form['comp_nm']
         user.user_type = "1"  # 외부인력
-        user.auth_id = current_app.config['AUTH_VISITOR']   # 기본권한
+        user.auth_id = current_app.config['AUTH_VISITOR']  # 기본권한
         user.sms_yn = 'Y'
         user.info_agr_yn = 'Y'
         user.use_yn = '1'
@@ -368,5 +373,33 @@ def join():
 
         comp = {'check': "true"}
 
-
     return jsonify({'msg': comp});
+
+
+# 조회조건에 맞게 방문신청리스트 SELECT Function
+def getApplyListByCurrentUserAuth():
+    userAuth = current_user.get_auth.code
+    tenant_id = current_user.ssctenant.id
+    user_id = current_user.id
+    site_nm = current_user.site_nm
+
+    applyLists = db.session.query(Vcapplymaster).filter(
+        and_(Vcapplymaster.use_yn == '1', Vcapplymaster.tenant_id == tenant_id)) \
+        .order_by(Vcapplymaster.visit_sdate.desc())
+
+    # AUTH_ADMIN : 전체관리자 - 사업장 다봐야함
+    # AUTH_APPROVAL : 내부직원- 사업장 상관없이 본인에게 온거 다 조회 가능
+    # AUTH_VISIT_ADMIN : 방문관리자 - 본인사업장
+
+    if userAuth == current_app.config['AUTH_VISITOR']:
+        applyLists = applyLists.filter(Vcapplymaster.user_id == user_id)
+    
+    elif userAuth == current_app.config['AUTH_APPROVAL']:
+        applyLists = db.session.query(Vcapplymaster).filter(Vcapplymaster.interview_id == user_id,Vcapplymaster.approval_state == '대기')
+
+    elif userAuth == current_app.config['AUTH_VISIT_ADMIN']:
+        applyLists = db.session.query(Vcapplymaster).filter(Vcapplymaster.site_nm == site_nm, Vcapplymaster.approval_state == '승인')
+
+    applyList = applyLists.limit(5).all()
+
+    return applyList
