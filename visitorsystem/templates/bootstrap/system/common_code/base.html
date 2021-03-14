@@ -1,6 +1,10 @@
 {% extends 'bootstrap/base.html' %}
 {% block content %}
+<script src="https://code.jquery.com/jquery-2.2.4.min.js" integrity="sha256-BbhdlvQf/xTY9gja0Dq3HiwQF8LaCRTXxZKRutelT44=" crossorigin="anonymous"></script>
+<script src="{{ url_for('static', filename='js/common_code.js') }}" ></script>
+
 <div id="mainContent">
+
     {% block mainContent %}
     {% endblock%}
 </div>

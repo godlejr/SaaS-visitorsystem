@@ -10,78 +10,70 @@
 
             <div class="mT-30">
 
-<!--외부업체-->
-                {% if current_user.user_type == '1' %}
+                <!--외부업체-->
 
                 <div class="form-row">
-                    <div class="form-group col-md-4" >
+                    <div class="form-group col-md-1">
                         <label for="applicant_name">신청자</label>
-                        <input type="text" class="form-control" name="applicant_name" id="applicant_name" value="{{current_user.name}}" disabled>
+                        <input type="text" class="form-control" name="applicant_name" id="applicant_name"
+                               style="{% if current_user.user_type != '1' %}background-color:white{% endif %}"
+                               value="{% if current_user.user_type == '1' %}{{current_user.name}}{% endif %}" readonly>
                     </div>
 
-                    <div class="form-group col-md-3">
+                    <div class="form-group col-md-2">
                         <label for="applicant_phone">연락처</label>
-                        <input type="text"  class="form-control" name="applicant_phone" id="applicant_phone" value="{{current_user.phone}}" disabled>
+                        <input type="text" class="form-control" name="applicant_phone" id="applicant_phone"
+                               style="{% if current_user.user_type != '1' %}background-color:white{% endif %}"
+                               value="{% if current_user.user_type == '1' %}{{current_user.phone}}{% endif %}" readonly>
                     </div>
 
-                </div>
-
-                <div class="form-row">
-                    <div class="form-group col-md-1"><label for="applicant_biz_no">업체명</label> <input type="text"  class="form-control" name="applicant_biz_no" id="applicant_biz_no" value="{{current_user.biz_no}}" disabled></div>
-                    <div class="form-group col-md-3">
-                        <div >
-                            <label for="applicant_comp_nm" style="visibility:hidden">업체번호</label>
-                            <input type="text"  class="form-control" name="applicant_comp_nm" id="applicant_comp_nm" value="{{current_user.comp_nm}}" disabled>
-                        </div>
-
-                    </div>
-                    <div class="form-group col-md-2" >
+                    {% if current_user.user_type != '1' %}
+                    <div class="form-group col-md-2">
                         <label style="visibility:hidden">&nbsp</label>
-                        <button type="button" style="display:block" class="btn btn-primary"  data-toggle="modal" data-target="#interviewModal" disabled>
+                        <button type="button" style="display:block" class="btn btn-primary" data-toggle="modal"
+                                data-target="#visitModal">
                             <i class="search-icon ti-search pdd-right-10"></i>
                         </button>
                     </div>
-
+                    {% endif %}
 
                 </div>
-            </div>
-            {% else %}
-<!--내부직원-->
-            <div class="form-row">
-                <div class="form-group col-md-4" >
-                    <label for="applicant_name">신청자</label>
-                    <input type="text" class="form-control" name="applicant_name" id="applicant_name">
-                </div>
 
-                <div class="form-group col-md-3">
-                    <label for="applicant_phone">연락처</label>
-                    <input type="text"  class="form-control" name="applicant_phone" id="applicant_phone">
-                </div>
+                <div class="form-row">
+                    <div class="form-group col-md-1"><label for="applicant_biz_no">업체명</label> <input type="text"
+                                                                                                      class="form-control"
+                                                                                                      name="applicant_biz_no"
+                                                                                                      id="applicant_biz_no"
+                                                                                                      style="{% if current_user.user_type != '1' %}background-color:white{% endif %}"
+                                                                                                      value="{% if current_user.user_type == '1' %}{{sccompinfo.biz_no}}{% endif %}"
+                                                                                                      readonly></div>
+                    <div class="form-group col-md-2">
+                        <div>
+                            <label for="applicant_comp_nm" style="visibility:hidden">업체번호</label>
+                            <input type="text" class="form-control" name="applicant_comp_nm" id="applicant_comp_nm"
+                                   style="{% if current_user.user_type != '1' %}background-color:white{% endif %}"
+                                   value="{% if current_user.user_type == '1' %}{{current_user.comp_nm}}{% endif %}"
+                                   readonly>
+                        </div>
 
-            </div>
-
-            <div class="form-row">
-                <div class="form-group col-md-1"><label for="applicant_biz_no">업체명</label> <input type="text"  class="form-control" name="applicant_biz_no" id="applicant_biz_no"></div>
-                <div class="form-group col-md-3">
-                    <div >
-                        <label for="applicant_comp_nm" style="visibility:hidden">업체번호</label>
-                        <input type="text"  class="form-control" name="applicant_comp_nm" id="applicant_comp_nm">
                     </div>
 
-                </div>
-                <div class="form-group col-md-2" >
-                    <label style="visibility:hidden">&nbsp</label>
-                    <button type="button" style="display:block" class="btn btn-primary"  data-toggle="modal" data-target="#interviewModal">
-                        <i class="search-icon ti-search pdd-right-10"></i>
-                    </button>
-                </div>
+                    {% if current_user.user_type != '1' %}
 
+                    <div class="form-group col-md-2">
+                        <label style="visibility:hidden">&nbsp</label>
+                        <button type="button" style="display:block" class="btn btn-primary" data-toggle="modal"
+                                data-target="#visitModal2">
+                            <i class="search-icon ti-search pdd-right-10"></i>
+                        </button>
+                    </div>
+                    {% endif %}
 
+                </div>
             </div>
+
         </div>
-        {% endif %}
     </div>
-</div>
 </div>
 
 {% block section2 %}

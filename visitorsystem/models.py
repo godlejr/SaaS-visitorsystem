@@ -38,7 +38,7 @@ class BaseMixin(object):
     # updated_at = db.Column(db.DateTime, default=db.func.now(), onupdate=db.func.now())
 
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    use_yn = db.Column(db.String(1))
+    use_yn = db.Column(db.String(1), default='1')
     created_at = db.Column(db.DateTime, default=db.func.now())
     created_by = db.Column(db.String(50))
     updated_at = db.Column(db.DateTime, default=db.func.now(), onupdate=db.func.now())
@@ -639,7 +639,7 @@ class Scclass(db.Model, BaseMixin):
     user_def_yn = db.Column(db.String(1))
 
     # 1:多 (Scclass->Sccode)-Parent class 정의 - childs = db.relationship('Child ', back_populates='Child 클래스에 정의한 parent 변수명')
-    scclasses = db.relationship('Sccode', back_populates='sccode')
+    sccodes = db.relationship('Sccode', back_populates='scclass')
 
 class Sccode(db.Model, BaseMixin):
     """공통코드관리"""
@@ -654,10 +654,17 @@ class Sccode(db.Model, BaseMixin):
     depth = db.Column(db.Integer)
     group_id = db.Column(db.String(50))
     position = db.Column(db.Integer)
-    user_def_yn = db.Column(db.String(1))
+
 
     # [Detail] -Child class 정의 - parent = db.relationship('Parent', backref=backref('실제 DB FK명'))
-    sccode = db.relationship('Scclass', backref=backref('FK_SC_CODE_CLASS_ID'))
+    scclass = db.relationship('Scclass', backref=backref('FK_SC_CODE_CLASS_ID'))
+
+
+    @hybrid_property
+    def get_site_for_gate(self):
+        return db.session.query(Sccode).filter(Sccode.tenant_id == self.tenant_id, Sccode.use_yn == '1',
+                                               Sccode.class_nm == '사업장', Sccode.code == self.attb_a).first()
+
 
 
 # 권한 매핑 필요
@@ -666,7 +673,6 @@ class Sccodeauth(db.Model, BaseMixin):
     __tablename__ = 'sc_code_auth'
     auth_id = db.Column(db.String(100), nullable=False)
     class_id = db.Column(db.String(30), db.ForeignKey('sc_class.class_id'), nullable=False)
-
 
 class Sccompinfo(db.Model, BaseMixin):
     """업체정보"""
@@ -754,6 +760,7 @@ class Scmenu(db.Model, BaseMixin):
     # 1:多 (Scmenu->Scmenuauth) [Master]
     scmenuauths = db.relationship('Scmenuauth', back_populates='scmenu')
 
+
 class Scmenuauth(db.Model, BaseMixin):
     """공통메뉴권한관리"""
     __tablename__ = 'sc_menu_auth'
@@ -787,10 +794,10 @@ class Scuser(db.Model, UserMixin):
     biz_id = db.Column(db.Integer,db.ForeignKey('sc_comp_info.id'))  # 외부1일 경우에만 데이터 있음 sc_comp_info
     comp_nm = db.Column(db.String(50))
     login_yn = db.Column(db.String(2))
-    #dept_id/dept_nm 추가
+    # dept_id/dept_nm 추가
     dept_id = db.Column(db.String(30))
     dept_nm = db.Column(db.String(50))
-
+    site_nm = db.Column(db.String(50))
     phone = db.Column(db.String(512))
     email = db.Column(db.String(512))
     fax_no = db.Column(db.String(512))
@@ -801,6 +808,7 @@ class Scuser(db.Model, UserMixin):
     logout_at = db.Column(db.DateTime)
     user_ip = db.Column(db.String(20))
     user_host = db.Column(db.String(50))
+    site_nm = db.Column(db.String(512))
 
     # [Detail] : Child class 정의 - parent = db.relationship('Parent', backref=backref('실제 DB FK명'))
     ssctenant = db.relationship('Ssctenant', backref=backref('FK_SC_USER_TENANT_ID'))
@@ -827,12 +835,20 @@ class Scuser(db.Model, UserMixin):
         return self.login_id
 
 
+    @hybrid_property
+    def get_auth(self):
+        #권한은 테넌트 조건이 없음..
+        return db.session.query(Sccode).filter(Sccode.use_yn == '1', Sccode.class_nm == '권한', Sccode.code == self.auth_id).first()
+
+
 class Vcapplymaster(db.Model, BaseMixin):
-    """출입신청 마스터"""
+    """방문신청 마스터"""
     __tablename__ = 'vc_apply_master'
     tenant_id = db.Column(db.Integer, db.ForeignKey('ssc_tenants.id'), nullable=False)
     interviewr = db.Column(db.String(30), nullable=False)
     applicant = db.Column(db.String(30), nullable=False)
+    applicant_comp_id = db.Column(db.String(30))
+    applicant_comp_nm = db.Column(db.String(50))
     phone = db.Column(db.String(20), nullable=False)
     visit_category = db.Column(db.String(30), nullable=False)
     biz_id = db.Column(db.Integer, db.ForeignKey('sc_comp_info.id'), nullable=False)
@@ -842,19 +858,36 @@ class Vcapplymaster(db.Model, BaseMixin):
     visit_desc = db.Column(db.String(200))
     site_id = db.Column(db.String(30), nullable=False)
     site_nm = db.Column(db.String(50), nullable=False)
-    login_id = db.Column(db.Integer, db.ForeignKey('sc_user.id'), nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey('sc_user.id'), nullable=False) #신청자 아이디
+    interview_id = db.Column(db.Integer, nullable=False)  # 접견관 아이디
     approval_state = db.Column(db.String(20), nullable=False)
+    # 추가부분
+    site_id2 = db.Column(db.String(30), nullable=False)
+    site_nm2 = db.Column(db.String(50), nullable=False)
+    visit_type = db.Column(db.String(50)) #0(로그인 한 사용자, 작업자용) #1(로그인 안 함 사용자, 일반사용자용)
+    #승인일시 컬럼 추가
+    approval_date = db.Column(db.String(50), nullable=False)
 
     # [Detail] Child class 정의 - parent = db.relationship('Parent', backref=backref('실제 DB FK명'))
     sccompinfo = db.relationship('Sccompinfo', backref=backref('FK_VC_APPLY_MASTER_BIZ_ID'))
+
     # [Detail]
     scuser = db.relationship('Scuser', backref=backref('FK_VC_APPLY_MASTER_LOGIN_ID'))
+
     # 1:多 (Vcapplymaster->Vcapplyuser) [Master]
     vcapplyusers = db.relationship('Vcapplyuser', back_populates='vcapplymaster')
 
+    # 1:多 (Vcapplymaster->Vcvisituser) [Master] 신규
+    Vcvisitusers = db.relationship('Vcvisituser', back_populates='vcapplymaster')
+
+
+    @hybrid_property
+    def get_interviewer(self):
+        #권한은 테넌트 조건이 없음..
+        return db.session.query(Scuser).filter(Scuser.tenant_id == self.tenant_id ,Scuser.use_yn == '1', Scuser.id == self.interview_id).first()
 
 class Vcapplyuser(db.Model, BaseMixin):
-    """출입인원 정보"""
+    """방문인원 정보"""
     __tablename__ = 'vc_apply_user'
     tenant_id = db.Column(db.Integer, db.ForeignKey('ssc_tenants.id'), nullable=False)
     apply_id = db.Column(db.Integer, db.ForeignKey('vc_apply_master.id'), nullable=False)
@@ -870,14 +903,15 @@ class Vcapplyuser(db.Model, BaseMixin):
 
     # [Detail]
     vcapplymaster = db.relationship('Vcapplymaster', backref=backref('FK_VC_APPLY_USER_APPLY_ID'))
+
     # 1:多 (Vcapplyuser->Vcinoutinfo) [Master]
     vcinoutinfos = db.relationship('Vcinoutinfo', back_populates='vcapplyuser')
 
 
 class Vcinoutinfo(db.Model, BaseMixin):
-    """입출입정보"""
+    """입방문정보"""
     __tablename__ = 'vc_inout_info'
-    tenant_id = db.Column(db.Integer, db.ForeignKey('ssc_tenants.tenant_id'), nullable=False)
+    tenant_id = db.Column(db.Integer, db.ForeignKey('ssc_tenants.id'), nullable=False)
     apply_user_id = db.Column(db.Integer, db.ForeignKey('vc_apply_user.id'), nullable=False)
 
     site_id = db.Column(db.String(30))
@@ -896,8 +930,7 @@ class Vcinoutinfo(db.Model, BaseMixin):
 class Scrule(db.Model, BaseMixin):
     """테넌트 정보"""
     __tablename__ = 'sc_rule'
-    tenant_id = db.Column(db.Integer, db.ForeignKey('ssc_tenants.tenant_id'), nullable=False)
-    tenant_id = db.Column(db.Integer, nullable=False)
+    tenant_id = db.Column(db.Integer, db.ForeignKey('ssc_tenants.id'), nullable=False)
     rule_name = db.Column(db.String(50), nullable=False, unique=True)
     rule_type = db.Column(db.String(50), nullable=False)
     rule_duedate = db.Column(db.String(50), nullable=False)
@@ -914,8 +947,9 @@ class Scrule(db.Model, BaseMixin):
 class Vcvisituser(db.Model, BaseMixin):
     """작업자 정보"""
     __tablename__ = 'vc_visit_user'
-    tenant_id = db.Column(db.Integer, db.ForeignKey('ssc_tenants.tenant_id'), nullable=False)
+    tenant_id = db.Column(db.Integer, db.ForeignKey('ssc_tenants.id'), nullable=False)
     rule_id = db.Column(db.Integer, db.ForeignKey('sc_rule.id'), nullable=False)
+    apply_id = db.Column(db.Integer, db.ForeignKey('vc_apply_master.id'), nullable=False)
     name = db.Column(db.String(50), nullable=False)
     phone = db.Column(db.String(50), nullable=False)
     text_desc = db.Column(db.String(100))
@@ -924,15 +958,44 @@ class Vcvisituser(db.Model, BaseMixin):
 
     # [Detail]
     scrule = db.relationship('Scrule', backref=backref('VC_VISIT_USER_RULE_ID'))
+    vcapplymaster = db.relationship('Vcapplymaster', backref=backref('VC_VISIT_USER_APPLY_ID'))
+
+    # 1:多 (Vcvisituser->ScRuleFile) [Master]
+    scrulefiles = db.relationship('ScRuleFile', back_populates='vcvisituser')
+
+
+class Vcstackuser(db.Model, BaseMixin):
+    """작업자 스택 정보"""
+    __tablename__ = 'vc_stack_user'
+    tenant_id = db.Column(db.Integer, nullable=False)
+    rule_id = db.Column(db.Integer,db.ForeignKey('sc_rule.id'), nullable=False)
+    apply_id = db.Column(db.Integer)
+    name = db.Column(db.String(50), nullable=False)
+    phone = db.Column(db.String(50), nullable=False)
+    text_desc = db.Column(db.String(100))
+    s_date = db.Column(db.String(50))
+    e_date = db.Column(db.String(50))
+
+    # [Detail]
+    scrule = db.relationship('Scrule', backref=backref('VC_STACK_USER_RULE_ID'))
+
+    # 1:多 (Vcstackuser->ScRuleFile) [Master]
+    scrulefiles = db.relationship('ScRuleFile', back_populates='vcstackuser')
 
 
 class ScRuleFile(db.Model, BaseMixin):
     """파일 정보"""
     __tablename__ = 'sc_rule_file'
-    tenant_id = db.Column(db.Integer, db.ForeignKey('ssc_tenants.tenant_id'), nullable=False)
-    rule_id = db.Column(db.Integer, db.ForeignKey('sc_rule.id'), nullable=False)     # phone_ / user_id
-    file_dir = db.Column(db.String(100), nullable=False, unique=True)                # S3_dir + Scrule.id
-    file_name_ = db.Column(db.String(100), nullable=False)
+    tenant_id = db.Column(db.Integer, db.ForeignKey('ssc_tenants.id'), nullable=False)
+    rule_id = db.Column(db.Integer, db.ForeignKey('sc_rule.id'), nullable=False)
+    visit_id = db.Column(db.Integer, db.ForeignKey('vc_visit_user.id'), nullable=False)
+    visit_stack_id = db.Column(db.Integer, db.ForeignKey('vc_stack_user.id'))
+    file_dir = db.Column(db.String(100))
+    file_name = db.Column(db.String(100))
+    s3_url = db.Column(db.String(200))
+
 
     # [Detail]
     scrule = db.relationship('Scrule', backref=backref('sc_rule_file_sc_rule'))
+    vcvisituser = db.relationship('Vcvisituser', backref=backref('sc_rule_file_vc_visit_user'))
+    vcstackuser = db.relationship('Vcstackuser', backref=backref('sc_rule_file_vc_stack_user'))

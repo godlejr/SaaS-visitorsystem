@@ -1,84 +1,55 @@
 {% extends "bootstrap/inout_apply/section2.html" %}
 {% block section3 %}
+
 <div class="row gap-20 masonry pos-r">
     <div class="masonry-sizer col-md-12"></div>
     <div class="masonry-item col-md-12">
         <div class="bgc-white p-20 bd">
-            <h6 class="c-grey-900">출입 정보</h6>
+            <h6 class="c-grey-900">접견자 정보</h6>
             <hr>
+            <!--외부업체-->
+            {% if current_user.user_type == '1' %}
             <div class="mT-30">
                 <div class="form-row">
-                    <div class="form-group col-md-1"><label for="inout_biz_no">업체명</label> <input type="text"  class="form-control" name="input_biz_no" id="inout_biz_no"></div>
-                    <div class="form-group col-md-3">
-                        <label for="inout_comp_nm" style="visibility:hidden">&nbsp</label><input type="text"  class="form-control" name="inout_comp_nm" id="inout_comp_nm"></div>
+                    <div class="form-group col-md-1"><label for="interviewer_name">부서</label> <input type="text"  class="form-control" name="interviewer_dept" id="interviewer_dept" readonly style="background-color:white">
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group col-md-1"><label for="interviewer_name">접견자</label> <input type="text"  class="form-control" name="interviewer_name" id="interviewer_name" readonly style="background-color:white" ></div>
+                    <div class="form-group col-md-2"><label for="interviewer_phone">연락처</label> <input type="text"  class="form-control" name="interviewer_phone" id="interviewer_phone" readonly style="background-color:white"></div>
                     <div class="form-group col-md-2" >
                         <label style="visibility:hidden">&nbsp</label>
-                        <button type="button"  style="display:block" class="btn btn-primary" data-toggle="modal" data-target="#compSearchModal">
+                        <button type="button" style="display:block" class="btn btn-primary"  data-toggle="modal" data-target="#interviewModal">
                             <i class="search-icon ti-search pdd-right-10"></i>
                         </button>
                     </div>
                 </div>
+            </div>
+            {% else %}
+            <!--내부직원-->
+            <div class="mT-30">
 
                 <div class="form-row">
-                    <div class="form-group col-md-2"><label class="fw-500">방문기간</label>
-                        <div class="timepicker-input input-icon form-group">
-                            <div class="input-group">
-                                <div class="input-group-addon bgc-white bd bdwR-0"><i class="ti-calendar"></i></div>
-                                <input type="text" class="form-control bdc-grey-200 start-date" placeholder="시작일" data-provide="datepicker" name ="inout_sdate" id="inout_sdate" >
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="form-group col-md-2"><label class="fw-500" style="visibility:hidden">&nbsp</label>
-                        <div class="timepicker-input input-icon form-group">
-                            <div class="input-group">
-                                <div class="input-group-addon bgc-white bd bdwR-0"><i class="ti-calendar"></i></div>
-                                <input type="text" class="form-control bdc-grey-200 start-date" placeholder="종료일" data-provide="datepicker" name ="inout_edate" id="inout_edate">
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="form-group col-md-2">
-                        <label for="inout_purpose_type">방문목적</label>
-                        <select id="inout_purpose_type" name="input_purpose_type" class="form-control">
-                            <option selected="selected">선택</option>
-                            <option value="업무">업무</option>
-                            <option value="출하">출하</option>
-                            <option value="환경폐기물">환경폐기물</option>
-                            <option value="유독성">유독성</option>
-                            <option value="방사능">방사능</option>
-                        </select>
-                    </div>
-
-                    <div class="form-group col-md-4">
-                        <label for="inout_title" style="visibility:hidden">&nbsp</label>
-                        <input type="text"  class="form-control" id="inout_title" name="inout_title">
+                    <div class="form-group col-md-1"><label for="interviewer_name">부서</label> <input type="text"  class="form-control" name="interviewer_dept" id="interviewer_dept" value="{{current_user.dept_nm}}" readonly style="background-color:white" >
                     </div>
                 </div>
-
-
                 <div class="form-row">
-                    <div class="form-group col-md-2"><label for="inout_location">방문지역</label>
-                        <select  class="form-control"  id="inout_location" name="inout_location">
-                            <option selected="selected">Choose...</option>
-                            <option>...</option>
-                        </select>
-                    </div>
-
-                    <div class="form-group col-md-4">
-                        <label for="inout_location_desc" style="visibility:hidden">&nbsp</label>
-                        <input type="text"  class="form-control" id="inout_location_desc" name="inout_location_desc" >
-                    </div>
-
-                </div>
-
-                <div class="form-row">
-                    <div class="form-group col-md-6">
-                        <label for="inout_purpose_desc">상세기술</label>
-                        <textarea class="form-control" id="inout_purpose_desc" name="inout_purpose_desc" style="height:100px"/></textarea>
+                    <div class="form-group col-md-1"><label for="interviewer_name">접견자</label> <input type="text"  class="form-control" name="interviewer_name" id="interviewer_name" value="{{current_user.name}}" readonly style="background-color:white"></div>
+                    <div class="form-group col-md-2"><label for="interviewer_phone">연락처</label> <input type="text"  class="form-control" name="interviewer_phone" id="interviewer_phone" value="{{current_user.phone}}" readonly style="background-color:white"></div>
+                    <div class="form-group col-md-2" >
+                        <label style="visibility:hidden">&nbsp</label>
+                        <button type="button" style="display:block" class="btn btn-primary"  data-toggle="modal" data-target="#interviewModal">
+                            <i class="search-icon ti-search pdd-right-10"></i>
+                        </button>
                     </div>
                 </div>
             </div>
+
+
+            {% endif %}
+
+
         </div>
     </div>
 </div>

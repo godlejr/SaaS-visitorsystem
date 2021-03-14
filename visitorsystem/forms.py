@@ -43,12 +43,14 @@ validators = {
         DataRequired(message='이메일을 입력해주세요'),
         Email(message='Email 형식이 맞지 않습니다.')
     ],
+    'phone': [
+        DataRequired(message='전화번호를 입력해주세요')
+    ],
     'password': [
         DataRequired(message='비밀번호를 입력해주세요'),
         Length(min=6, max=50, message='6자 이상의 비밀번호를 입력하세요'),
         EqualTo('confirm', message='동일한 비밀번호를 입력해주세요.')
     ],
-
     'password_login': [
         DataRequired()
     ],
@@ -123,6 +125,15 @@ class Pagination(object):
     def has_next(self):
         return self.page < self.pages
 
+    def serializable(self, page_iter, p_pages):
+        return {
+            'page': self.page,
+            'per_page': self.per_page,
+            'total_count': self.total_count,
+            'iter_pages': page_iter,
+            'p_pages': p_pages
+        }
+
     def iter_pages(self, left_edge=0, left_current=2,
                    right_current=5, right_edge=0):
         last = 0
@@ -140,7 +151,7 @@ class TestForm(Form):
     password = PasswordField('비밀번호', validators['password_login'])
 
 
-#감독부서승인 조회조건 폼 by 박정은
+#접견부서승인 조회조건 폼 by 박정은
 class superApprovalSearchForm(Form):
     # 날짜 유효성 검사 부분 추가 필요 -> 동작한함.
     # visit_sdate = DateField('시작일')
@@ -158,8 +169,8 @@ class ApplyForm(Form):
     applicant_phone = StringField('신청자연락처')
     applicant_biz_no = StringField('업체번호')
     applicant_comp_nm = StringField('업체명')
-    interviewer_name = StringField('감독자')
-    interviewer_phone = StringField('감독자연락처')
+    interviewer_name = StringField('접견자')
+    interviewer_phone = StringField('접견자연락처')
     inout_biz_no = StringField('업체번호')
     inout_comp_nm = StringField('업체명')
     inout_sdate = StringField('시작시간')
@@ -170,8 +181,19 @@ class ApplyForm(Form):
     inout_location = StringField('방문지역')
     inout_location_desc = StringField('지역상세')
 
-    approve_interviewer = StringField('감독자')
-    approve_state = StringField('출입승인상태')
+    approve_interviewer = StringField('접견자')
+    approve_state = StringField('방문승인상태')
     approve_date = StringField('일시')
     approve_remark = StringField('비고')
 
+
+class UserAccountFrom(Form):
+    """사용자 폼"""
+    login_id = StringField('아이디', validators['name'])
+    login_pwd = PasswordField('비밀번호', validators['password_login'])
+    login_pw_conf = PasswordField('비밀번호확인', validators['password_login'])
+    name = StringField('이름', validators['name'])
+    phone = StringField('핸드폰', validators['phone'])
+    email = StringField('이메일', validators['email'])
+    comp_nm = StringField('회사명')
+    biz_no = StringField('업체번호')

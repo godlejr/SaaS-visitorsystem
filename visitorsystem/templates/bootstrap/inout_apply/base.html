@@ -1,8 +1,95 @@
 {% extends 'bootstrap/base.html' %}
 {% block content %}
-<script src="https://code.jquery.com/jquery-2.2.4.min.js" integrity="sha256-BbhdlvQf/xTY9gja0Dq3HiwQF8LaCRTXxZKRutelT44=" crossorigin="anonymous"></script>
-<script src="{{ url_for('static', filename='js/in_out.js') }}" rel="stylesheet"></script>
+<script src="{{ url_for('static', filename='js/jquery-2.2.4.min.js') }}" rel="stylesheet"></script>
+<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/inout.css') }}"/>
 
+<script src="{{ url_for('static', filename='js/bootstrap-datepicker.js') }}" rel="stylesheet"></script>
+<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/bootstrap-datepicker.css') }}"/>
+
+
+<style scoped>
+
+
+   @media only screen and (max-width: 760px),
+    (min-device-width: 768px) and (max-device-width: 1024px) {
+
+    /* Force table to not be like tables anymore */
+
+    .mediaTableTbodyTr{
+        margin-bottom : 20px;
+    }
+    .mediaTable{
+         display: block;
+    }
+
+    .mediaTableTbodyTr:nth-of-type(odd) {
+            background: #eee;
+        } /* Hide table headers (but not display: none;, for accessibility) */
+
+    .mediaTheadTr {
+        position: absolute;
+        top: -9999px;
+        left: -9999px;
+    }
+
+    .mediaTableTbodyTr {
+        border: 1px solid #ccc;
+    }
+
+    .mediaTableTbodyTd {
+        /* Behave  like a "row" */
+        border: none;
+        border-bottom: 1px solid #eee;
+        position: relative;
+        padding-left: 50%;
+    }
+
+     .mediaTableTbodyTd:before {
+        /* Now like a table header */
+        position: absolute;
+        /* Top/left values mimic padding */
+        top: 6px;
+        left: 6px;
+        width: 45%;
+        padding-right: 10px;
+        white-space: nowrap;
+    }
+
+     .resposiveTd{
+        margin-top: 20px;
+    }
+
+        /*
+    Label the data
+    */
+
+     .mediaTableTbodyTd:nth-of-type(2):before {
+       content: "방문자";
+    }
+
+     .mediaTableTbodyTd:nth-of-type(3):before {
+         content: "휴대폰번호";
+    }
+
+     .mediaTableTbodyTd:nth-of-type(4):before {
+        content: "차량종류";
+    }
+
+     .mediaTableTbodyTd:nth-of-type(5):before {
+         content: "차량번호";
+    }
+
+
+    {%for item in scrules %}
+        .mediaTableTbodyTd:nth-of-type({{ loop.index + 5 }}):before {
+             content: '{{ item.rule_name }}';
+          }
+    {% endfor %}
+
+
+     }
+
+</style>
 <div id="mainContent">
     {% block mainContent %}
 

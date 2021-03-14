@@ -57,38 +57,17 @@
     }
 }
 
-
-
     </style>
     <link href="{{ url_for('static', filename='css/bootstrap_vms.css') }}" rel="stylesheet">
     <link href="{{ url_for('static', filename='css/vms_style.css') }}" rel="stylesheet">
     <script src="{{ url_for('static', filename='js/vendor.js') }}"></script>
     <script src="{{ url_for('static', filename='js/bundle.js') }}"></script>
 </head>
+
 <body class="app">
 <div id="loader">
     <div class="spinner"></div>
 </div>
-<script>window.addEventListener('load', () => {
-        const loader = document.getElementById('loader');
-        setTimeout(() => {
-          loader.classList.add('fadeOut');
-        }, 300);
-      });
-
-
-
-</script>
-
-<!--&lt;!&ndash; top start &ndash;&gt;-->
-<!--<div id="header">-->
-<!--    <div class="top">-->
-<!--        <div class="col-md-12 top-bar">-->
-<!--            <h1>Visitor Management System</h1>-->
-<!--        </div>-->
-<!--    </div>-->
-<!--</div>-->
-<!--&lt;!&ndash; top end &ndash;&gt;-->
 
 <div class="peers ai-s fxw-nw h-100vh">
     <!--<div class="d-n@sm- peer peer-greed h-100 pos-r bgr-n bgpX-c bgpY-c bgsz-cv"
@@ -105,7 +84,6 @@
     <div class="d-n@sm- peer peer-greed h-100 pos-r bgr-n bgpX-c bgpY-c bgsz-cv tenant-bg"
          style="background-image:url( {{ url_for_s3(tenant.tenant_id, 'S3_IMG_MAIN_DIRECTORY_VMS',tenant.background_img)  }})"/>
 </div>
-
 
 <!-- 우측 로그인 부분 -->
 <div class="col-12 col-md-4 peer pX-40 pY-80 h-100 bgc-white scrollable pos-r">
@@ -148,33 +126,246 @@
 
             <div class="form-group">
                 <div class="peers ai-c jc-sb fxw-nw">
-                    <div class="peer">
-                        <div class="checkbox checkbox-circle checkbox-info peers ai-c"><input type="checkbox"
-                                                                                              id="inputCall1"
-                                                                                              name="inputCheckboxesCall"
-                                                                                              class="peer"> <label
-                                for="inputCall1" class="peers peer-greed js-sb ai-c"><span class="peer peer-greed">Remember Me</span></label>
-                        </div>
-                    </div>
+                    <!--                    <div class="peer">-->
+                    <!--                        <div class="checkbox checkbox-circle checkbox-info peers ai-c">-->
+                    <!--                            <input type="checkbox" id="inputCall1" name="inputCheckboxesCall" class="peer"> -->
+                    <!--                            <label for="inputCall1" class="peers peer-greed js-sb ai-c">-->
+                    <!--                                <span class="peer peer-greed">Remember Me</span></label>-->
+                    <!--                        </div>-->
+                    <!--                    </div>-->
                     <div class="peer">
                         <button class="btn btn-primary">로그인</button>
-                        <button class="btn btn-primary">회원가입</button>
+                        <button type="button" style="display:inline" class="btn btn-primary" data-toggle="modal"
+                                data-target="#joinModal">회원가입
+                        </button>
                     </div>
                 </div>
+                <div class="peers ai-c jc-sb fxw-nw mT-20">
+                    <div class="peer">
+                        <h5 class="fsz-def tt-c c-grey-900" style="cursor: pointer;">로그인없이 방문객 신청하기</h5>
+                    </div>
+
+                </div>
+                <div class="peers ai-c jc-sb fxw-nw mT-10">
+                    <div class="peer">
+                        <span class="peer peer-greed" style="cursor: pointer;" onclick="location.href='{{url_for('main.pricing')}}'">과금정책 안내</span>
+                    </div>
+                </div>
+
             </div>
+
         </form>
     </div>
 </div>
 </div>
 
-<!--&lt;!&ndash; footer start &ndash;&gt;-->
-<!--<div id="footer">-->
-<!--    <div class="footer-container">-->
-<!--        <div class="col-md-12 footer-bar">-->
-<!--            <h1>Visitor Management System</h1>-->
-<!--        </div>-->
-<!--    </div>-->
-<!--</div>&lt;!&ndash; footer end &ndash;&gt;-->
+<!-- 회원 가입 Modal -->
+<div class="modal fade" id="joinModal" tabindex="-1" role="dialog" aria-labelledby="interviewModalCenterTitle"
+     aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title c-grey-900 mB-20" id="joinModalCenterTitle">회원 가입</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
 
-</body>
+            <div class="modal-body">
+                <div class="masonry-item col-md-12">
+                    <div class="bgc-white p-20 bd">
+                        <h6 class="c-grey-900">업체 정보</h6>
+                        <div class="mT-30">
+                            <form>
+                                <div class="form-row">
+                                    <div class="form-group col-md-4">
+                                        <label for="inputBizNo">사업자 등록 번호</label>
+                                        <input type="text" class="form-control" maxlength=10 id="inputBizNo">
+                                        <input type="text" id="inputBizId" style="display:none">
+                                    </div>
+                                    <div class="form-group col-md-8">
+                                        <label for="inputCompName">회사명</label>
+                                        <input type="text" class="form-control" id="inputCompName">
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <button type="button" style="display:inline" class="btn btn-primary"
+                                            id="btnCompSearch">조회
+                                    </button>
+                                    <label id="lblComp" style="padding:5px"></label>
+                                </div>
+                                <div class="form-group"><label for="inputAddress">주소</label>
+                                    <input type="text" class="form-control" id="inputAddress">
+                                </div>
+                                <div class="form-group">
+                                    <input type="button" class="btn btn-primary" onclick="FindAddress()" value="주소 찾기">
+                                </div>
+                                <div id="wrap"
+                                     style="display:none;border:1px solid;width:400px;height:300px;margin:5px 0;position:relative">
+                                    <img src="//t1.daumcdn.net/postcode/resource/images/close.png" id="btnFoldWrap"
+                                         style="cursor:pointer;position:absolute;right:0px;top:-1px;z-index:1"
+                                         onclick="foldDaumPostcode()" alt="접기 버튼">
+                                </div>
+
+                                <div class="form-group"><label for="inputAddress2">상세주소</label> <input type="text"
+                                                                                                       class="form-control"
+                                                                                                       id="inputAddress2">
+                                </div>
+                                <div class="form-group">
+                                    <div class="form-group"><label for="inputTel">업체 연락처</label> <input type="tel"
+                                                                                                        class="form-control"
+                                                                                                        id="inputTel">
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="masonry-item col-md-12">
+                    <div class="bgc-white p-20 bd">
+                        <h6 class="c-grey-900">회원 정보</h6>
+                        <div class="mT-30">
+                            <form>
+                                <div class="form-row">
+                                    <div class="form-group col-md-6">
+                                        <label for="inputID">ID</label>
+                                        <input type="text" class="form-control" id="inputID">
+                                        <input id="chkDuplicate" style="display:none">
+                                    </div>
+                                    <div class="form-group col-md-6">
+                                        <label for="inputName">성명</label>
+                                        <input type="text" class="form-control" id="inputName">
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <button type="button" style="display:inline" class="btn btn-primary"
+                                            id="btnChechID">중복 확인
+                                    </button>
+                                    <label id="lblcheckID" style="padding:5px"></label>
+                                </div>
+
+
+                                <div class="form-row">
+                                    <div class="form-group col-md-6">
+                                        <label for="inputPassword">패스워드</label>
+                                        <input type="password" class="form-control" id="inputPassword">
+                                    </div>
+                                    <div class="form-group col-md-6">
+                                        <label for="inputPasswordCfm">패스워드 확인</label>
+                                        <input type="password" class="form-control" id="inputPasswordCfm">
+                                    </div>
+                                </div>
+                                <div class="form-group"><label for="inputEmail">이메일</label>
+                                    <input type="email" class="form-control" id="inputEmail" required>
+                                </div>
+                                <div class="form-group"><label for="inputPhone">핸드폰</label>
+                                    <input type="tel" class="form-control" id="inputPhone">
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal" id="btnClose">취소</button>
+                <button type="button" class="btn btn-primary" id="btnJoin">가입</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
+<script>
+//화면 로딩
+window.addEventListener('load', () => {
+        const loader = document.getElementById('loader');
+        setTimeout(() => {
+          loader.classList.add('fadeOut');
+        }, 300);
+      });
+
+
+// 우편번호 찾기 찾기 화면을 넣을 element
+var element_wrap = document.getElementById('wrap');
+
+function foldDaumPostcode() {
+    // iframe을 넣은 element를 안보이게 한다.
+    element_wrap.style.display = 'none';
+}
+
+//본 예제에서는 도로명 주소 표기 방식에 대한 법령에 따라, 내려오는 데이터를 조합하여 올바른 주소를 구성하는 방법을 설명합니다.
+function FindAddress() {
+    // 현재 scroll 위치를 저장해놓는다.
+    var currentScroll = Math.max(document.body.scrollTop, document.documentElement.scrollTop);
+    new daum.Postcode({
+        oncomplete: function(data) {
+            // 검색결과 항목을 클릭했을때 실행할 코드를 작성하는 부분.
+
+            // 각 주소의 노출 규칙에 따라 주소를 조합한다.
+            // 내려오는 변수가 값이 없는 경우엔 공백('')값을 가지므로, 이를 참고하여 분기 한다.
+            var addr = ''; // 주소 변수
+            var extraAddr = ''; // 참고항목 변수
+
+            //사용자가 선택한 주소 타입에 따라 해당 주소 값을 가져온다.
+            if (data.userSelectedType === 'R') { // 사용자가 도로명 주소를 선택했을 경우
+                addr = data.roadAddress;
+            } else { // 사용자가 지번 주소를 선택했을 경우(J)
+                addr = data.jibunAddress;
+            }
+
+            // 사용자가 선택한 주소가 도로명 타입일때 참고항목을 조합한다.
+            if(data.userSelectedType === 'R'){
+                // 법정동명이 있을 경우 추가한다. (법정리는 제외)
+                // 법정동의 경우 마지막 문자가 "동/로/가"로 끝난다.
+                if(data.bname !== '' && /[동|로|가]$/g.test(data.bname)){
+                    extraAddr += data.bname;
+                }
+                // 건물명이 있고, 공동주택일 경우 추가한다.
+                if(data.buildingName !== '' && data.apartment === 'Y'){
+                    extraAddr += (extraAddr !== '' ? ', ' + data.buildingName : data.buildingName);
+                }
+                // 표시할 참고항목이 있을 경우, 괄호까지 추가한 최종 문자열을 만든다.
+                if(extraAddr !== ''){
+                    extraAddr = ' (' + extraAddr + ')';
+                }
+                // 조합된 참고항목을 해당 필드에 넣는다.
+                //document.getElementById("sample3_extraAddress").value = extraAddr;
+            
+            } else {
+                //document.getElementById("sample3_extraAddress").value = '';
+            }
+
+            // 우편번호와 주소 정보를 해당 필드에 넣는다.
+            //document.getElementById('sample3_postcode').value = data.zonecode;
+            document.getElementById("inputAddress").value = addr;
+            // 커서를 상세주소 필드로 이동한다.
+            document.getElementById("inputAddress2").focus();
+
+            // iframe을 넣은 element를 안보이게 한다.
+            // (autoClose:false 기능을 이용한다면, 아래 코드를 제거해야 화면에서 사라지지 않는다.)
+            element_wrap.style.display = 'none';
+
+            // 우편번호 찾기 화면이 보이기 이전으로 scroll 위치를 되돌린다.
+            document.body.scrollTop = currentScroll;
+        },
+        // 우편번호 찾기 화면 크기가 조정되었을때 실행할 코드를 작성하는 부분. iframe을 넣은 element의 높이값을 조정한다.
+        onresize : function(size) {
+            element_wrap.style.height = size.height+'px';
+        },
+        width : '100%',
+        height : '100%'
+    }).embed(element_wrap);
+
+    // iframe을 넣은 element를 보이게 한다.
+    element_wrap.style.display = 'block';
+}
+
+</script>
+<script src="https://code.jquery.com/jquery-2.2.4.min.js"
+        integrity="sha256-BbhdlvQf/xTY9gja0Dq3HiwQF8LaCRTXxZKRutelT44=" crossorigin="anonymous"></script>
+<script src="{{ url_for('static', filename='js/login.js') }}" rel="stylesheet"></script>
+
 </html>

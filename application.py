@@ -7,12 +7,10 @@ init.py - context processor 포함
 import os
 
 from flask import url_for, current_app, request
-from flask_script import Manager
 from flask_login import current_user
 
 from visitorsystem import create_app
-from visitorsystem.models import Ssctenant, Scmenu
-from loggers import log
+from visitorsystem.models import Ssctenant, Scmenu, Scmenuauth
 
 application = create_app(os.getenv('FLASK_CONFIG') or 'default')
 
@@ -34,11 +32,6 @@ def dated_url_for(endpoint, **values):
 @application.context_processor
 def utility_processor():
     def url_for_s3(tenant_id, s3path, filename=''):
-        # 로그인 전, 사용자 정보 모를 때 tenant_id만 출력
-        if current_user.is_anonymous:
-            log("S3").info("[tenant_id:%s]", get_tenant().tenant_id)
-        else:
-            log("S3").info("[tenant_id:%s][login_id:%s]", get_tenant().tenant_id, current_user.id)
         return ''.join((current_app.config['S3_BUCKET_NAME_VMS'], tenant_id, current_app.config[s3path], filename))
 
     def get_tenant():
@@ -46,11 +39,20 @@ def utility_processor():
         return ssctenant
 
     def get_menu():
-        scMenu = Scmenu.query.order_by(Scmenu.group_id, Scmenu.depth, Scmenu.position)
+        scMenu = []
+        if current_user.is_authenticated :
+            authId = current_user.get_auth.code
+            scMenu = Scmenu.query.join(Scmenuauth).filter(Scmenuauth.auth_id == authId,
+                                                          Scmenu.id == Scmenuauth.menu_id).order_by(Scmenu.group_id,
+                                                                                                    Scmenu.depth,
+                                                                                                    Scmenu.position)
         return scMenu
 
     return dict(url_for_s3=url_for_s3, get_tenant=get_tenant, get_menu=get_menu)
 
+
 if __name__ == '__main__':
+    from flask_script import Manager
+
     manager = Manager(application)
     manager.run()

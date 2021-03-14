@@ -5,8 +5,9 @@
     <div class="masonry-item col-md-12">
         <div class="bgc-white p-20 bd">
             <div class="mT-30">
-                <div class="form-row">
 
+                <div class="form-row">
+                    <p class="h4  text-danger" id="errorMsg"></p>
                     <button type="button" style="display:block; margin-left:auto; margin-bottom:2px; margin-right:2px;" id="addUser"class="btn btn-primary text-center text-right" >
                         <i class="ti-plus"></i>
                     </button>
@@ -15,19 +16,18 @@
                         <i class="ti-minus"></i>
                     </button>
 
-
-                    <div id="table" class="table-responsive">
-                        <table name="user_info"  class="table table-bordered" cellspacing="0" width="100%">
-                            <thead>
-                            <tr id="thead">
-                                <th style="width: 30px;"></th>
-                                <th style="">방문자</th>
-                                <th style="">휴대폰번호</th>
-                                <th style="">차량종류</th>
-                                <th style="">차량번호</th>
+                    <div id="table" class="table-responsive mediaDiv">
+                        <table name="user_info"  class="table table-bordered mediaTable" cellspacing="0" width="100%">
+                            <thead class="mediaTable" id="'mediaThead">
+                            <tr id="thead" class="mediaTable mediaTheadTr">
+                                <th style="width: 15px;" class="mediaTable"></th>
+                                <th style="" class="mediaTable">방문자</th>
+                                <th style="" class="mediaTable">휴대폰번호</th>
+                                <th style="" class="mediaTable">차량종류</th>
+                                <th style="" class="mediaTable">차량번호</th>
                             </tr>
                             </thead>
-                            <tbody id="tableBody">
+                            <tbody id="tableBody" class="mediaTable">
                             </tbody>
                         </table>
 
@@ -41,14 +41,14 @@
 
 
 
-<!-- Modal -->
+<!-- 신청자정보 Modal -->
 <div class="modal fade" id="visitModal" tabindex="-1" role="dialog"
      aria-labelledby="interviewModalCenterTitle" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title c-grey-900 mB-20" id="visitModalCenterTitle">방문자 검색</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <h5 class="modal-title c-grey-900 mB-20" id="visitModalCenterTitle">신청자 검색</h5>
+                <button type="button" class="close visitApply" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
@@ -58,42 +58,26 @@
                         <div class="bgc-white bd bdrs-3 p-20">
 
                             <div>
-                                <input type="text" class="form-control" style="width:90%;float:left">
-                                <button type="button" class="btn btn-primary" style="float:right">
+                                <input type="text"  id="visitInput" class="form-control" style="width:90%;float:left" placeholder="이름을 입력해주세요">
+                                <button type="button" id="visitSearchView" class="btn btn-primary" style="float:right" >
                                     <i class="search-icon ti-search pdd-right-10"></i>
                                 </button>
                             </div>
                             <!-- <p>Add <code class="highlighter-rouge">.table-hover</code> to enable a hover state
                                 on table rows within a <code class="highlighter-rouge">&lt;tbody&gt;</code>.</p> -->
 
-                            <table class="table table-hover">
+                            <table id='applyTables' class="table table-hover">
                                 <thead>
                                 <tr>
                                     <th scope="col">#</th>
-                                    <th scope="col">부서</th>
-                                    <th scope="col">이름</th>
-                                    <th scope="col">휴대폰번호</th>
+                                    <th scope="col" style="width:67px;">신청자</th>
+                                    <th scope="col">연락처</th>
+                                    <th scope="col">업체명</th>
+                                    <th scope="col">업체번호</th>
                                 </tr>
                                 </thead>
-                                <tbody>
-                                <tr>
-                                    <th scope="row">1</th>
-                                    <td>유화1팀</td>
-                                    <td>한호정</td>
-                                    <td>010-4882-2298</td>
-                                </tr>
-                                <tr>
-                                    <th scope="row">2</th>
-                                    <td>방산1팀</td>
-                                    <td>이용식</td>
-                                    <td>010-2239-9993</td>
-                                </tr>
-                                <tr>
-                                    <th scope="row">3</th>
-                                    <td>서비스1팀</td>
-                                    <td>조용식</td>
-                                    <td>010-2239-9993</td>
-                                </tr>
+                                <tbody id="applyTbody">
+
                                 </tbody>
                             </table>
                         </div>
@@ -101,8 +85,9 @@
                 </div>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">취소</button>
-                <button type="button" class="btn btn-primary">확인</button>
+                <button type="button" class="btn btn-primary visitApply" data-dismiss="modal">확인</button>
+                <button type="button" class="btn btn-secondary visitApply" data-dismiss="modal">취소</button>
+
             </div>
         </div>
     </div>
@@ -110,14 +95,16 @@
 <br>
 
 
-<!-- Modal -->
-<div class="modal fade" id="interviewModal" tabindex="-1" role="dialog"
+
+<!--신청자조회(업체별)-->
+<!-- 신청자정보 Modal -->
+<div class="modal fade" id="visitModal2" tabindex="-1" role="dialog"
      aria-labelledby="interviewModalCenterTitle" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title c-grey-900 mB-20" id="interviewModalCenterTitle">감독자 검색</h5>
-                <button type="button" class="close"  data-dismiss="modal" aria-label="Close">
+                <h5 class="modal-title c-grey-900 mB-20" id="visitModalCenterTitle2">업체 검색</h5>
+                <button type="button" class="close visitApply2" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
@@ -127,8 +114,8 @@
                         <div class="bgc-white bd bdrs-3 p-20">
 
                             <div>
-                                <input type="text" id="interviewInput" class="form-control" placeholder="이름을 입력해주세요" style="width:90%;float:left">
-                                <button type="button" class="btn btn-primary"  id="interviewSearch" style="float:right">
+                                <input type="text"  id="visitInput2" class="form-control" style="width:90%;float:left" placeholder="업체명을 입력해주세요">
+                                <button type="button" id="visitSearchView2" class="btn btn-primary" style="float:right" >
                                     <i class="search-icon ti-search pdd-right-10"></i>
                                 </button>
                             </div>
@@ -139,30 +126,14 @@
                                 <thead>
                                 <tr>
                                     <th scope="col">#</th>
-                                    <th scope="col">부서</th>
-                                    <th scope="col">이름</th>
-                                    <th scope="col">휴대폰번호</th>
+                                    <th scope="col" style="width:67px;">신청자</th>
+                                    <th scope="col">연락처</th>
+                                    <th scope="col">업체명</th>
+                                    <th scope="col">업체번호</th>
                                 </tr>
                                 </thead>
-                                <tbody id="interviewTbody">
-                                <!--                                <tr>-->
-                                <!--                                    <th scope="row">1</th>-->
-                                <!--                                    <td>유화1팀</td>-->
-                                <!--                                    <td>한호정</td>-->
-                                <!--                                    <td>010-4882-2298</td>-->
-                                <!--                                </tr>-->
-                                <!--                                <tr>-->
-                                <!--                                    <th scope="row">2</th>-->
-                                <!--                                    <td>방산1팀</td>-->
-                                <!--                                    <td>이용식</td>-->
-                                <!--                                    <td>010-2239-9993</td>-->
-                                <!--                                </tr>-->
-                                <!--                                <tr>-->
-                                <!--                                    <th scope="row">3</th>-->
-                                <!--                                    <td>서비스1팀</td>-->
-                                <!--                                    <td>조용식</td>-->
-                                <!--                                    <td>010-2239-9993</td>-->
-                                <!--                                </tr>-->
+                                <tbody id="applyTbody2">
+
                                 </tbody>
                             </table>
                         </div>
@@ -170,24 +141,25 @@
                 </div>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">취소</button>
-                <button type="button" class="btn btn-primary" data-dismiss="modal">확인</button>
+                <button type="button" class="btn btn-primary visitApply2" data-dismiss="modal">확인</button>
+                <button type="button" class="btn btn-secondary visitApply2" data-dismiss="modal">취소</button>
+
             </div>
         </div>
     </div>
 </div>
+<br>
 
 
 
-
-<!-- Modal -->
+<!-- 방문정보 Modal -->
 <div class="modal fade" id="compSearchModal" tabindex="-1" role="dialog"
      aria-labelledby="interviewModalCenterTitle" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered" role="document">
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title c-grey-900 mB-20" id="compSearchCenterTitle">업체 검색</h5>
-                <button type="button" class="close"  data-dismiss="modal" aria-label="Close">
+                <button type="button" class="close initApply"  data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
@@ -221,14 +193,89 @@
                 </div>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">취소</button>
-                <button type="button" class="btn btn-primary" data-dismiss="modal">확인</button>
+                <button type="button" class="btn btn-primary initApply" data-dismiss="modal">확인</button>
+                <button type="button" class="btn btn-secondary initApply" data-dismiss="modal">취소</button>
             </div>
         </div>
     </div>
 </div>
 
 
+
+<!-- 접견자정보 Modal -->
+<div class="modal fade" id="interviewModal" tabindex="-1" role="dialog"
+     aria-labelledby="interviewModalCenterTitle" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title c-grey-900 mB-20" id="interviewModalCenterTitle">접견자 검색</h5>
+                <button type="button" class="close interviewInit"  data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="bgc-white bd bdrs-3 p-20">
+
+                            <div>
+                                <input type="text" id="interviewInput" class="form-control" placeholder="이름을 입력해주세요" style="width:90%;float:left">
+                                <button type="button" class="btn btn-primary"  id="interviewSearch" style="float:right">
+                                    <i class="search-icon ti-search pdd-right-10"></i>
+                                </button>
+                            </div>
+                            <!-- <p>Add <code class="highlighter-rouge">.table-hover</code> to enable a hover state
+                                on table rows within a <code class="highlighter-rouge">&lt;tbody&gt;</code>.</p> -->
+
+                            <table class="table table-hover">
+                                <thead>
+                                <tr>
+                                    <th scope="col">#</th>
+                                    <th scope="col">부서</th>
+                                    <th scope="col">이름</th>
+                                    <th scope="col">휴대폰번호</th>
+                                </tr>
+                                </thead>
+                                <tbody id="interviewTbody">
+
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary interviewInit" data-dismiss="modal">확인</button>
+                <button type="button" class="btn btn-secondary interviewInit " data-dismiss="modal">취소</button>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+<!--방문규칙 alert-->
+<div id = "alertModal" class="modal" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">인원차량 방문신청</h5>
+                <button id="exitModal" type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true" data-dismiss="modal">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <p id="modalContent"></p>
+            </div>
+            <div class="modal-footer">
+                <button id="confirmModal" type="button" class="btn btn-primary" data-dismiss="modal">확인</button>
+            </div>
+        </div>
+    </div>
+</div>
 
 
 {% endblock %}

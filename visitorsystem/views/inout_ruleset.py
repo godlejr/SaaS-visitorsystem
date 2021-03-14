@@ -24,11 +24,16 @@ def save():
         if not result:
             scrule = Scrule()
             scrule.tenant_id = tenant_id  # 테넌트ID
-            scrule.rule_name = request.form['rule_name']  # 규칙이름
+            if request.form['rule_name'].strip() == '':
+                return jsonify({'msg': '공백입니다.'})
+            scrule.rule_name = ''.join(request.form['rule_name'].split())  # 규칙이름
             scrule.rule_type = request.form['rule_type']  # 규칙유형
             scrule.rule_duedate = request.form['rule_duedate']  # 규칙기간
+            if request.form['rule_duedate'].strip() == '':
+                return jsonify({'msg': '공백입니다.'})
+
             scrule.rule_desc = request.form['rule_desc']  # 규칙설명
-            scrule.rule_tlocation = request.form['rule_name']  # text정보 location
+            scrule.rule_tlocation = request.form['rule_name'].strip() # text정보 location
             db.session.add(scrule)
             db.session.commit()
         else:

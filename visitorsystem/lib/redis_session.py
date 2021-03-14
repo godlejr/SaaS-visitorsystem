@@ -5,8 +5,6 @@ from redis import Redis
 from werkzeug.datastructures import CallbackDict
 from flask.sessions import SessionInterface, SessionMixin
 
-from loggers import log
-
 
 class RedisSession(CallbackDict, SessionMixin):
     def __init__(self, initial=None, sid=None, new=False):
@@ -59,6 +57,8 @@ class RedisSessionInterface(SessionInterface):
         cookie_exp = self.get_expiration_time(app, session)
         val = self.serializer.dumps(dict(session))
         self.redis.setex(self.prefix + session.sid, int(redis_exp.total_seconds()),val)
+
+
 
         response.set_cookie(app.session_cookie_name, session.sid,
                             expires=cookie_exp, httponly=True,

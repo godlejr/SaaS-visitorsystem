@@ -4,17 +4,14 @@ from flask import Flask, render_template, session
 from flask_debugtoolbar import DebugToolbarExtension
 from flask_login import LoginManager
 from redis import Redis
-
-from loggers import log, loggerSet
 from werkzeug.utils import redirect
 
 import config
-
+from loggers import log, loggerSet
 from visitorsystem.lib.redis_session import RedisSessionInterface
 from visitorsystem.models import db, File, Photo, Magazine, MagazineComment, PhotoComment, Comment, Board, \
     Category, \
     Residence, Scuser
-
 
 # from visitorsystem.views import mail
 
@@ -62,6 +59,8 @@ def create_app(config_name):
     from visitorsystem.views.common_code import common_code as common_code_blueprint
     from visitorsystem.views.inout_apply import inout_apply as inout_apply_blueprint
     from visitorsystem.views.inout_manage import inout_manage as inout_manage_blueprint
+    from visitorsystem.views.inout_apply_manage import inout_apply_manage as inout_apply_manage_blueprint
+
     from visitorsystem.views.inout_ruleset import inout_ruleset as inout_ruleset_blueprint
     from visitorsystem.views.inout_tag import inout_tag as inout_tag_blueprint
     from visitorsystem.views.statistics import statistics as statistics_blueprint
@@ -73,12 +72,11 @@ def create_app(config_name):
     application.register_blueprint(common_code_blueprint, url_prefix='/commonCode')
     application.register_blueprint(inout_apply_blueprint, url_prefix='/inoutApply')
     application.register_blueprint(inout_manage_blueprint, url_prefix='/inoutManage')
+    application.register_blueprint(inout_apply_manage_blueprint, url_prefix='/inoutApplyManage')
+
     application.register_blueprint(inout_ruleset_blueprint, url_prefix='/inoutRuleset')
     application.register_blueprint(inout_tag_blueprint, url_prefix='/inoutTag')
     application.register_blueprint(statistics_blueprint, url_prefix='/statistics')
-
-    from visitorsystem.views.example.test import test as test_blueprint
-    application.register_blueprint(test_blueprint, url_prefix='/test')
 
     application.errorhandler(403)(lambda e: redirect('/'))
     application.errorhandler(404)(lambda e: render_template('error/404.html'))
@@ -104,3 +102,4 @@ def create_app(config_name):
         return Scuser.query.filter_by(id=session['id']).first()
 
     return application
+

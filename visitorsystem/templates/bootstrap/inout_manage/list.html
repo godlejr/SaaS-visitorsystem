@@ -1,5 +1,172 @@
-{% extends "bootstrap/inout_manage/base.html" %}
+{% extends "bootstrap/inout_manage/manage_modal.html" %}
 
 {% block mainContent %}
- <!-- 여기서 html 작성하세요-->
+<!-- mainContent의 상단 조회조건 설정 부분 -->
+<script>
+    function url_for(param, searchCondition){
+        document.location.href =  "{{url_for( 'inout_manage.index')}}page/" + param + searchCondition
+    }
+
+
+
+</script>
+
+<div class="mainContent-top">
+    <div class="row gap-20 masonry pos-r mR-10" style=" height: 200px;">
+        <div class="masonry-sizer col-md-12"></div>
+        <div class="masonry-item col-md-12">
+            <div class="bgc-white bd p-20 col-md-12">
+                <div class="content-top mB-5">
+                    <div class="page-header"><h5 class="c-grey-900"> 방문 관리 > 방문 현황 관리 </h5><br></div>
+                </div>
+                <div class="mT-30">
+                </div>
+            </div>
+            <br>
+            <!-- mainContent 최상단 : 페이지 명칭, 버튼 위치-->
+            <div class="bgc-white bd p-20">
+                <div class="mT-10">
+                    <div id="inoutTagSearchForm">
+                        <button type="submit" class="btn cur-p btn-primary mB-10 mR-10 btn-right search-btn"
+                                id="searchBtn">조회
+                        </button>
+                        <div class="form-row">
+                            <div class="form-group col-md-4"><label class="fw-500">방문일자</label>
+                                <div class="timepicker-input input-icon form-group">
+                                    <div class="input-group">
+                                        <i class="ti-calendar mT-5 p-5"></i>
+                                        <input type="text" class="form-control bdc-grey-200 startDate"
+                                               data-provide="datepicker" name="visit_sdate" id="visit_sdate"
+                                        />
+
+                                        <h6 class="c-grey-900"> &nbsp~&nbsp</h6>
+
+                                        <i class="ti-calendar mT-5 p-5"></i>
+                                        <input type="text" class="form-control bdc-grey-200 ml-20 endDate"
+                                               data-provide="datepicker" name="visit_edate" id="visit_edate"/>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group col-md-2"><label for="type">방문유형</label>
+                                <select id="type" class="form-control" name="visit_category">
+                                    <option selected="selected" value="all">-전체-</option>
+                                    {% for list in visitCategory %}
+                                    <option name="{{list.code_nm}}">{{list.code_nm}}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <!-- AUTH_ADMIN, 권힌 보유자만 해당 검색조건이 보임 -->
+                            {% if userAuth == current_app.config['AUTH_ADMIN'] %}
+                            <div class="form-group col-md-2"><label for="location">사업장</label>
+                                <select id="location" class="form-control" name="site_nm">
+                                    <option selected="selected" value="all">-전체-</option>
+                                    {% for list in siteList %}
+                                    <option name="{{list.code}}" value="{{list.code}}">{{list.code_nm}}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            {% endif %}
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group col-md-1"><label for="visit-user">방문자</label> <input type="text"
+                                                                                                        class="form-control"
+                                                                                                        id="visit-user"
+                                                                                                        name="visit_user">
+                                <input id="visit_user" name="visit_user" type="hidden" value="hi">
+                            </div>
+                            <div class="form-group col-md-1"><label for="visit-user">접견자</label> <input type="text"
+                                                                                                        class="form-control"
+                                                                                                        id="visit-interviewer"
+                                                                                                        name="visit-interviewer">
+                                <input id="visit_interviewer" name="visit_interviewer" type="hidden" value="hi">
+                            </div>
+                            <div class="form-group col-md-1"><label for="visit-user">접견부서</label> <input type="text"
+                                                                                                         class="form-control"
+                                                                                                         id="visit-dept"
+                                                                                                         name="visit-dept">
+                                <input id="visit_dept" name="visit_dept" type="hidden" value="hi">
+                            </div>
+                            <div class="form-group col-md-3"><label for="visit-purpose">방문목적</label> <input type="text"
+                                                                                                            class="form-control"
+                                                                                                            id="visit-purpose"
+                                                                                                            name="visit_purpose">
+                                <input id="visit_purpose" name="visit_purpose" type="hidden" value="hi">
+                            </div>
+
+                            <div class="form-group col-md-3"><label for="comp-nm">업체명</label> <input type="text"
+                                                                                                     class="form-control"
+                                                                                                     id="comp-nm"
+                                                                                                     name="comp_nm">
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div><br/>
+
+<!-- mainContent의 하단 조회결과 테이블 -->
+<div class="mainContent-bottom container-fluid">
+    <div class="row gap-20 pos-r">
+        <div class="col-md-12">
+            <div class="bgc-white bd bdrs-3 p-20">
+
+                <h5 class="c-grey-900 mB-20">방문 내역</h5>
+                <hr/>
+                <section id="no-more-tables">
+                    <table id="applyListTable" class="table table-striped table-bordered applyListTable" cellspacing="0"
+                           width="100%">
+                        <thead>
+                        <!-- 변수명 변경 및 컬럼 사이즈 조절 필요함 -->
+                        <tr>
+                            <th style="width: 80px;" class="numeric">유형</th>
+                            <th style="width: 130px;" class="numeric">업체명</th>
+                            <th style="width: 230px;" class="numeric">방문목적</th>
+                            <th style="width: 120px;" class="numeric">방문자</th>
+                            <th style="width: 120px;" class="numeric">접견자</th>
+                            <th style="width: 120px;" class="numeric">접견부서</th>
+                            <th style="width: 120px;" class="numeric">방문일시</th>
+                            <th style="width: 120px;" class="numeric">퇴장일시</th>
+                            <th style="width: 110px;" class="numeric">신청사업장</th>
+                            <th style="width: 110px;" class="numeric">신청출입문</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {% if lists|length < 1 %}
+                        <td colspan="12" style="text-align:center">
+                            <text> 조회된 내역이 없습니다.</text>
+                        </td>
+                        {% else %}
+                        <!-- 방문신청마스터에서 작업내역 데이터 출력 부분-->
+                        {% for visitInfo in lists %}
+                        <tr value1="{{visitInfo.id}}">
+
+                            <td data-title="방문유형">{{visitInfo.vcapplyuser.vcapplymaster.visit_category}}</td>
+                            <td data-title="업체명">{{visitInfo.vcapplyuser.vcapplymaster.sccompinfo.comp_nm}}</td>
+                            <td data-title="방문목적">{{visitInfo.vcapplyuser.vcapplymaster.visit_purpose}}</td>
+                            <td data-title="방문자">{{visitInfo.vcapplyuser.visitant}}</td>
+                            <td data-title="접견자">{{visitInfo.vcapplyuser.vcapplymaster.interviewr}}</td>
+                            <td data-title="접견부서">{{visitInfo.vcapplyuser.vcapplymaster.get_interviewer.dept_nm}}</td>
+                            <td data-title="방문일시">{{visitInfo.in_time}}</td>
+                            <td data-title="퇴장일시">{{visitInfo.out_time if visitInfo.out_time is not none else ''}}</td>
+                            <td data-title="신청사업장">{{visitInfo.site_nm}}</td>
+                            <td data-title="신청출입문">{{visitInfo.in_area_nm}}</td>
+
+                        </tr>
+                        {% endfor %}
+                        {% endif %}
+                        </tbody>
+                    </table>
+                </section>
+                <div id="pagination" class="pagination-nav">
+                    {{ func.render_pagination('inout_manage.index', pagination, id=None, query_string=query_string) }}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
 {% endblock %}

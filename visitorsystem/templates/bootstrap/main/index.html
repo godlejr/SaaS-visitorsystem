@@ -94,29 +94,7 @@
                     </div>
                 </div>
                 <div class="layer w-100">
-                    <!--                    <div class="peers peers-greed ai-fs ta-c">-->
-                    <!--                        <div class="peer"><h6 class="mB-10">MON</h6>-->
-                    <!--                            <canvas class="sleet" width="30" height="30"></canvas>-->
-                    <!--                            <span class="d-b fw-600">32<sup>°F</sup></span></div>-->
-                    <!--                        <div class="peer"><h6 class="mB-10">TUE</h6>-->
-                    <!--                            <canvas class="clear-day" width="30" height="30"></canvas>-->
-                    <!--                            <span class="d-b fw-600">30<sup>°F</sup></span></div>-->
-                    <!--                        <div class="peer"><h6 class="mB-10">WED</h6>-->
-                    <!--                            <canvas class="partly-cloudy-day" width="30" height="30"></canvas>-->
-                    <!--                            <span class="d-b fw-600">28<sup>°F</sup></span></div>-->
-                    <!--                        <div class="peer"><h6 class="mB-10">THR</h6>-->
-                    <!--                            <canvas class="cloudy" width="30" height="30"></canvas>-->
-                    <!--                            <span class="d-b fw-600">32<sup>°F</sup></span></div>-->
-                    <!--                        <div class="peer"><h6 class="mB-10">FRI</h6>-->
-                    <!--                            <canvas class="snow" width="30" height="30"></canvas>-->
-                    <!--                            <span class="d-b fw-600">24<sup>°F</sup></span></div>-->
-                    <!--                        <div class="peer"><h6 class="mB-10">SAT</h6>-->
-                    <!--                            <canvas class="wind" width="30" height="30"></canvas>-->
-                    <!--                            <span class="d-b fw-600">28<sup>°F</sup></span></div>-->
-                    <!--                        <div class="peer"><h6 class="mB-10">SUN</h6>-->
-                    <!--                            <canvas class="sleet" width="30" height="30"></canvas>-->
-                    <!--                            <span class="d-b fw-600">32<sup>°F</sup></span></div>-->
-                    <!--                    </div>-->
+
                 </div>
             </div>
         </div>
@@ -152,10 +130,6 @@
                             <tr onClick="window.open('{{article[0]}}')" style=" cursor:pointer;">
                                 <td class="fw-600">{{article[1]}}</td>
                                 <td class="fw-600">{{article[4]}}</td>
-
-                                <!--                                <td><span-->
-                                <!--                                        class="badge bgc-red-50 c-red-700 p-10 lh-0 tt-c badge-pill">Unavailable</span>-->
-                                <!--                                </td>-->
                                 <td>{{article[2]}}</td>
                             </tr>
                             {% endfor %}
@@ -169,73 +143,55 @@
     <div class="masonry-item col-md-6">
         <div class="bd bgc-white p-20">
             <div class="layers">
-                <div class="layer w-100 mB-10"><h6 class="lh-1">나의 신청목록</h6></div>
+                {% set userAuth = current_user.get_auth.code %}
+                {% if userAuth == current_app.config['AUTH_VISITOR'] %}
+                <div class="layer w-100 mB-10"><h6 class="lh-1">나의 방문신청 목록</h6></div>
+                {% endif %}
+
+                {% if userAuth == current_app.config['AUTH_APPROVAL'] %}
+                <div class="layer w-100 mB-10"><h6 class="lh-1">결재 할 방문신청 목록</h6></div>
+                {% endif %}
+
+                {% if userAuth == current_app.config['AUTH_VISIT_ADMIN'] %}
+                <div class="layer w-100 mB-10"><h6 class="lh-1">{{current_user.site_nm}} 사업장 방문승인 목록</h6></div>
+                {% endif %}
+
+                {% if userAuth == current_app.config['AUTH_ADMIN'] %}
+                <div class="layer w-100 mB-10"><h6 class="lh-1">{{current_user.ssctenant.comp_nm}} 방문신청 목록</h6></div>
+                {% endif %}
                 <div class="layer w-100">
-                    <ul class="list-task list-group" data-role="tasklist">
-                        <li class="list-group-item bdw-0" data-role="task">
-                            <div class="checkbox checkbox-circle checkbox-info peers ai-c">
-                                <input
-                                    type="checkbox" id="inputCall1" name="inputCheckboxesCall"
-                                    class="peer">
-                                <label for="inputCall1"
-                                                         class="peers peer-greed js-sb ai-c"><span
-                                    class="peer peer-greed">울산공장 출입신청</span></label></div>
-                        </li>
-                        <li class="list-group-item bdw-0" data-role="task">
-                            <div class="checkbox checkbox-circle checkbox-info peers ai-c"><input
-                                    type="checkbox" id="inputCall2" name="inputCheckboxesCall"
-                                    class="peer"> <label for="inputCall2"
-                                                         class="peers peer-greed js-sb ai-c"><span
-                                    class="peer peer-greed">여수공장 굴삭기 작업 출입신청</span> <span
-                                    class="peer"><span
-                                    class="badge badge-pill fl-r badge-success lh-0 p-10">대기</span></span></label>
-                            </div>
-                        </li>
-                        <li class="list-group-item bdw-0" data-role="task">
-                            <div class="checkbox checkbox-circle checkbox-info peers ai-c"><input
-                                    type="checkbox" id="inputCall3" name="inputCheckboxesCall"
-                                    class="peer"> <label for="inputCall3"
-                                                         class="peers peer-greed js-sb ai-c"><span
-                                    class="peer peer-greed">울산 1공장 작업자 신청</span> <span class="peer"><span
-                                    class="badge badge-pill fl-r badge-danger lh-0 p-10">준비 중</span></span></label>
-                            </div>
-                        </li>
-<!--                        <li class="list-group-item bdw-0" data-role="task">-->
-<!--                            <div class="checkbox checkbox-circle checkbox-info peers ai-c"><input-->
-<!--                                    type="checkbox" id="inputCall4" name="inputCheckboxesCall"-->
-<!--                                    class="peer"> <label for="inputCall4"-->
-<!--                                                         class="peers peer-greed js-sb ai-c"><span-->
-<!--                                    class="peer peer-greed">Give Purchase Report</span> <span-->
-<!--                                    class="peer"><span-->
-<!--                                    class="badge badge-pill fl-r badge-warning lh-0 p-10">not important</span></span></label>-->
-<!--                            </div>-->
-<!--                        </li>-->
-<!--                        <li class="list-group-item bdw-0" data-role="task">-->
-<!--                            <div class="checkbox checkbox-circle checkbox-info peers ai-c"><input-->
-<!--                                    type="checkbox" id="inputCall5" name="inputCheckboxesCall"-->
-<!--                                    class="peer"> <label for="inputCall5"-->
-<!--                                                         class="peers peer-greed js-sb ai-c"><span-->
-<!--                                    class="peer peer-greed">Watch Game of Thrones Episode</span> <span-->
-<!--                                    class="peer"><span-->
-<!--                                    class="badge badge-pill fl-r badge-info lh-0 p-10">Tomorrow</span></span></label>-->
-<!--                            </div>-->
-<!--                        </li>-->
-<!--                        <li class="list-group-item bdw-0" data-role="task">-->
-<!--                            <div class="checkbox checkbox-circle checkbox-info peers ai-c"><input-->
-<!--                                    type="checkbox" id="inputCall6" name="inputCheckboxesCall"-->
-<!--                                    class="peer"> <label for="inputCall6"-->
-<!--                                                         class="peers peer-greed js-sb ai-c"><span-->
-<!--                                    class="peer peer-greed">Give Purchase report</span> <span-->
-<!--                                    class="peer"><span-->
-<!--                                    class="badge badge-pill fl-r badge-success lh-0 p-10">Done</span></span></label>-->
-<!--                            </div>-->
-<!--                        </li>-->
-                    </ul>
+
+                    <div class="table-responsive p-20">
+                        <table class="table">
+                            <thead>
+                            <tr>
+                                <th class="bdwT-0">방문목적</th>
+                                <th class="bdwT-0">업체</th>
+                                <th class="bdwT-0">방문기간</th>
+                                <th class="bdwT-0">승인상태</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            {% for applyMaster in applyList %}
+                            <tr onclick="location.href='{{ url_for('inout_apply.edit', id=applyMaster.id) }}'"
+                                style=" cursor:pointer;">
+                                <td class="fw-600">{{ applyMaster.visit_purpose }}</td>
+                                <td class="fw-600">{{applyMaster.applicant_comp_nm}}</td>
+                                <td class="fw-600">{{applyMaster.visit_sdate}} ~ {{applyMaster.visit_edate}}</td>
+
+                                <td class="fw-600"> <span class="badge badge-pill fl-l {% if applyMaster.approval_state == '승인' %}badge-success
+                                    {% elif applyMaster.approval_state == '반려' %}badge-danger
+                                    {% elif applyMaster.approval_state == '대기' %}badge-info {%endif%}lh-0 p-10">{{ applyMaster.approval_state }}</span>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
-
 </div>
 
 
