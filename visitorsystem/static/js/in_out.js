@@ -166,7 +166,7 @@ $(document).ready(function() {
         $("#alertModal").show();
         $("#modalContent").text('');
         $("#modalContent").text('방문신청이 성공적으로 이뤄졌습니다.');
-        $(location).attr('href', '/')
+        $(location).attr('href', '/inoutApplyManage')
 
 
     }

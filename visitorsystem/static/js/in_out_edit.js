@@ -170,7 +170,7 @@ $(document).ready(function() {
         $("#alertModal").show();
         $("#modalContent").text('');
         $("#modalContent").text('방문수정 되었습니다.');
-        $(location).attr('href', '/')
+        $(location).attr('href', '/inoutApplyManage')
 
 
     }
