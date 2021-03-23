@@ -116,8 +116,8 @@ $(document).ready(function() {
 				htmlData += '<td data-title="방문자">' + dataSet[i].visit_user + '</td>';
 				htmlData += '<td data-title="방문자 정보" style=" cursor:pointer; text-decoration: underline; cursor:pointer;" data-toggle="modal" class="guestInfo" name="guestInfo" value1=' + dataSet[i].master_id + ' value2=' + dataSet[i].user_id + '>방문자 정보</td>';
                 htmlData += '<td data-title="접견자">' + dataSet[i].visit_interviewr + '</td>';
-				htmlData += '<td data-title="시작일">' + dataSet[i].admin_sdate + '</td>';
-				htmlData += '<td data-title="종료일">' + dataSet[i].admin_edate + '</td>';
+				htmlData += '<td data-title="시작일">' + dataSet[i].visit_sdate + '</td>';
+				htmlData += '<td data-title="종료일">' + dataSet[i].visit_edate + '</td>';
 				htmlData += '<td data-title="신청사업장">' + dataSet[i].site_nm + '</td>';
 				htmlData += '<td data-title="신청출입문">' + dataSet[i].site_nm2 + '</td>';
 				htmlData += '<td data-title="발급상태">' + dataSet[i].barcode_state + '</td>';
