@@ -63,7 +63,7 @@ class Config(object):
     SQLALCHEMY_TRACK_MODIFICATIONS = False
 
     #운영
-    SQLALCHEMY_DATABASE_URI = 'mysql+pymysql://root:password!@vms-database.cluster-custom-cseigyxe813j.ap-northeast-2.rds.amazonaws.com/vmswebprod'
+    SQLALCHEMY_DATABASE_URI = 'mysql+pymysql://root:password!@vms-database.cluster-cseigyxe813j.ap-northeast-2.rds.amazonaws.com/vmswebprod'
 
     #SQLALCHEMY_DATABASE_URI = 'mysql+pymysql://saas:P@ssw0rd@172.19.116.78:3307/hccwebdev'
     #SQLALCHEMY_DATABASE_URI = 'mysql+pymysql://saas:P@ssw0rd@localhost:3306/hccwebdev'
