@@ -2,7 +2,7 @@
 
 **Architecture Created & Updated**
 * Created Date: 2021-01-14 (초기) 
-* Updated Date: 2021-01-25 (최신) 
+* Updated Date: 2021-05-25 (최신) 
 * Architect: 김동주 
 
 **서버 환경**
