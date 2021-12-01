@@ -63,10 +63,10 @@ class Config(object):
     SQLALCHEMY_TRACK_MODIFICATIONS = False
 
     #운영
-    SQLALCHEMY_DATABASE_URI = 'mysql+pymysql://root:password!@vms-database.cluster-cseigyxe813j.ap-northeast-2.rds.amazonaws.com/vmswebprod'
+    SQLALCHEMY_DATABASE_URI = 'mysql+pymysql://root:xxxxxxxxx!@vms-database.cluster-cseigyxe813j.ap-northeast-2.rds.amazonaws.com/vmswebprod'
 
-    #SQLALCHEMY_DATABASE_URI = 'mysql+pymysql://saas:P@ssw0rd@172.19.116.78:3307/hccwebdev'
-    #SQLALCHEMY_DATABASE_URI = 'mysql+pymysql://saas:P@ssw0rd@localhost:3306/hccwebdev'
+    #SQLALCHEMY_DATABASE_URI = 'mysql+pymysql://saas:xxxxxxxxx@172.19.116.78:3307/hccwebdev'
+    #SQLALCHEMY_DATABASE_URI = 'mysql+pymysql://saas:xxxxxxxxx@localhost:3306/hccwebdev'
     SOCIAL_FACEBOOK = {
         'consumer_key': 'xxxxxxxx',
         'consumer_secret': 'xxxxxxxxx'
@@ -74,14 +74,14 @@ class Config(object):
 
 
     #S3 Upload Key
-    AWS_ACCESS_KEY = "AKIAUOEDDROYNOE74JYR"
-    AWS_SECRET_KEY = "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"
+    AWS_ACCESS_KEY = "xxxxxxxxx"
+    AWS_SECRET_KEY = "xxxxxxxxx"
     BUCKET_NAME = "vms-tenants-bucket-dev"
 
     #SNS Key
 
-    AWS_SNS_ACCESS_KEY = "AKIAUOEDDROYK2II6BGE"
-    AWS_SNS_SECRET_KEY = "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"
+    AWS_SNS_ACCESS_KEY = "xxxxxxxxx"
+    AWS_SNS_SECRET_KEY = "xxxxxxxxx"
     AWS_SNS_REGION_NAME = "ap-northeast-1"
     AWS_SNS_SMS_TOPIC_ARN = "arn:aws:sns:ap-northeast-1:305217637296:VMS_SMS"
 
