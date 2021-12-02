@@ -10,9 +10,9 @@
 
 **AWS 환경**
 * Server: EC2 (CentOS)
-* Database: RDS (MySQL v5.7.x),
+* Database: RDS 
 * Storage: S3,
 * Session: Redis,
-* Language: Python v3.5.2,
-* Framework: Flask v0.11.1
+* Language: Python v3.7
+* Framework: Flask v1.1.2
 
